@@ -1,0 +1,201 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for authentication and authorization
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return request.auth.token.role == 'admin';
+    }
+    
+    function isTeacher() {
+      return request.auth.token.role == 'teacher' || isAdmin();
+    }
+    
+    function isValidUser() {
+      return request.auth.token.role in ['learner', 'teacher', 'admin'];
+    }
+    
+    function hasValidEmail() {
+      return request.auth.token.email_verified == true;
+    }
+    
+    // Users collection - users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId) && hasValidEmail();
+      
+      // User profiles can be read by authenticated users (for community features)
+      allow read: if isAuthenticated() && isValidUser();
+      
+      // User stats subcollection
+      match /stats/{statId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      }
+      
+      // User preferences subcollection
+      match /preferences/{prefId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      }
+    }
+    
+    // Languages collection - read only for all authenticated users
+    match /languages/{languageId} {
+      allow read: if isAuthenticated() && isValidUser();
+      allow write: if isAdmin();
+      
+      // Dictionary entries subcollection
+      match /dictionary/{entryId} {
+        allow read: if isAuthenticated() && isValidUser();
+        allow write: if isTeacher();
+      }
+      
+      // Grammar rules subcollection
+      match /grammar/{ruleId} {
+        allow read: if isAuthenticated() && isValidUser();
+        allow write: if isTeacher();
+      }
+    }
+    
+    // Lessons collection
+    match /lessons/{lessonId} {
+      allow read: if isAuthenticated() && isValidUser();
+      allow write: if isTeacher();
+      
+      // Lesson progress subcollection
+      match /progress/{userId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isTeacher());
+      }
+      
+      // Lesson exercises subcollection
+      match /exercises/{exerciseId} {
+        allow read: if isAuthenticated() && isValidUser();
+        allow write: if isTeacher();
+      }
+    }
+    
+    // User progress and achievements
+    match /userProgress/{userId} {
+      allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      
+      match /achievements/{achievementId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      }
+      
+      match /badges/{badgeId} {
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      }
+    }
+    
+    // Community features
+    match /forums/{forumId} {
+      allow read: if isAuthenticated() && isValidUser();
+      allow create: if isAuthenticated() && isValidUser();
+      allow update, delete: if isAuthenticated() && (isOwner(resource.data.authorId) || isAdmin());
+      
+      match /posts/{postId} {
+        allow read: if isAuthenticated() && isValidUser();
+        allow create: if isAuthenticated() && isValidUser();
+        allow update, delete: if isAuthenticated() && (isOwner(resource.data.authorId) || isAdmin());
+        
+        match /comments/{commentId} {
+          allow read: if isAuthenticated() && isValidUser();
+          allow create: if isAuthenticated() && isValidUser();
+          allow update, delete: if isAuthenticated() && (isOwner(resource.data.authorId) || isAdmin());
+        }
+      }
+    }
+    
+    // Friend requests and social connections
+    match /friendRequests/{requestId} {
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.senderId) || 
+        isOwner(resource.data.receiverId) || 
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && isOwner(request.auth.uid);
+      allow update, delete: if isAuthenticated() && (
+        isOwner(resource.data.senderId) || 
+        isOwner(resource.data.receiverId) || 
+        isAdmin()
+      );
+    }
+    
+    match /friendships/{friendshipId} {
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.user1Id) || 
+        isOwner(resource.data.user2Id) || 
+        isAdmin()
+      );
+      allow create, update, delete: if isAuthenticated() && (
+        isOwner(resource.data.user1Id) || 
+        isOwner(resource.data.user2Id) || 
+        isAdmin()
+      );
+    }
+    
+    // Payment records (read-only for users, admin can manage)
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create, update: if isAdmin();
+    }
+    
+    // Subscriptions
+    match /subscriptions/{subscriptionId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create, update: if isAdmin();
+    }
+    
+    // App metadata (read-only for users)
+    match /appMetadata/{docId} {
+      allow read: if isAuthenticated() && isValidUser();
+      allow write: if isAdmin();
+    }
+    
+    // Analytics and usage data (admin only)
+    match /analytics/{docId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Feedback and support tickets
+    match /feedback/{feedbackId} {
+      allow read, write: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create: if isAuthenticated() && isValidUser();
+    }
+    
+    match /supportTickets/{ticketId} {
+      allow read, write: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create: if isAuthenticated() && isValidUser();
+    }
+    
+    // Content moderation
+    match /moderationQueue/{itemId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // System notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create, update: if isAdmin();
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Leaderboards (read-only for users)
+    match /leaderboards/{leaderboardId} {
+      allow read: if isAuthenticated() && isValidUser();
+      allow write: if isAdmin();
+    }
+    
+    // Deny all other requests
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

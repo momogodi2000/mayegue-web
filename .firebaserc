@@ -1,0 +1,24 @@
+{
+  "projects": {
+    "default": "mayegue-cameroon-languages",
+    "development": "mayegue-dev-environment",
+    "staging": "mayegue-staging-env", 
+    "production": "mayegue-cameroon-languages"
+  },
+  "targets": {
+    "mayegue-cameroon-languages": {
+      "hosting": {
+        "web": [
+          "mayegue-web-app"
+        ]
+      },
+      "storage": {
+        "default": [
+          "mayegue-cameroon-languages.appspot.com"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

@@ -53,6 +53,18 @@ export class FirestoreService {
     return snap.docs.map(d => ({ ...(d.data() as Record<string, unknown>), id: d.id }) as T);
   }
 
+  async getDocuments<T>(collectionName: string, options?: { where?: [string, WhereFilterOp, unknown][] }): Promise<T[]> {
+    let q = collection(db, collectionName);
+    
+    if (options?.where) {
+      const constraints: QueryConstraint[] = options.where.map(([field, op, value]) => where(field, op, value));
+      q = fsQuery(q, ...constraints) as typeof q;
+    }
+    
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ ...(d.data() as Record<string, unknown>), id: d.id }) as T);
+  }
+
   async getDocument<T>(collectionName: string, docId: string): Promise<T | null> {
     const ref = doc(db, collectionName, docId);
     const snap = await getDoc(ref);
@@ -68,6 +80,15 @@ export class FirestoreService {
     };
     const ref = await addDoc(collection(db, collectionName), docData);
     return ref.id;
+  }
+
+  async setDocument<T extends DocumentData>(collectionName: string, docId: string, data: T): Promise<void> {
+    const ref = doc(db, collectionName, docId);
+    const setData = {
+      ...data,
+      updatedAt: serverTimestamp(),
+    };
+    await updateDoc(ref, setData);
   }
 
   async updateDocument<T extends DocumentData>(collectionName: string, docId: string, data: Partial<T>): Promise<void> {

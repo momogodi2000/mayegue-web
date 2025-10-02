@@ -21,7 +21,7 @@ export interface LearningEvent extends Record<string, unknown> {
 }
 
 export class AnalyticsService {
-  private isEnabled: boolean;
+  private readonly isEnabled: boolean;
 
   constructor() {
     this.isEnabled = config.monitoring.performanceMonitoring && !!analytics;
@@ -78,7 +78,7 @@ export class AnalyticsService {
   }
 
   // Legacy methods for backward compatibility
-  trackPageView(pageName: string, path: string): void {
+  trackPageView(pageName: string, _path: string): void {
     this.logPageView(pageName, pageName);
   }
 
@@ -94,11 +94,11 @@ export class AnalyticsService {
     this.logSearch(searchTerm, category || 'dictionary', 0);
   }
 
-  trackLessonStarted(lessonId: string, lessonName: string): void {
+  trackLessonStarted(lessonId: string, _lessonName: string): void {
     this.logLessonStarted({ lesson_id: lessonId });
   }
 
-  trackLessonCompleted(lessonId: string, lessonName: string, duration: number): void {
+  trackLessonCompleted(lessonId: string, _lessonName: string, duration: number): void {
     this.logLessonCompleted({ lesson_id: lessonId, time_spent: duration, score: 0 });
   }
 
@@ -106,7 +106,7 @@ export class AnalyticsService {
     this.logPurchaseInitiated(plan, amount, currency);
   }
 
-  trackPaymentCompleted(amount: number, currency: string, transactionId: string): void {
+  trackPaymentCompleted(amount: number, currency: string, _transactionId: string): void {
     this.logPurchaseCompleted('premium', amount, currency, 'card');
   }
 
@@ -289,6 +289,34 @@ export class AnalyticsService {
         ...additionalParams,
       });
     });
+  }
+
+  // Sync event tracking
+  async trackSyncEvent(eventName: string, parameters: Record<string, unknown> = {}): Promise<void> {
+    if (!analytics) return;
+
+    try {
+      logEvent(analytics, `sync_${eventName}`, {
+        timestamp: Date.now(),
+        ...parameters
+      });
+    } catch (error) {
+      console.error('Failed to track sync event:', error);
+    }
+  }
+
+  // Payment event tracking
+  async trackPaymentEvent(eventName: string, parameters: Record<string, unknown> = {}): Promise<void> {
+    if (!analytics) return;
+
+    try {
+      logEvent(analytics, `payment_${eventName}`, {
+        timestamp: Date.now(),
+        ...parameters
+      });
+    } catch (error) {
+      console.error('Failed to track payment event:', error);
+    }
   }
 }
 

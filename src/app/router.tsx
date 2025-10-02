@@ -8,7 +8,7 @@ import { RoleRoute } from '@/shared/components/auth/RoleRoute';
 import { GuestDashboard } from '@/features/users/guest';
 import { LearnerDashboard } from '@/features/users/learner';
 import { TeacherDashboard } from '@/features/users/teacher';
-import { AdminDashboard } from '@/features/users/admin';
+import { AdminPage } from '@/features/users/admin';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('@/features/home/pages/HomePage'));
@@ -63,7 +63,7 @@ export function AppRouter() {
             <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
               <Route path="dashboard/teacher" element={<TeacherDashboard />} />
               <Route path="teacher/lessons" element={<TeacherLessonManagementPage />} />
-              <Route path="dashboard/admin" element={<AdminDashboard />} />
+              <Route path="dashboard/admin" element={<AdminPage />} />
               <Route path="admin/analytics" element={<AdminAnalyticsPage />} />
             </Route>
             <Route path="lessons" element={<LessonsPage />} />

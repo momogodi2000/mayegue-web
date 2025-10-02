@@ -12,7 +12,17 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "generate-sitemap": "tsx scripts/generate-sitemap.ts",
-    "seed-db": "tsx scripts/seed-database.ts"
+    "seed-db": "tsx scripts/seed-database.ts",
+    "firebase:emulators": "firebase emulators:start",
+    "firebase:deploy": "firebase deploy",
+    "firebase:deploy:hosting": "firebase deploy --only hosting",
+    "firebase:deploy:firestore": "firebase deploy --only firestore",
+    "firebase:deploy:storage": "firebase deploy --only storage",
+    "deploy:production": "chmod +x scripts/deploy-production.sh && scripts/deploy-production.sh",
+    "deploy:staging": "firebase use staging && npm run build && firebase deploy",
+    "setup:dev": "chmod +x scripts/setup-dev.sh && scripts/setup-dev.sh",
+    "test:ci": "echo 'No tests configured yet'",
+    "backup:firestore": "firebase firestore:delete --all-collections --force && firebase firestore:restore"
   },
   "dependencies": {
     "react": "^18.2.0",
