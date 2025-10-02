@@ -13,6 +13,7 @@ import {
   Badge
 } from '@/shared/components/ui';
 import toast from 'react-hot-toast';
+import logoUrl from '@/assets/logo/logo.jpg';
 
 interface FormData {
   name: string;
@@ -140,7 +141,7 @@ export default function RegisterPage() {
         <div className="text-center">
           <div className="flex items-center justify-center mb-4">
             <img 
-              src="/src/assets/logo/logo.jpg" 
+              src={logoUrl}
               alt="Ma’a yegue Logo" 
               className="h-12 w-12 rounded-lg shadow-md"
             />

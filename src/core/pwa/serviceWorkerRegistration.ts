@@ -18,8 +18,11 @@ export function registerServiceWorker(): void {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                   // New service worker available
-                  if (confirm('Une nouvelle version est disponible. Mettre à jour?')) {
-                    window.location.reload();
+                  const showPopup = (import.meta as any).env?.VITE_SW_UPDATE_POPUP !== 'false';
+                  if (showPopup) {
+                    if (confirm('Une nouvelle version est disponible. Mettre à jour?')) {
+                      window.location.reload();
+                    }
                   }
                 }
               });

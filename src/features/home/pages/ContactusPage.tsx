@@ -1,15 +1,40 @@
 import { FormEvent, useState } from 'react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/core/config/firebase.config';
+import toast from 'react-hot-toast';
 
 export default function ContactusPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // In V1, we just display success. Hook to backend/email provider later.
-    setSent(true);
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      toast.error('Veuillez remplir tous les champs.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await addDoc(collection(db, 'contact_messages'), {
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim(),
+        createdAt: serverTimestamp(),
+        status: 'new'
+      });
+      setSent(true);
+      toast.success('Merci! Votre message a été envoyé.');
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch (err) {
+      toast.error("Impossible d'envoyer le message. Réessayez.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -40,7 +65,9 @@ export default function ContactusPage() {
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
                 <textarea id="message" className="input min-h-[140px]" required value={message} onChange={(e)=>setMessage(e.target.value)} />
               </div>
-              <button type="submit" className="btn-primary">Envoyer</button>
+              <button type="submit" className="btn-primary" disabled={submitting}>
+                {submitting ? 'Envoi...' : 'Envoyer'}
+              </button>
             </form>
           )}
         </div>

@@ -179,10 +179,7 @@ cd Ma’a yegue-web
 npm install
 
 # 3. Configurer les variables d'environnement
-cp .env.example .env.local
-
-# 4. Éditer .env.local avec vos clés API
-# (Firebase credentials sont déjà configurées)
+# Créez un fichier .env.local à la racine avec vos clés API
 
 # 5. Lancer le serveur de développement
 npm run dev
@@ -195,22 +192,66 @@ L'application sera accessible sur `http://localhost:3000`
 Créer un fichier `.env.local`:
 
 ```env
-# Firebase (déjà configurées)
-VITE_FIREBASE_API_KEY=AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0
-VITE_FIREBASE_AUTH_DOMAIN=studio-6750997720-7c22e.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=studio-6750997720-7c22e
-VITE_FIREBASE_STORAGE_BUCKET=studio-6750997720-7c22e.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=853678151393
-VITE_FIREBASE_APP_ID=1:853678151393:web:40332d5cd4cedb029cc9a0
-VITE_FIREBASE_MEASUREMENT_ID=G-F60NV25RDJ
+# App
+VITE_APP_NAME=Ma’a yegue
+VITE_APP_VERSION=1.0.0
+VITE_APP_DESCRIPTION=Application d'apprentissage des langues camerounaises
+VITE_APP_ENV=development
 
-# AI Services
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
+# Firebase
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
 
-# Payment Services (sandbox)
-VITE_CAMPAY_API_KEY=your_campay_api_key
-VITE_CAMPAY_SECRET=your_campay_secret
-VITE_CAMPAY_ENVIRONMENT=sandbox
+# APIs
+VITE_API_BASE_URL=http://localhost:5001
+VITE_CAMPAY_API_URL=https://demo.campay.net/api
+VITE_NOUPAI_API_URL=https://api.noupai.com
+
+# AI Services (optional)
+VITE_GEMINI_API_KEY=
+VITE_OPENAI_API_KEY=
+
+# Payments (optional)
+VITE_CAMPAY_APP_USER=
+VITE_CAMPAY_APP_PASS=
+VITE_NOUPAI_CLIENT_ID=
+VITE_NOUPAI_CLIENT_SECRET=
+
+# Security (dev defaults)
+VITE_ENCRYPTION_KEY=change_this_in_prod
+VITE_JWT_SECRET=change_this_in_prod
+
+# Social Auth (optional)
+VITE_GOOGLE_CLIENT_ID=
+VITE_FACEBOOK_APP_ID=
+VITE_APPLE_CLIENT_ID=
+
+# Feature Flags
+VITE_ENABLE_AI_CHAT=true
+VITE_ENABLE_VOICE_RECOGNITION=true
+VITE_ENABLE_OFFLINE_MODE=true
+VITE_ENABLE_PAYMENTS=true
+VITE_ENABLE_COMMUNITY=true
+VITE_ENABLE_GAMIFICATION=true
+
+# Monitoring
+VITE_SENTRY_DSN=
+VITE_GOOGLE_ANALYTICS_ID=
+VITE_HOTJAR_ID=
+VITE_PERFORMANCE_MONITORING=true
+
+# PWA
+VITE_PWA_ENABLED=true
+VITE_SW_UPDATE_POPUP=true
+
+# Development
+VITE_USE_EMULATORS=false
+VITE_DEBUG_MODE=true
 ```
 
 ---

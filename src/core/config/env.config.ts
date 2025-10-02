@@ -223,7 +223,14 @@ export function validateConfig(): void {
   const missing = requiredVars.filter(key => !import.meta.env[key]);
   
   if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    const isProd = import.meta.env.MODE === 'production' || config.environment === 'production';
+    const message = `Missing required environment variables: ${missing.join(', ')}`;
+    if (isProd) {
+      throw new Error(message);
+    } else {
+      // In development/staging, warn instead of throwing to avoid blank screen
+      console.warn(message);
+    }
   }
   
   // Warn about optional but recommended variables

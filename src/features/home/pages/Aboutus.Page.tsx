@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 
-export const AboutPage: React.FC = () => {
+const AboutusPage: React.FC = () => {
   const teamMembers = [
     {
       name: 'Dr. Marie Atangana',
@@ -97,7 +97,7 @@ export const AboutPage: React.FC = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  to="/auth/register"
+                  to="/register"
                   className="bg-white text-green-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
                 >
                   Commencer l'apprentissage
@@ -276,7 +276,7 @@ export const AboutPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/auth/register"
+                to="/register"
                 className="bg-white text-green-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
                 Créer un compte
@@ -294,3 +294,5 @@ export const AboutPage: React.FC = () => {
     </>
   );
 };
+
+export default AboutusPage;

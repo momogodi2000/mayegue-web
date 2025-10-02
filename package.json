@@ -21,7 +21,10 @@
     "deploy:production": "chmod +x scripts/deploy-production.sh && scripts/deploy-production.sh",
     "deploy:staging": "firebase use staging && npm run build && firebase deploy",
     "setup:dev": "chmod +x scripts/setup-dev.sh && scripts/setup-dev.sh",
-    "test:ci": "echo 'No tests configured yet'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --reporter=dot",
     "backup:firestore": "firebase firestore:delete --all-collections --force && firebase firestore:restore"
   },
   "dependencies": {
@@ -69,7 +72,11 @@
     "workbox-precaching": "^7.0.0",
     "workbox-routing": "^7.0.0",
     "workbox-strategies": "^7.0.0",
-    "tsx": "^4.7.0"
+    "tsx": "^4.7.0",
+    "vitest": "^2.0.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.4.2",
+    "jsdom": "^24.0.0"
   },
   "engines": {
     "node": ">=18.0.0",
