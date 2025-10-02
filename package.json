@@ -1,9 +1,9 @@
 {
-  "name": "mayegue-web",
+  "name": "Ma’a yegue-web",
   "version": "1.0.0",
   "type": "module",
-  "description": "Mayegue - Application web d'apprentissage des langues camerounaises",
-  "author": "Mayegue Team",
+  "description": "Ma’a yegue - Application web d'apprentissage des langues camerounaises",
+  "author": "Ma’a yegue Team",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

@@ -8,7 +8,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold mb-3">1. Acceptation des Conditions</h2>
             <p className="text-gray-700 dark:text-gray-300">
-              En utilisant Mayegue, vous acceptez ces conditions d'utilisation. Si vous n'êtes pas d'accord,
+              En utilisant Ma’a yegue, vous acceptez ces conditions d'utilisation. Si vous n'êtes pas d'accord,
               veuillez ne pas utiliser l'application.
             </p>
           </section>
@@ -16,7 +16,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold mb-3">2. Services Proposés</h2>
             <p className="text-gray-700 dark:text-gray-300">
-              Mayegue offre une plateforme d'apprentissage des langues camerounaises avec :
+              Ma’a yegue offre une plateforme d'apprentissage des langues camerounaises avec :
             </p>
             <ul className="list-disc pl-6 mt-2 space-y-1 text-gray-700 dark:text-gray-300">
               <li>Dictionnaire interactif</li>

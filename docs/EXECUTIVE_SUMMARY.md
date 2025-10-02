@@ -1,15 +1,15 @@
-# 📋 Mayegue Web - Résumé Exécutif
+# 📋 Ma’a yegue Web - Résumé Exécutif
 
 **Date**: 30 Septembre 2025  
 **Projet**: Migration Mobile → Web  
-**Client**: Mayegue Team  
+**Client**: Ma’a yegue Team  
 **Consultant**: Senior Software Engineer & System Architect
 
 ---
 
 ## 🎯 Mission Accomplie
 
-J'ai analysé l'intégralité de votre documentation mobile (9000+ lignes) et créé une **architecture web production-ready complète** pour Mayegue Web.
+J'ai analysé l'intégralité de votre documentation mobile (9000+ lignes) et créé une **architecture web production-ready complète** pour Ma’a yegue Web.
 
 ---
 
@@ -560,7 +560,7 @@ Total Value: ~$30,000+
 
 ```bash
 # 1. Installer les dépendances
-cd mayegue-web
+cd Ma’a yegue-web
 npm install
 
 # 2. Créer .env.local (variables d'environnement)
@@ -812,5 +812,5 @@ Vous disposez d'une **architecture web professionnelle, scalable et production-r
 
 *Document préparé par: Senior Software Engineer & System Architect*  
 *Date: 30 Septembre 2025*  
-*Projet: Mayegue Web - Migration Mobile → Web*  
+*Projet: Ma’a yegue Web - Migration Mobile → Web*  
 *Statut: Architecture Complétée ✅ - Ready for Development 🚀*

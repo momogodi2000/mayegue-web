@@ -14,7 +14,7 @@ export const LoadingScreen: React.FC = () => {
         
         {/* Loading text */}
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-          Mayegue
+          Ma’a yegue
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Chargement en cours...

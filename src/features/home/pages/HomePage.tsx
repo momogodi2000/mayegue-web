@@ -8,7 +8,7 @@ export default function HomePage() {
         <div className="text-center max-w-4xl mx-auto">
           {/* Logo/Title */}
           <h1 className="heading-1 mb-6 gradient-text">
-            Mayegue
+            Ma’a yegue
           </h1>
           
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">

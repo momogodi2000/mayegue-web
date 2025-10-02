@@ -1,6 +1,6 @@
 {
-  "name": "Mayegue - Langues Camerounaises",
-  "short_name": "Mayegue",
+  "name": "Ma’a yegue - Langues Camerounaises",
+  "short_name": "Ma’a yegue",
   "description": "Apprenez les langues traditionnelles camerounaises: Ewondo, Duala, Fulfulde et plus encore.",
   "start_url": "/",
   "display": "standalone",
@@ -44,7 +44,7 @@
       "src": "/assets/screenshots/home.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "label": "Page d'accueil Mayegue"
+      "label": "Page d'accueil Ma’a yegue"
     },
     {
       "src": "/assets/screenshots/dictionary.png",

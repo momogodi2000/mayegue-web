@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🚀 Starting Mayegue production deployment..."
+echo "🚀 Starting Ma’a yegue production deployment..."
 
 # Check if required tools are installed
 if ! command -v firebase &> /dev/null; then

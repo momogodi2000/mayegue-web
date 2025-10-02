@@ -22,8 +22,8 @@ export default function CheckoutPage() {
       const payment = await campayService.initiatePayment({
         amount: plan.amount,
         currency: 'XAF',
-        description: `Abonnement ${plan.name} - Mayegue`,
-        externalReference: `MAYEGUE-${Date.now()}`,
+        description: `Abonnement ${plan.name} - Ma’a yegue`,
+        externalReference: `Ma’a yegue-${Date.now()}`,
         phoneNumber: phoneNumber.replace(/\s/g, ''),
       });
 

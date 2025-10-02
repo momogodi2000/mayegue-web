@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Mayegue - Langues Camerounaises',
-        short_name: 'Mayegue',
+        name: 'Ma’a yegue - Langues Camerounaises',
+        short_name: 'Ma’a yegue',
         description: 'Apprenez les langues traditionnelles camerounaises: Ewondo, Duala, Fulfulde et plus encore.',
         theme_color: '#10B981',
         background_color: '#ffffff',

@@ -154,7 +154,7 @@ export const useProfileStore = create<ProfileState>()(
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `mayegue-profile-export-${Date.now()}.json`;
+          a.download = `Ma’a yegue-profile-export-${Date.now()}.json`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);

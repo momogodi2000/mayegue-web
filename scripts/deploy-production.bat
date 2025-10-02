@@ -2,7 +2,7 @@
 REM Firebase Production Deployment Script for Windows
 REM Run this script to deploy to production
 
-echo 🚀 Starting Mayegue production deployment...
+echo 🚀 Starting Ma’a yegue production deployment...
 
 REM Check if Firebase CLI is installed
 firebase --version >nul 2>&1

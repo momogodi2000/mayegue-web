@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
           <div className="flex items-center justify-center mb-4">
             <img 
               src="/src/assets/logo/logo.jpg" 
-              alt="Mayegue Logo" 
+              alt="Ma’a yegue Logo" 
               className="h-12 w-12 rounded-lg shadow-md"
             />
           </div>
@@ -156,7 +156,7 @@ export default function ForgotPasswordPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       error={error && !validateEmail(email) ? 'Format d\'email invalide' : undefined}
-                      hint="Entrez l'email associé à votre compte Mayegue"
+                      hint="Entrez l'email associé à votre compte Ma’a yegue"
                       fullWidth
                       required
                       leftIcon={

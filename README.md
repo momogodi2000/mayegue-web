@@ -1,8 +1,8 @@
-# 🌍 Mayegue Web - Plateforme d'Apprentissage des Langues Camerounaises
+# 🌍 Ma’a yegue Web - Plateforme d'Apprentissage des Langues Camerounaises
 
 <div align="center">
 
-![Mayegue Logo](public/assets/icons/icon-512x512.png)
+![Ma’a yegue Logo](public/assets/icons/icon-512x512.png)
 
 **Apprenez les langues traditionnelles camerounaises avec une technologie moderne**
 
@@ -15,7 +15,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
 [![PWA](https://img.shields.io/badge/PWA-Enabled-5A0FC8?style=for-the-badge&logo=pwa)](https://web.dev/progressive-web-apps/)
 
-[🚀 Demo Live](https://mayegue.app) · [📖 Documentation](./WEB_ARCHITECTURE.md) · [🐛 Signaler un Bug](https://github.com/mayegue/issues)
+[🚀 Demo Live](https://Ma’a yegue.app) · [📖 Documentation](./WEB_ARCHITECTURE.md) · [🐛 Signaler un Bug](https://github.com/Ma’a yegue/issues)
 
 </div>
 
@@ -40,7 +40,7 @@
 
 ## 📖 À Propos
 
-**Mayegue** est une plateforme web progressive (PWA) d'apprentissage des langues traditionnelles camerounaises. Basée sur l'app mobile Flutter originale, cette version web offre une expérience utilisateur optimale sur tous les navigateurs avec support hors ligne complet.
+**Ma’a yegue** est une plateforme web progressive (PWA) d'apprentissage des langues traditionnelles camerounaises. Basée sur l'app mobile Flutter originale, cette version web offre une expérience utilisateur optimale sur tous les navigateurs avec support hors ligne complet.
 
 ### 🎯 Mission
 
@@ -172,8 +172,8 @@ Préserver et promouvoir les langues camerounaises en rendant leur apprentissage
 
 ```bash
 # 1. Cloner le repository
-git clone https://github.com/mayegue/mayegue-web.git
-cd mayegue-web
+git clone https://github.com/Ma’a yegue/Ma’a yegue-web.git
+cd Ma’a yegue-web
 
 # 2. Installer les dépendances
 npm install
@@ -239,7 +239,7 @@ npm run seed-db          # Peupler la base de données SQLite
 ### Structure du Projet
 
 ```
-mayegue-web/
+Ma’a yegue-web/
 ├── public/              # Assets statiques
 │   ├── assets/         # Images, icons, SQLite DB
 │   ├── manifest.json   # PWA manifest
@@ -500,18 +500,18 @@ Ce projet est sous licence **MIT**. Voir [LICENSE](./LICENSE) pour plus d'inform
 
 ## 📞 Contact & Support
 
-### Équipe Mayegue
+### Équipe Ma’a yegue
 
-- **Email**: contact@mayegue.app
-- **Website**: https://mayegue.app
-- **GitHub**: https://github.com/mayegue
-- **Twitter**: [@MayegueApp](https://twitter.com/MayegueApp)
+- **Email**: contact@Ma’a yegue.app
+- **Website**: https://Ma’a yegue.app
+- **GitHub**: https://github.com/Ma’a yegue
+- **Twitter**: [@Ma’a yegueApp](https://twitter.com/Ma’a yegueApp)
 
 ### Support Technique
 
 - **Documentation**: [WEB_ARCHITECTURE.md](./WEB_ARCHITECTURE.md)
-- **Issues**: https://github.com/mayegue/mayegue-web/issues
-- **Discord**: [Rejoindre la communauté](https://discord.gg/mayegue)
+- **Issues**: https://github.com/Ma’a yegue/Ma’a yegue-web/issues
+- **Discord**: [Rejoindre la communauté](https://discord.gg/Ma’a yegue)
 
 ---
 
@@ -527,22 +527,22 @@ Ce projet est sous licence **MIT**. Voir [LICENSE](./LICENSE) pour plus d'inform
 
 ## 📊 Statistiques du Projet
 
-![GitHub stars](https://img.shields.io/github/stars/mayegue/mayegue-web?style=social)
-![GitHub forks](https://img.shields.io/github/forks/mayegue/mayegue-web?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/mayegue/mayegue-web?style=social)
+![GitHub stars](https://img.shields.io/github/stars/Ma’a yegue/Ma’a yegue-web?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Ma’a yegue/Ma’a yegue-web?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/Ma’a yegue/Ma’a yegue-web?style=social)
 
-![GitHub last commit](https://img.shields.io/github/last-commit/mayegue/mayegue-web)
-![GitHub issues](https://img.shields.io/github/issues/mayegue/mayegue-web)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/mayegue/mayegue-web)
+![GitHub last commit](https://img.shields.io/github/last-commit/Ma’a yegue/Ma’a yegue-web)
+![GitHub issues](https://img.shields.io/github/issues/Ma’a yegue/Ma’a yegue-web)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Ma’a yegue/Ma’a yegue-web)
 
 ---
 
 <div align="center">
 
-**Fait avec ❤️ par l'équipe Mayegue**
+**Fait avec ❤️ par l'équipe Ma’a yegue**
 
 *Préservons ensemble les langues camerounaises pour les générations futures*
 
-[🔝 Retour en haut](#-mayegue-web---plateforme-dapprentissage-des-langues-camerounaises)
+[🔝 Retour en haut](#-Ma’a yegue-web---plateforme-dapprentissage-des-langues-camerounaises)
 
 </div>

@@ -27,7 +27,7 @@ export const Layout = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold gradient-text">Mayegue</span>
+              <span className="text-2xl font-bold gradient-text">Ma’a yegue</span>
             </Link>
 
             {/* Navigation */}
@@ -124,7 +124,7 @@ export const Layout = () => {
         <div className="container-custom">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">Mayegue</h3>
+              <h3 className="text-xl font-bold mb-4">Ma’a yegue</h3>
               <p className="text-gray-400 text-sm">
                 Préservons ensemble les langues camerounaises pour les générations futures
               </p>
@@ -164,7 +164,7 @@ export const Layout = () => {
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-            <p>© 2025 Mayegue. Tous droits réservés. Fait avec ❤️ pour le Cameroun 🇨🇲</p>
+            <p>© 2025 Ma’a yegue. Tous droits réservés. Fait avec ❤️ pour le Cameroun 🇨🇲</p>
           </div>
         </div>
       </footer>

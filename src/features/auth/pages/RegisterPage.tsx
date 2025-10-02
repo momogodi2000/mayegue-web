@@ -123,7 +123,7 @@ export default function RegisterPage() {
       );
       
       setUser(user);
-      showSuccess('Bienvenue dans Mayegue! Votre compte a été créé avec succès.');
+      showSuccess('Bienvenue dans Ma’a yegue! Votre compte a été créé avec succès.');
       navigate('/dashboard');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'inscription';
@@ -142,12 +142,12 @@ export default function RegisterPage() {
           <div className="flex items-center justify-center mb-4">
             <img 
               src="/src/assets/logo/logo.jpg" 
-              alt="Mayegue Logo" 
+              alt="Ma’a yegue Logo" 
               className="h-12 w-12 rounded-lg shadow-md"
             />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Rejoignez Mayegue
+            Rejoignez Ma’a yegue
           </h1>
           <p className="mt-2 text-gray-600">
             Commencez votre voyage d'apprentissage des langues camerounaises

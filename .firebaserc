@@ -1,20 +1,20 @@
 {
   "projects": {
-    "default": "mayegue-cameroon-languages",
-    "development": "mayegue-dev-environment",
-    "staging": "mayegue-staging-env", 
-    "production": "mayegue-cameroon-languages"
+    "default": "Ma’a yegue-cameroon-languages",
+    "development": "Ma’a yegue-dev-environment",
+    "staging": "Ma’a yegue-staging-env", 
+    "production": "Ma’a yegue-cameroon-languages"
   },
   "targets": {
-    "mayegue-cameroon-languages": {
+    "Ma’a yegue-cameroon-languages": {
       "hosting": {
         "web": [
-          "mayegue-web-app"
+          "Ma’a yegue-web-app"
         ]
       },
       "storage": {
         "default": [
-          "mayegue-cameroon-languages.appspot.com"
+          "Ma’a yegue-cameroon-languages.appspot.com"
         ]
       }
     }

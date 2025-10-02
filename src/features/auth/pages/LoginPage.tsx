@@ -60,7 +60,7 @@ export default function LoginPage() {
         localStorage.setItem('rememberMe', 'true');
       }
       
-      showSuccess('Connexion réussie! Bienvenue dans Mayegue');
+      showSuccess('Connexion réussie! Bienvenue dans Ma’a yegue');
       navigate('/dashboard');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion';
@@ -98,12 +98,12 @@ export default function LoginPage() {
           <div className="flex items-center justify-center mb-4">
             <img 
               src="/src/assets/logo/logo.jpg" 
-              alt="Mayegue Logo" 
+              alt="Ma’a yegue Logo" 
               className="h-12 w-12 rounded-lg shadow-md"
             />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Mayegue
+            Ma’a yegue
           </h1>
           <p className="mt-2 text-gray-600">
             Connectez-vous à votre compte pour continuer votre apprentissage

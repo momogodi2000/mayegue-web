@@ -743,11 +743,11 @@ Support email
 yvangodimomo@gmail.com
 Your apps
 Android apps
-Mayegue Android
-com.mayegue.app
+Ma’a yegue Android
+com.Ma’a yegue.app
 Apple apps
-Mayegue iOS
-com.mayegue.app
+Ma’a yegue iOS
+com.Ma’a yegue.app
 Web apps
 Firebase app
 Web App

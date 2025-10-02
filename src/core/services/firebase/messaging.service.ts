@@ -128,7 +128,7 @@ export class MessagingService {
         console.log('Message received in foreground:', payload);
         
         const notification: NotificationPayload = {
-          title: payload.notification?.title || 'Mayegue',
+          title: payload.notification?.title || 'Ma’a yegue',
           body: payload.notification?.body || '',
           icon: payload.notification?.icon || '/logo.jpg',
           image: payload.notification?.image,
@@ -164,7 +164,7 @@ export class MessagingService {
         icon: payload.icon || '/logo.jpg',
         badge: payload.badge || '/logo.jpg',
         data: payload.data,
-        tag: 'mayegue-notification',
+        tag: 'Ma’a yegue-notification',
         renotify: true,
         requireInteraction: false,
         vibrate: [200, 100, 200],
@@ -353,7 +353,7 @@ export class MessagingService {
   async testNotification(): Promise<void> {
     const testPayload: NotificationPayload = {
       title: 'Test Notification',
-      body: 'This is a test notification from Mayegue!',
+      body: 'This is a test notification from Ma’a yegue!',
       icon: '/logo.jpg',
       data: {
         type: 'test',

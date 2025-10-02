@@ -1,4 +1,4 @@
-# 🚀 Mayegue Web - Deployment Guide
+# 🚀 Ma’a yegue Web - Deployment Guide
 
 ## Production Deployment Checklist
 
@@ -206,7 +206,7 @@ VITE_NOUPAI_MERCHANT_ID=...
 
 5. **Configure Custom Domain** (Optional)
 ```bash
-vercel domains add mayegue.app
+vercel domains add Ma’a yegue.app
 ```
 
 ---
@@ -257,7 +257,7 @@ https://studio-6750997720-7c22e.firebaseapp.com
 
 6. **Add Custom Domain** (Optional)
 ```bash
-firebase hosting:channel:deploy production --domain mayegue.app
+firebase hosting:channel:deploy production --domain Ma’a yegue.app
 ```
 
 ---
@@ -307,8 +307,8 @@ VITE_NOUPAI_API_KEY=your_noupai_key
 VITE_NOUPAI_MERCHANT_ID=your_merchant_id
 
 # App
-VITE_APP_NAME=Mayegue
-VITE_APP_URL=https://mayegue.app
+VITE_APP_NAME=Ma’a yegue
+VITE_APP_URL=https://Ma’a yegue.app
 VITE_APP_VERSION=1.0.0
 ```
 
@@ -451,9 +451,9 @@ npm run generate-sitemap
 {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  "name": "Mayegue",
+  "name": "Ma’a yegue",
   "description": "Apprentissage des langues camerounaises",
-  "url": "https://mayegue.app"
+  "url": "https://Ma’a yegue.app"
 }
 </script>
 ```
@@ -638,11 +638,11 @@ tsx scripts/seed-firestore.ts
 
 ## 🌍 Domain Configuration
 
-### Custom Domain Setup (mayegue.app)
+### Custom Domain Setup (Ma’a yegue.app)
 
 #### For Vercel:
 ```bash
-vercel domains add mayegue.app
+vercel domains add Ma’a yegue.app
 
 # Add DNS records at domain registrar:
 # A record: @ → 76.76.21.21
@@ -651,7 +651,7 @@ vercel domains add mayegue.app
 
 #### For Firebase:
 ```bash
-firebase hosting:channel:deploy live --domain mayegue.app
+firebase hosting:channel:deploy live --domain Ma’a yegue.app
 
 # Add TXT record for verification
 # Add A records as shown in Firebase Console
@@ -672,7 +672,7 @@ firebase hosting:channel:deploy live --domain mayegue.app
 npm i -g lighthouse
 
 # Run audit
-lighthouse https://mayegue.app --view
+lighthouse https://Ma’a yegue.app --view
 
 # Target scores:
 # Performance: 90+

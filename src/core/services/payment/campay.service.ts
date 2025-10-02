@@ -61,7 +61,7 @@ export class CamPayService {
           currency: request.currency || 'XAF',
           from: request.customerPhone || '237xxxxxxxxx',
           description: request.description,
-          external_reference: `mayegue_${Date.now()}`,
+          external_reference: `Ma’a yegue_${Date.now()}`,
         },
         {
           headers: {

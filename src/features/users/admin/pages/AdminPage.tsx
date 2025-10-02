@@ -58,7 +58,7 @@ const AdminPage: React.FC = () => {
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Administration Mayegue
+                Administration Ma’a yegue
               </h1>
               <p className="text-gray-600 mt-1">
                 Interface d'administration pour la plateforme d'apprentissage

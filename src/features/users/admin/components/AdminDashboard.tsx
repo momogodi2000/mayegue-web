@@ -88,7 +88,7 @@ const AdminDashboard: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord Administrateur</h1>
           <p className="text-gray-600 mt-2">
-            Vue d'ensemble de la plateforme Mayegue
+            Vue d'ensemble de la plateforme Ma’a yegue
           </p>
         </div>
         

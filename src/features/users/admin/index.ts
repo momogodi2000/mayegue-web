@@ -1,4 +1,4 @@
-// Admin Module - Complete administrative interface for Mayegue platform
+// Admin Module - Complete administrative interface for Ma’a yegue platform
 export { default as AdminPage } from './pages/AdminPage';
 export { default as AdminDashboard } from './pages/DashboardPage';
 export { useAdminStore } from './store/adminStore';

@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://mayegue.app/sitemap.xml
+Sitemap: https://Ma’a yegue.app/sitemap.xml
 
 # Disallow admin and private routes
 Disallow: /admin/

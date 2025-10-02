@@ -37,9 +37,9 @@
 ```bash
 # Firebase Configuration
 VITE_FIREBASE_API_KEY="your-production-api-key"
-VITE_FIREBASE_AUTH_DOMAIN="mayegue-cameroon-languages.firebaseapp.com"
-VITE_FIREBASE_PROJECT_ID="mayegue-cameroon-languages"
-VITE_FIREBASE_STORAGE_BUCKET="mayegue-cameroon-languages.appspot.com"
+VITE_FIREBASE_AUTH_DOMAIN="Ma’a yegue-cameroon-languages.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID="Ma’a yegue-cameroon-languages"
+VITE_FIREBASE_STORAGE_BUCKET="Ma’a yegue-cameroon-languages.appspot.com"
 VITE_FIREBASE_MESSAGING_SENDER_ID="your-messaging-sender-id"
 VITE_FIREBASE_APP_ID="your-production-app-id"
 VITE_FIREBASE_MEASUREMENT_ID="your-ga-measurement-id"

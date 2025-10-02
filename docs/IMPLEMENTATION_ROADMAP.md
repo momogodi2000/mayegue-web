@@ -1,4 +1,4 @@
-# 🗺️ Mayegue Web - Roadmap d'Implémentation Détaillé
+# 🗺️ Ma’a yegue Web - Roadmap d'Implémentation Détaillé
 
 **Version**: 1.0.0  
 **Dernière mise à jour**: 30 Septembre 2025  
@@ -463,14 +463,14 @@ export interface ProgressCache {
   updatedAt: Date;
 }
 
-class MayegueDB extends Dexie {
+class Ma’a yegueDB extends Dexie {
   users!: Table<User>;
   dictionary!: Table<DictionaryEntry>;
   lessons!: Table<LessonCache>;
   progress!: Table<ProgressCache>;
 
   constructor() {
-    super('MayegueDB');
+    super('Ma’a yegueDB');
     
     this.version(1).stores({
       users: 'id, email',
@@ -518,7 +518,7 @@ class MayegueDB extends Dexie {
   }
 }
 
-export const indexedDb = new MayegueDB();
+export const indexedDb = new Ma’a yegueDB();
 ```
 
 **Tests**:

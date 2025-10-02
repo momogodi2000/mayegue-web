@@ -118,7 +118,7 @@ function getArrayEnvVar(key: string, fallback: string[] = []): string[] {
 // Main configuration object
 export const config: AppConfig = {
   // App Info
-  appName: getEnvVar('VITE_APP_NAME', 'Mayegue'),
+  appName: getEnvVar('VITE_APP_NAME', 'Ma’a yegue'),
   appVersion: getEnvVar('VITE_APP_VERSION', '1.0.0'),
   appDescription: getEnvVar('VITE_APP_DESCRIPTION', 'Application d\'apprentissage des langues camerounaises'),
   environment: getEnvVar('VITE_APP_ENV', 'development') as 'development' | 'staging' | 'production',

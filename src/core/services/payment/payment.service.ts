@@ -85,7 +85,7 @@ export class PaymentService {
         currency: plan.currency,
         description: `Subscription to ${plan.name}`,
         customerId: userId,
-        customerEmail: `${userId}@mayegue.app`, // This should come from user data
+        customerEmail: `${userId}@Ma’a yegue.app`, // This should come from user data
         metadata: {
           type: 'subscription',
           planId: plan.id,
