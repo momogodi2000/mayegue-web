@@ -10,9 +10,9 @@ import {
   Form, 
   FormGroup, 
   FormError,
-  Badge,
-  useToastActions
+  Badge
 } from '@/shared/components/ui';
+import toast from 'react-hot-toast';
 
 interface FormData {
   name: string;
@@ -33,7 +33,6 @@ interface ValidationErrors {
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { setUser, setError, setLoading, isLoading, error } = useAuthStore();
-  const { success: showSuccess, error: showError } = useToastActions();
   
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -123,12 +122,12 @@ export default function RegisterPage() {
       );
       
       setUser(user);
-      showSuccess('Bienvenue dans Ma’a yegue! Votre compte a été créé avec succès.');
+      toast.success('Bienvenue dans Ma’a yegue! Votre compte a été créé avec succès.');
       navigate('/dashboard');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'inscription';
       setError(errorMessage);
-      showError('Échec de l\'inscription. Veuillez vérifier vos informations et réessayer.');
+      toast.error('Échec de l\'inscription. Veuillez vérifier vos informations et réessayer.');
     } finally {
       setLoading(false);
     }

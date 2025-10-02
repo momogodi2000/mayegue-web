@@ -9,16 +9,15 @@ import {
   Form, 
   FormGroup, 
   FormError,
-  Badge,
-  useToastActions
+  Badge
 } from '@/shared/components/ui';
+import toast from 'react-hot-toast';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { success: showSuccess, error: showError } = useToastActions();
 
   const validateEmail = (email: string): boolean => {
     return /\S+@\S+\.\S+/.test(email);
@@ -42,11 +41,11 @@ export default function ForgotPasswordPage() {
       setLoading(true);
       await authService.requestPasswordReset(email);
       setSent(true);
-      showSuccess('Email de réinitialisation envoyé avec succès');
+      toast.success('Email de réinitialisation envoyé avec succès');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'envoi';
       setError(errorMessage);
-      showError('Impossible d\'envoyer l\'email. Veuillez vérifier votre adresse.');
+      toast.error('Impossible d\'envoyer l\'email. Veuillez vérifier votre adresse.');
     } finally {
       setLoading(false);
     }
@@ -56,10 +55,10 @@ export default function ForgotPasswordPage() {
     try {
       setLoading(true);
       await authService.requestPasswordReset(email);
-      showSuccess('Email renvoyé avec succès');
+      toast.success('Email renvoyé avec succès');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du renvoi';
-      showError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

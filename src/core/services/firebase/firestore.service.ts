@@ -338,6 +338,36 @@ export class FirestoreService {
       return false;
     }
   }
+
+  // Alias methods for compatibility
+  async getDoc<T>(collectionName: string, docId: string): Promise<T | null> {
+    return this.getDocument<T>(collectionName, docId);
+  }
+
+  async addDoc(collectionName: string, data: DocumentData): Promise<string> {
+    return this.addDocument(collectionName, data);
+  }
+
+  async updateDoc(collectionName: string, docId: string, data: Partial<DocumentData>): Promise<void> {
+    return this.updateDocument(collectionName, docId, data);
+  }
+
+  async deleteDoc(collectionName: string, docId: string): Promise<void> {
+    return this.deleteDocument(collectionName, docId);
+  }
+
+  async getDocs<T>(collectionName: string, options?: { where?: [string, WhereFilterOp, unknown][] }): Promise<T[]> {
+    return this.getDocuments<T>(collectionName, options);
+  }
+
+  get collection() {
+    return (collectionName: string) => ({
+      where: (field: string, op: WhereFilterOp, value: unknown) => ({
+        collectionName,
+        filters: [{ field, operator: op, value }]
+      })
+    });
+  }
 }
 
 export const firestoreService = new FirestoreService();

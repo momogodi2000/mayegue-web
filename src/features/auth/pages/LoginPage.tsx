@@ -10,14 +10,13 @@ import {
   Form, 
   FormGroup, 
   FormError,
-  Badge,
-  useToastActions
+  Badge
 } from '@/shared/components/ui';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { setUser, setError, setLoading, isLoading, error } = useAuthStore();
-  const { success: showSuccess, error: showError } = useToastActions();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -60,12 +59,12 @@ export default function LoginPage() {
         localStorage.setItem('rememberMe', 'true');
       }
       
-      showSuccess('Connexion réussie! Bienvenue dans Ma’a yegue');
+      toast.success('Connexion réussie! Bienvenue dans Ma’a yegue');
       navigate('/dashboard');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion';
       setError(errorMessage);
-      showError('Identifiants invalides. Veuillez vérifier vos informations.');
+      toast.error('Identifiants invalides. Veuillez vérifier vos informations.');
     } finally {
       setLoading(false);
     }
@@ -79,12 +78,12 @@ export default function LoginPage() {
       const user = await authService.signInWithGoogle();
       setUser(user);
       
-      showSuccess('Connecté avec Google avec succès!');
+      toast.success('Connecté avec Google avec succès!');
       navigate('/dashboard');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion Google';
       setError(errorMessage);
-      showError('Connexion Google échouée. Veuillez réessayer.');
+      toast.error('Connexion Google échouée. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }

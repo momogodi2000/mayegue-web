@@ -1,9 +1,9 @@
 {
   "projects": {
-    "default": "Ma’a yegue-cameroon-languages",
-    "development": "Ma’a yegue-dev-environment",
-    "staging": "Ma’a yegue-staging-env", 
-    "production": "Ma’a yegue-cameroon-languages"
+    "default": "studio-6750997720-7c22e",
+    "development": "studio-6750997720-7c22e",
+    "staging": "studio-6750997720-7c22e", 
+    "production": "studio-6750997720-7c22e"
   },
   "targets": {
     "Ma’a yegue-cameroon-languages": {

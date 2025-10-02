@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/core/config/firebase.config';
-import type { UserRole } from '@/types/user.types';
+import type { UserRole } from '@/shared/types/user.types';
 
 interface UserProfileDoc {
   role?: UserRole;

@@ -10,7 +10,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { auth } from '@/core/config/firebase.config';
-import type { User } from '@/types/user.types';
+import type { User } from '@/shared/types/user.types';
 import { userService } from './user.service';
 
 async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
