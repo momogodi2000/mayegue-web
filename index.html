@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Apprenez les langues traditionnelles camerounaises: Ewondo, Duala, Fulfulde, Bassa, Bamum et Fe'efe'e. Plateforme d'apprentissage interactive avec IA." />
+    <meta name="keywords" content="langues camerounaises, ewondo, duala, fulfulde, bassa, bamum, apprentissage, cameroun, dictionnaire, leçons" />
+    <meta name="author" content="Mayegue Team" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="French" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Mayegue - Apprenez les Langues Camerounaises" />
+    <meta property="og:description" content="Plateforme d'apprentissage des langues traditionnelles camerounaises avec IA et contenu interactif" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mayegue.app" />
+    <meta property="og:image" content="/assets/og-image.png" />
+    <meta property="og:site_name" content="Mayegue" />
+    <meta property="og:locale" content="fr_FR" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mayegue - Apprenez les Langues Camerounaises" />
+    <meta name="twitter:description" content="Plateforme d'apprentissage des langues traditionnelles camerounaises" />
+    <meta name="twitter:image" content="/assets/og-image.png" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Mayegue" />
+    <meta name="theme-color" content="#10B981" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://mayegue.app" />
+    
+    <!-- Preconnect to Firebase -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" />
+    <link rel="preconnect" href="https://firebase.googleapis.com" />
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <title>Mayegue - Apprenez les Langues Camerounaises</title>
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.firebaseio.com; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                   font-src 'self' https://fonts.gstatic.com; 
+                   img-src 'self' data: https: blob:; 
+                   connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://*.firebasestorage.app wss://*.firebaseio.com; 
+                   media-src 'self' https://*.firebasestorage.app blob:; 
+                   worker-src 'self' blob:;">
+  </head>
+  <body>
+    <noscript>
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: system-ui, sans-serif; text-align: center; padding: 20px;">
+        <div>
+          <h1>JavaScript est désactivé</h1>
+          <p>Veuillez activer JavaScript pour utiliser Mayegue.</p>
+          <p>Please enable JavaScript to use Mayegue.</p>
+        </div>
+      </div>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/app/main.tsx"></script>
+  </body>
+</html>

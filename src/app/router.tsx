@@ -1,0 +1,86 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Layout } from '@/shared/components/layout/Layout';
+import { LoadingScreen } from '@/shared/components/ui/LoadingScreen';
+import { ProtectedRoute } from '@/shared/components/auth/ProtectedRoute';
+import { RoleRedirect } from '@/shared/components/auth/RoleRedirect';
+import { RoleRoute } from '@/shared/components/auth/RoleRoute';
+import { GuestDashboard } from '@/features/users/guest';
+import { LearnerDashboard } from '@/features/users/learner';
+import { TeacherDashboard } from '@/features/users/teacher';
+import { AdminDashboard } from '@/features/users/admin';
+
+// Lazy load pages for code splitting
+const HomePage = lazy(() => import('@/features/home/pages/HomePage'));
+const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
+const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'));
+const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('@/features/auth/pages/ResetPasswordPage'));
+const DictionaryPage = lazy(() => import('@/features/dictionary/pages/DictionaryPage'));
+const LessonsPage = lazy(() => import('@/features/lessons/pages/LessonsPage'));
+const LessonDetailPage = lazy(() => import('@/features/lessons/pages/LessonDetailPage'));
+const AboutusPage = lazy(() => import('@/features/home/pages/Aboutus.Page'));
+const ContactusPage = lazy(() => import('@/features/home/pages/ContactusPage'));
+const AIAssistantPage = lazy(() => import('@/features/ai-assistant/pages/AIAssistantPage'));
+const GamificationPage = lazy(() => import('@/features/gamification/pages/GamificationPage'));
+const CommunityPage = lazy(() => import('@/features/community/pages/CommunityPage'));
+const ProfilePage = lazy(() => import('@/features/profile/pages/ProfilePage'));
+const SettingsPage = lazy(() => import('@/features/profile/pages/SettingsPage'));
+const PricingPage = lazy(() => import('@/features/payments/pages/PricingPage'));
+const NotFoundPage = lazy(() => import('@/features/errors/pages/NotFoundPage'));
+const TeacherLessonManagementPage = lazy(() => import('@/features/users/teacher/pages/LessonManagementPage'));
+const AdminAnalyticsPage = lazy(() => import('@/features/users/admin/pages/AnalyticsPage'));
+const PrivacyPage = lazy(() => import('@/features/legal/pages/PrivacyPage'));
+const TermsPage = lazy(() => import('@/features/legal/pages/TermsPage'));
+const CheckoutPage = lazy(() => import('@/features/payments/pages/CheckoutPage'));
+
+export function AppRouter() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="pricing" element={<PricingPage />} />
+          <Route path="about" element={<AboutusPage />} />
+          <Route path="contact" element={<ContactusPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="terms" element={<TermsPage />} />
+          
+          {/* Dictionary - Public with limited features */}
+          <Route path="dictionary" element={<DictionaryPage />} />
+          {/* Public Guest Dashboard */}
+          <Route path="dashboard/guest" element={<GuestDashboard />} />
+          
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="dashboard" element={<RoleRedirect />} />
+            <Route path="dashboard/learner" element={<LearnerDashboard />} />
+            <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
+              <Route path="dashboard/teacher" element={<TeacherDashboard />} />
+              <Route path="teacher/lessons" element={<TeacherLessonManagementPage />} />
+              <Route path="dashboard/admin" element={<AdminDashboard />} />
+              <Route path="admin/analytics" element={<AdminAnalyticsPage />} />
+            </Route>
+            <Route path="lessons" element={<LessonsPage />} />
+            <Route path="lessons/:lessonId" element={<LessonDetailPage />} />
+            <Route path="ai-assistant" element={<AIAssistantPage />} />
+            <Route path="gamification" element={<GamificationPage />} />
+            <Route path="community" element={<CommunityPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="checkout" element={<CheckoutPage />} />
+          </Route>
+          
+          {/* 404 */}
+          <Route path="404" element={<NotFoundPage />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
+}

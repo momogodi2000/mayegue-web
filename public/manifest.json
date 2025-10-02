@@ -1,0 +1,56 @@
+{
+  "name": "Mayegue - Langues Camerounaises",
+  "short_name": "Mayegue",
+  "description": "Apprenez les langues traditionnelles camerounaises: Ewondo, Duala, Fulfulde et plus encore.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10B981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dictionnaire",
+      "url": "/dictionary",
+      "description": "Accéder au dictionnaire"
+    },
+    {
+      "name": "Leçons",
+      "url": "/lessons",
+      "description": "Continuer l'apprentissage"
+    },
+    {
+      "name": "Assistant IA",
+      "url": "/ai-assistant",
+      "description": "Discuter avec l'assistant IA"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Page d'accueil Mayegue"
+    },
+    {
+      "src": "/assets/screenshots/dictionary.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Dictionnaire interactif"
+    }
+  ]
+}
