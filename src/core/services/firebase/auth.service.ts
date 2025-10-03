@@ -36,14 +36,14 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
     subscriptionStatus: profile?.subscriptionStatus || 'free',
     createdAt: new Date(user.metadata.creationTime || Date.now()),
     lastLoginAt: new Date(user.metadata.lastSignInTime || Date.now()),
-    preferences: {
+    preferences: profile?.preferences || {
       language: 'fr',
       targetLanguages: [],
       notificationsEnabled: true,
       theme: 'system',
       dailyGoalMinutes: 10,
     },
-    stats: {
+    stats: profile?.stats || {
       lessonsCompleted: 0,
       wordsLearned: 0,
       totalTimeMinutes: 0,
@@ -69,14 +69,18 @@ export class AuthService {
     if (displayName) {
       await updateProfile(cred.user, { displayName });
     }
-    await sendEmailVerification(cred.user);
-
-    // Create user profile in Firestore with default 'apprenant' role
+    
+    // Create user profile in Firestore with default 'apprenant' role FIRST
     await userService.ensureUserProfile(cred.user.uid, {
       email: cred.user.email || '',
-      displayName: displayName || cred.user.email || 'Utilisateur'
+      displayName: displayName || cred.user.email || 'Utilisateur',
+      emailVerified: false
     });
 
+    // Send verification email after profile creation
+    await sendEmailVerification(cred.user);
+
+    // Return mapped user with proper role
     return await mapFirebaseUser(cred.user);
   }
 
@@ -88,12 +92,14 @@ export class AuthService {
 
     const cred = await signInWithPopup(auth, provider);
 
-    // Ensure user profile exists in Firestore
+    // Ensure user profile exists in Firestore FIRST
     await userService.ensureUserProfile(cred.user.uid, {
       email: cred.user.email || '',
-      displayName: cred.user.displayName || cred.user.email || 'Utilisateur'
+      displayName: cred.user.displayName || cred.user.email || 'Utilisateur',
+      emailVerified: cred.user.emailVerified
     });
 
+    // Return mapped user with proper role
     return await mapFirebaseUser(cred.user);
   }
 
@@ -223,6 +229,14 @@ export class AuthService {
 
   getCurrentUser(): FirebaseUser | null {
     return auth.currentUser;
+  }
+
+  async getCurrentMappedUser(): Promise<User | null> {
+    const fbUser = auth.currentUser;
+    if (fbUser) {
+      return await mapFirebaseUser(fbUser);
+    }
+    return null;
   }
 }
 

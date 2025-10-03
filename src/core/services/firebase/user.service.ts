@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/core/config/firebase.config';
-import type { UserRole } from '@/shared/types/user.types';
+import type { UserRole, UserPreferences, UserStats } from '@/shared/types/user.types';
 
 interface UserProfileDoc {
   role?: UserRole;
@@ -11,6 +11,8 @@ interface UserProfileDoc {
   twoFactorEnabled?: boolean;
   createdAt?: number;
   updatedAt?: number;
+  preferences?: UserPreferences;
+  stats?: UserStats;
 }
 
 export class UserService {
@@ -38,6 +40,23 @@ export class UserService {
         subscriptionStatus: 'free',
         emailVerified: false,
         twoFactorEnabled: false,
+        preferences: {
+          language: 'fr',
+          targetLanguages: [],
+          notificationsEnabled: true,
+          theme: 'system',
+          dailyGoalMinutes: 10,
+        },
+        stats: {
+          lessonsCompleted: 0,
+          wordsLearned: 0,
+          totalTimeMinutes: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+          badgesEarned: 0,
+          level: 1,
+          xp: 0,
+        },
         ...payload
       });
     }

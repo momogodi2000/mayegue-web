@@ -338,7 +338,7 @@ export default function RegisterPage() {
           isOpen={showEmailVerificationModal}
           onClose={() => {
             setShowEmailVerificationModal(false);
-            navigate('/dashboard');
+            navigate('/dashboard/apprenant'); // New users are apprenant by default
           }}
           email={registeredEmail}
           type="registration"

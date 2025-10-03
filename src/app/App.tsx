@@ -28,12 +28,23 @@ function App() {
 
   useEffect(() => {
     // Wire Firebase auth state changes to Zustand store
-    const unsub = authService.onAuthStateChange((user) => {
+    const unsub = authService.onAuthStateChange(async (user) => {
       if (user) {
-        // Optionally ensure profile and fetch role from Firestore
-        void userService.ensureUserProfile(user.id, { email: user.email, displayName: user.displayName });
-        // For now we keep existing role in store; could fetch and update based on Firestore
-        setUser(user);
+        try {
+          // Ensure profile exists and fetch complete user data
+          await userService.ensureUserProfile(user.id, { 
+            email: user.email, 
+            displayName: user.displayName,
+            emailVerified: user.emailVerified 
+          });
+          
+          // Get fresh user data with role from Firestore
+          const freshUser = await authService.getCurrentMappedUser();
+          setUser(freshUser);
+        } catch (error) {
+          console.error('Error updating user profile:', error);
+          setUser(user); // Fallback to the user from auth state
+        }
       } else {
         setUser(null);
       }
