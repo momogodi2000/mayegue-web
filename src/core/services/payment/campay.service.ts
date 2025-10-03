@@ -83,21 +83,54 @@ export class CamPayService {
 
   async initiatePayment(request: PaymentRequest): Promise<PaymentResponse> {
     try {
+      // Validate phone number
+      if (!request.customerPhone) {
+        return {
+          success: false,
+          transactionId: '',
+          reference: '',
+          status: 'failed',
+          amount: request.amount,
+          currency: request.currency || 'XAF',
+          fees: 0,
+          netAmount: request.amount,
+          message: 'Numéro de téléphone requis',
+          timestamp: new Date()
+        };
+      }
+
+      const phoneValidation = this.validatePhoneNumber(request.customerPhone);
+      if (!phoneValidation.valid) {
+        return {
+          success: false,
+          transactionId: '',
+          reference: '',
+          status: 'failed',
+          amount: request.amount,
+          currency: request.currency || 'XAF',
+          fees: 0,
+          netAmount: request.amount,
+          message: 'Numéro de téléphone invalide. Utilisez un numéro MTN ou Orange Money.',
+          timestamp: new Date()
+        };
+      }
+
       const token = await this.getToken();
       const response = await axios.post(
         `${this.config.baseUrl}/collect/`,
         {
           amount: request.amount.toString(),
           currency: request.currency || 'XAF',
-          from: request.customerPhone || '237xxxxxxxxx',
+          from: request.customerPhone.replace(/\D/g, ''),
           description: request.description,
-          external_reference: `Ma’a yegue_${Date.now()}`,
+          external_reference: `MAYEGUE_${Date.now()}`,
         },
         {
           headers: {
             Authorization: `Token ${token}`,
             'Content-Type': 'application/json',
           },
+          timeout: 120000, // 2 minutes
         }
       );
 
@@ -108,14 +141,50 @@ export class CamPayService {
         status: this.mapStatus(response.data.status),
         amount: request.amount,
         currency: request.currency || 'XAF',
-        fees: 0, // CamPay fees would need to be calculated
+        fees: 0,
         netAmount: request.amount,
         paymentUrl: response.data.link,
-        message: response.data.description || 'Payment initiated successfully',
+        message: this.getStatusMessage(response.data.status),
         timestamp: new Date()
       };
     } catch (error) {
       console.error('CamPay payment error:', error);
+
+      // Handle specific errors
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+
+        if (axiosError.code === 'ECONNABORTED' || axiosError.code === 'ETIMEDOUT') {
+          return {
+            success: false,
+            transactionId: '',
+            reference: '',
+            status: 'failed',
+            amount: request.amount,
+            currency: request.currency || 'XAF',
+            fees: 0,
+            netAmount: request.amount,
+            message: 'Le paiement a expiré. Veuillez réessayer.',
+            timestamp: new Date()
+          };
+        }
+
+        if (axiosError.response?.data?.code === 'INSUFFICIENT_BALANCE') {
+          return {
+            success: false,
+            transactionId: '',
+            reference: '',
+            status: 'failed',
+            amount: request.amount,
+            currency: request.currency || 'XAF',
+            fees: 0,
+            netAmount: request.amount,
+            message: 'Solde insuffisant sur votre compte Mobile Money',
+            timestamp: new Date()
+          };
+        }
+      }
+
       return {
         success: false,
         transactionId: '',
@@ -125,7 +194,7 @@ export class CamPayService {
         currency: request.currency || 'XAF',
         fees: 0,
         netAmount: request.amount,
-        message: error instanceof Error ? error.message : 'Payment failed',
+        message: error instanceof Error ? error.message : 'Erreur lors du paiement',
         timestamp: new Date()
       };
     }
@@ -168,9 +237,35 @@ export class CamPayService {
 
     return statusMap[status.toUpperCase()] || 'pending';
   }
+
+  private getStatusMessage(status: string): string {
+    const messages: Record<string, string> = {
+      'SUCCESSFUL': 'Paiement effectué avec succès',
+      'PENDING': 'Paiement en cours de traitement',
+      'FAILED': 'Le paiement a échoué',
+      'CANCELLED': 'Paiement annulé'
+    };
+
+    return messages[status.toUpperCase()] || 'Statut inconnu';
+  }
+
+  /**
+   * Get supported operators
+   */
+  getSupportedOperators(): string[] {
+    return ['MTN', 'ORANGE'];
+  }
+
+  /**
+   * Calculate transaction fee
+   */
+  getTransactionFee(amount: number): number {
+    // Campay fee structure (check your Campay dashboard for actual rates)
+    const feePercentage = 0.02; // 2% example
+    return Math.ceil(amount * feePercentage);
+  }
 }
 
 export const camPayService = new CamPayService();
-
 export const campayService = new CamPayService();
 

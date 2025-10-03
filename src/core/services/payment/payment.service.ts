@@ -1,15 +1,19 @@
-import { camPayService } from './campay.service';
+import { camPayService, campayService } from './campay.service';
+import { noupaiService } from './noupai.service';
+import { stripeService } from './stripe.service';
 import { firestoreService } from '../firebase/firestore.service';
 import { analyticsService } from '../firebase/analytics.service';
-import { 
-  PaymentRequest, 
-  PaymentResponse, 
-  PaymentHistory, 
-  SubscriptionPlan, 
+import {
+  PaymentRequest,
+  PaymentResponse,
+  PaymentHistory,
+  SubscriptionPlan,
   UserSubscription,
   PaymentStats,
-  WebhookPayload 
+  WebhookPayload
 } from './types';
+
+type PaymentProvider = 'campay' | 'noupai' | 'stripe';
 
 export class PaymentService {
   private readonly subscriptionPlans: SubscriptionPlan[] = [
@@ -62,10 +66,15 @@ export class PaymentService {
     }
   ];
 
+  /**
+   * Initialize payment with automatic fallback mechanism
+   * Priority: Campay (Mobile Money) → Noupai (Mobile Money Fallback) → Stripe (International)
+   */
   async initializePayment(
-    userId: string, 
-    planId: string, 
-    paymentMethod: 'campay' | 'noupai' = 'campay'
+    userId: string,
+    planId: string,
+    paymentMethod: 'mobile_money' | 'credit_card' = 'mobile_money',
+    phoneNumber?: string
   ): Promise<PaymentResponse> {
     try {
       const plan = this.getSubscriptionPlan(planId);
@@ -83,9 +92,10 @@ export class PaymentService {
       const paymentRequest: PaymentRequest = {
         amount: plan.price,
         currency: plan.currency,
-        description: `Subscription to ${plan.name}`,
+        description: `Abonnement ${plan.name}`,
         customerId: userId,
-        customerEmail: `${userId}@Ma’a yegue.app`, // This should come from user data
+        customerEmail: `${userId}@maayegue.app`, // This should come from user data
+        customerPhone: phoneNumber,
         metadata: {
           type: 'subscription',
           planId: plan.id,
@@ -95,14 +105,18 @@ export class PaymentService {
         subscriptionPlan: plan.id
       };
 
-      // Process payment based on method
       let paymentResponse: PaymentResponse;
-      
-      if (paymentMethod === 'campay') {
-        paymentResponse = await camPayService.initiatePayment(paymentRequest);
+      let provider: PaymentProvider;
+
+      // Process based on payment method
+      if (paymentMethod === 'mobile_money') {
+        // Try Mobile Money with automatic fallback
+        paymentResponse = await this.processMobileMoneyPayment(paymentRequest);
+        provider = (paymentResponse as any).provider || 'campay';
       } else {
-        // TODO: Implement NouPai service
-        throw new Error('NouPai payment method not yet implemented');
+        // Use Stripe for credit card
+        paymentResponse = await this.processCreditCardPayment(paymentRequest);
+        provider = 'stripe';
       }
 
       // Store payment history
@@ -113,7 +127,7 @@ export class PaymentService {
         amount: paymentResponse.amount,
         currency: paymentResponse.currency,
         status: paymentResponse.status,
-        provider: paymentMethod,
+        provider,
         description: paymentRequest.description,
         subscriptionPlan: planId,
         createdAt: new Date(),
@@ -126,20 +140,103 @@ export class PaymentService {
         planId,
         amount: plan.price,
         currency: plan.currency,
-        provider: paymentMethod,
+        provider,
         userId
       });
 
       return paymentResponse;
     } catch (error) {
       console.error('Payment initialization failed:', error);
-      
+
       await analyticsService.trackPaymentEvent('payment_failed', {
         planId,
         error: error instanceof Error ? error.message : 'Unknown error',
         userId
       });
-      
+
+      throw error;
+    }
+  }
+
+  /**
+   * Process Mobile Money payment with automatic fallback
+   * Try Campay first, fallback to Noupai if Campay fails
+   */
+  private async processMobileMoneyPayment(request: PaymentRequest): Promise<PaymentResponse> {
+    let lastError: Error | null = null;
+
+    // 1. Try Campay (Primary)
+    try {
+      const isAvailable = await campayService.isAvailable();
+      if (isAvailable) {
+        console.log('Using Campay as primary provider...');
+        const response = await campayService.initiatePayment(request);
+        if (response.success || response.status === 'pending') {
+          return { ...response, provider: 'campay' } as any;
+        }
+        lastError = new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Campay payment failed:', error);
+      lastError = error as Error;
+    }
+
+    // 2. Fallback to Noupai
+    try {
+      const isAvailable = await noupaiService.isAvailable();
+      if (isAvailable) {
+        console.log('Falling back to Noupai...');
+        const response = await noupaiService.initiatePayment(request);
+        if (response.success || response.status === 'pending') {
+          // Track fallback
+          await analyticsService.trackPaymentEvent('payment_fallback', {
+            from: 'campay',
+            to: 'noupai',
+            userId: request.customerId
+          });
+          return { ...response, provider: 'noupai' } as any;
+        }
+        lastError = new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Noupai payment failed:', error);
+      lastError = error as Error;
+    }
+
+    // If all providers failed
+    throw lastError || new Error('Tous les services de paiement Mobile Money sont indisponibles');
+  }
+
+  /**
+   * Process credit card payment via Stripe
+   */
+  private async processCreditCardPayment(request: PaymentRequest): Promise<PaymentResponse> {
+    try {
+      const isAvailable = await stripeService.isAvailable();
+      if (!isAvailable) {
+        throw new Error('Stripe service indisponible');
+      }
+
+      console.log('Using Stripe for credit card payment...');
+
+      // Note: Actual Stripe payment requires client-side card element
+      // This should be implemented in the frontend component
+      // Here we just return the structure for Payment Intent creation
+
+      return {
+        success: false,
+        transactionId: '',
+        reference: '',
+        status: 'pending',
+        amount: request.amount,
+        currency: request.currency,
+        fees: 0,
+        netAmount: request.amount,
+        message: 'Paiement par carte en attente de confirmation',
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Stripe payment failed:', error);
       throw error;
     }
   }
