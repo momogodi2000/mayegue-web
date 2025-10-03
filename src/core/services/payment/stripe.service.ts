@@ -4,8 +4,7 @@
  * API Documentation: https://stripe.com/docs/api
  */
 
-import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
-import axios from 'axios';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { PaymentRequest, PaymentResponse } from './types';
 
 export interface StripeConfig {
@@ -53,22 +52,15 @@ export class StripeService {
   /**
    * Create payment intent (server-side should create this)
    * This is a client-side example - in production, call your backend
+   * @param _request - Payment request data (unused - for future backend implementation)
    */
-  async createPaymentIntent(request: PaymentRequest): Promise<{
+  async createPaymentIntent(_request: PaymentRequest): Promise<{
     clientSecret: string;
     paymentIntentId: string;
   }> {
-    try {
-      // In production, this should call your Firebase Function/backend
-      // Example: const response = await axios.post('/api/create-payment-intent', {...});
-
-      // For now, returning mock structure
-      // Replace with actual backend call
-      throw new Error('createPaymentIntent doit être implémenté côté serveur (Firebase Functions)');
-    } catch (error) {
-      console.error('Failed to create payment intent:', error);
-      throw error;
-    }
+    // In production, this should call your Firebase Function/backend
+    // Example: const response = await axios.post('/api/create-payment-intent', {...});
+    throw new Error('createPaymentIntent doit être implémenté côté serveur (Firebase Functions)');
   }
 
   /**

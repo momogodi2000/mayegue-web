@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { debounce, throttle, memoize } from '../utils/performance';
+import { throttle, memoize } from '../utils/performance';
 
 // Hook for debounced values
 export function useDebounce<T>(value: T, delay: number): T {
@@ -201,7 +201,7 @@ export function useMemoryCleanup() {
 }
 
 // Hook for caching with TTL
-export function useCache<T>(key: string, ttl: number = 5 * 60 * 1000) {
+export function useCache<T>(_key: string, ttl: number = 5 * 60 * 1000) {
   const cache = useRef<Map<string, { data: T; timestamp: number }>>(new Map());
 
   const get = useCallback((cacheKey: string): T | null => {
@@ -265,7 +265,7 @@ export function usePerformanceMetrics() {
 
 // Hook for bundle size monitoring
 export function useBundleSize() {
-  const [bundleSize, setBundleSize] = useState<number>(0);
+  const [bundleSize] = useState<number>(0);
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -327,3 +327,4 @@ export function useWebVitals() {
 
   return vitals;
 }
+

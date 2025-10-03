@@ -101,3 +101,4 @@ describe('Button', () => {
     expect(screen.getByLabelText('Icon button')).toBeInTheDocument();
   });
 });
+

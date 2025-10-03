@@ -31,8 +31,8 @@ export function throttle<T extends (...args: any[]) => any>(
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
-  
-  return function executedFunction(...args: Parameters<T>) {
+
+  return function executedFunction(this: any, ...args: Parameters<T>) {
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
@@ -198,10 +198,12 @@ export function preloadImage(src: string): Promise<void> {
 }
 
 // Code splitting helpers
+import React from 'react';
+
 export function createAsyncComponent<T extends React.ComponentType<any>>(
   importFn: () => Promise<{ default: T }>,
-  fallback?: React.ComponentType
-): React.ComponentType {
+  _fallback?: React.ComponentType
+): React.LazyExoticComponent<T> {
   return React.lazy(importFn);
 }
 
@@ -333,8 +335,9 @@ export function measureWebVitals(): void {
   // First Input Delay
   new PerformanceObserver((list) => {
     const entries = list.getEntries();
-    entries.forEach((entry) => {
-      console.log('FID:', entry.processingStart - entry.startTime);
+    entries.forEach((entry: any) => {
+      const fid = entry.processingStart - entry.startTime;
+      console.log('FID:', fid);
     });
   }).observe({ entryTypes: ['first-input'] });
   
@@ -355,3 +358,4 @@ export function measureWebVitals(): void {
 export const performanceMonitor = PerformanceMonitor.getInstance();
 export const memoryManager = MemoryManager.getInstance();
 export const cacheManager = new CacheManager();
+

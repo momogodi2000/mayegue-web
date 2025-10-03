@@ -130,7 +130,7 @@ export class NouPaiService {
 
       // Handle specific errors
       if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
+        const axiosError = error as AxiosError<{error?: string; message?: string}>;
 
         if (axiosError.code === 'ECONNABORTED' || axiosError.code === 'ETIMEDOUT') {
           return {
@@ -147,7 +147,7 @@ export class NouPaiService {
           };
         }
 
-        if (axiosError.response?.data?.error === 'INSUFFICIENT_FUNDS') {
+        if ((axiosError.response?.data as any)?.error === 'INSUFFICIENT_FUNDS') {
           return {
             success: false,
             transactionId: '',

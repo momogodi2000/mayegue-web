@@ -1,32 +1,35 @@
+#!/usr/bin/env node
+
 /**
  * Script to create a default admin user in Firebase
+ * This version uses Firebase emulators for local development
  * Run with: npm run create-admin
  */
 
-import { initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+const admin = require('firebase-admin');
 
 // Check if we should use emulators (for local development)
 const useEmulators = process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.NODE_ENV === 'development';
 
+console.log('🔐 Ma\'a yegue - Default Admin User Creation\n');
+
 // Initialize Firebase Admin with proper configuration
-const app = initializeApp({
+const app = admin.initializeApp({
   projectId: process.env.VITE_FIREBASE_PROJECT_ID || 'maayegue-dev-environment',
-  ...(useEmulators ? {} : {}) // For production, you'd add service account credentials here
 });
 
 // Configure emulators if running locally
 if (useEmulators) {
+  console.log('🔧 Using Firebase emulators for local development');
   process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
   process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 }
 
-const auth = getAuth(app);
-const db = getFirestore(app);
+const auth = admin.auth();
+const db = admin.firestore();
 
 // Use environment variables or defaults to avoid readline issues
-function getEnvOrDefault(envVar: string, defaultValue: string, description: string): string {
+function getEnvOrDefault(envVar, defaultValue, description) {
   const value = process.env[envVar] || process.argv.find(arg => arg.startsWith(`--${envVar.toLowerCase()}=`))?.split('=')[1];
   if (value) {
     console.log(`✓ Using ${description}: ${value}`);
@@ -37,14 +40,13 @@ function getEnvOrDefault(envVar: string, defaultValue: string, description: stri
 }
 
 async function createAdminUser() {
-  console.log('🔐 Ma\'a yegue - Default Admin User Creation\n');
-  console.log('💡 Tip: You can pass arguments like: npm run create-admin -- --email=admin@test.com --password=Pass123 --name=Admin\n');
-
   try {
-    // Get admin credentials from environment variables or defaults
-    const email = getEnvOrDefault('ADMIN_EMAIL', 'admin@maayegue.com', 'email');
-    const password = getEnvOrDefault('ADMIN_PASSWORD', 'Admin@2025!', 'password');
-    const displayName = getEnvOrDefault('ADMIN_NAME', 'Admin', 'display name');
+    console.log('💡 Tip: You can pass arguments like: npm run create-admin -- --email=admin@test.com --password=Pass123 --name=Admin\n');
+
+    // Get user input or use defaults
+    const email = getEnvOrDefault('EMAIL', 'admin@maayegue.com', 'email');
+    const password = getEnvOrDefault('PASSWORD', 'Admin@2025!', 'password');
+    const displayName = getEnvOrDefault('NAME', 'Admin', 'display name');
 
     console.log('\n📝 Creating admin user...');
 
@@ -54,8 +56,7 @@ async function createAdminUser() {
       userRecord = await auth.getUserByEmail(email);
       console.log('⚠️  User already exists. Updating role to admin...');
     } catch (error) {
-      const errorCode = error && typeof error === 'object' && 'code' in error ? error.code : null;
-      if (errorCode === 'auth/user-not-found') {
+      if (error.code === 'auth/user-not-found') {
         // Create new user
         userRecord = await auth.createUser({
           email,
@@ -132,8 +133,7 @@ async function createAdminUser() {
     console.log('✅ Admin permissions configured\n');
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    console.error('❌ Error creating admin user:', errorMessage);
+    console.error('❌ Error creating admin user:', error.message || error);
     process.exit(1);
   }
 }

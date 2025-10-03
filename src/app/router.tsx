@@ -37,6 +37,7 @@ const AdminAnalyticsPage = lazy(() => import('@/features/users/admin/pages/Analy
 const PrivacyPage = lazy(() => import('@/features/legal/pages/PrivacyPage'));
 const TermsPage = lazy(() => import('@/features/legal/pages/TermsPage'));
 const CheckoutPage = lazy(() => import('@/features/payments/pages/CheckoutPage'));
+const NewsletterVerifyPage = lazy(() => import('@/features/newsletter/pages/NewsletterVerifyPage'));
 
 export function AppRouter() {
   return (
@@ -57,6 +58,7 @@ export function AppRouter() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="partners" element={<PartnersPage />} />
           <Route path="careers" element={<CareersPage />} />
+          <Route path="newsletter/verify" element={<NewsletterVerifyPage />} />
           
           {/* Dictionary - Public with limited features */}
           <Route path="dictionary" element={<DictionaryPage />} />

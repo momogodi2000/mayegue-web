@@ -13,7 +13,7 @@
    npm install firebase-admin --save-dev
    ```
 
-## Option 1: Using the TypeScript Script (Recommended)
+## Option 1: Using the TypeScript Script (Recommended - PowerShell Compatible)
 
 ### Step 1: Set Environment Variable
 ```bash
@@ -27,18 +27,35 @@ set GOOGLE_APPLICATION_CREDENTIALS=path\to\firebase-admin-key.json
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/firebase-admin-key.json"
 ```
 
-### Step 2: Add Script to package.json
-Add this to your `package.json` scripts section:
-```json
-"create-admin": "tsx scripts/create-admin.ts"
-```
+### Step 2: Run the Script
 
-### Step 3: Run the Script
+**Method A: Use Defaults (Quickest)**
 ```bash
 npm run create-admin
 ```
+Creates admin with:
+- Email: admin@maayegue.com
+- Password: Admin@2025!
+- Name: Admin
 
-Follow the prompts to create the admin user.
+**Method B: Pass Arguments (Recommended)**
+```bash
+npm run create-admin -- --email=youremail@domain.com --password=YourSecurePass123 --name="Your Name"
+```
+
+**Method C: Use Environment Variables**
+```bash
+# PowerShell
+$env:ADMIN_EMAIL="admin@test.com"
+$env:ADMIN_PASSWORD="SecurePass123!"
+$env:ADMIN_NAME="Super Admin"
+npm run create-admin
+
+# Bash
+ADMIN_EMAIL="admin@test.com" ADMIN_PASSWORD="SecurePass123!" npm run create-admin
+```
+
+The script no longer uses interactive prompts to avoid PowerShell readline issues.
 
 ## Option 2: Using Firebase Console
 

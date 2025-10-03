@@ -12,8 +12,10 @@ import {
   FormError,
   Badge
 } from '@/shared/components/ui';
+import { EmailVerificationModal } from '@/shared/components/ui/EmailVerificationModal';
 import toast from 'react-hot-toast';
 import logoUrl from '@/assets/logo/logo.jpg';
+import { newsletterService } from '@/core/services/firebase/newsletter.service';
 
 interface FormData {
   name: string;
@@ -21,6 +23,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   acceptTerms: boolean;
+  subscribeNewsletter: boolean;
 }
 
 interface ValidationErrors {
@@ -29,6 +32,7 @@ interface ValidationErrors {
   password?: string;
   confirmPassword?: string;
   acceptTerms?: string;
+  subscribeNewsletter?: string;
 }
 
 export default function RegisterPage() {
@@ -40,10 +44,13 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    acceptTerms: false
+    acceptTerms: false,
+    subscribeNewsletter: false
   });
   
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const validateForm = (): boolean => {
     const errors: ValidationErrors = {};
@@ -122,13 +129,25 @@ export default function RegisterPage() {
         formData.name.trim()
       );
       
+      // Subscribe to newsletter if opted in
+      if (formData.subscribeNewsletter) {
+        try {
+          await newsletterService.subscribe(formData.email, 'user_registration', false);
+        } catch (error) {
+          console.error('Newsletter subscription error:', error);
+          // Don't fail registration if newsletter subscription fails
+        }
+      }
+      
       setUser(user);
-      toast.success('Bienvenue dans Ma’a yegue! Votre compte a été créé avec succès.');
-      navigate('/dashboard');
+      setRegisteredEmail(formData.email);
+      setShowEmailVerificationModal(true);
+      
+      toast.success("Bienvenue dans Ma'a yegue! Votre compte a été créé avec succès.");
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'inscription';
+      const errorMessage = err instanceof Error ? err.message : "Erreur lors de l'inscription";
       setError(errorMessage);
-      toast.error('Échec de l\'inscription. Veuillez vérifier vos informations et réessayer.');
+      toast.error("Échec de l'inscription. Veuillez vérifier vos informations et réessayer.");
     } finally {
       setLoading(false);
     }
@@ -248,6 +267,21 @@ export default function RegisterPage() {
               <FormGroup>
                 <label className="flex items-start">
                   <input
+                    id="subscribeNewsletter"
+                    type="checkbox"
+                    checked={formData.subscribeNewsletter}
+                    onChange={handleInputChange('subscribeNewsletter')}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+                  />
+                  <span className="ml-2 text-sm text-gray-600">
+                    Je souhaite recevoir la newsletter avec les dernières actualités et promotions
+                  </span>
+                </label>
+              </FormGroup>
+
+              <FormGroup>
+                <label className="flex items-start">
+                  <input
                     id="acceptTerms"
                     type="checkbox"
                     checked={formData.acceptTerms}
@@ -256,11 +290,11 @@ export default function RegisterPage() {
                   />
                   <span className="ml-2 text-sm text-gray-600">
                     J'accepte les{' '}
-                    <Link to="/legal/terms" className="text-blue-600 hover:text-blue-500 hover:underline">
+                    <Link to="/terms" className="text-blue-600 hover:text-blue-500 hover:underline">
                       conditions d'utilisation
                     </Link>
                     {' '}et la{' '}
-                    <Link to="/legal/privacy" className="text-blue-600 hover:text-blue-500 hover:underline">
+                    <Link to="/privacy" className="text-blue-600 hover:text-blue-500 hover:underline">
                       politique de confidentialité
                     </Link>
                   </span>
@@ -298,6 +332,20 @@ export default function RegisterPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Email Verification Modal */}
+        <EmailVerificationModal
+          isOpen={showEmailVerificationModal}
+          onClose={() => {
+            setShowEmailVerificationModal(false);
+            navigate('/dashboard');
+          }}
+          email={registeredEmail}
+          type="registration"
+          onVerificationSent={() => {
+            toast.success('Email de vérification renvoyé avec succès');
+          }}
+        />
       </div>
     </div>
   );

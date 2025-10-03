@@ -16,23 +16,26 @@ export default function GuestDashboardPage() {
       description: 'Accédez à notre dictionnaire de base avec des mots essentiels en langues camerounaises.',
       link: '/dictionary',
       buttonText: 'Explorer',
-      color: 'text-blue-600 dark:text-blue-400'
+      color: 'text-blue-600 dark:text-blue-400',
+      available: true
     },
     {
       icon: GlobeAltIcon,
-      title: 'Leçons Démo',
-      description: 'Essayez quelques leçons gratuites pour découvrir notre méthode d\'apprentissage.',
-      link: '/lessons',
-      buttonText: 'Commencer',
-      color: 'text-green-600 dark:text-green-400'
+      title: 'Leçons Premium',
+      description: 'Créez un compte pour accéder à toutes nos leçons interactives.',
+      link: '/register',
+      buttonText: 'Créer un Compte',
+      color: 'text-gray-400 dark:text-gray-500',
+      available: false
     },
     {
       icon: SparklesIcon,
-      title: 'Assistant IA (Limité)',
-      description: 'Testez notre assistant IA avec un nombre limité de requêtes.',
-      link: '/ai-assistant',
-      buttonText: 'Essayer',
-      color: 'text-purple-600 dark:text-purple-400'
+      title: 'Assistant IA Premium',
+      description: 'Déverrouillez notre assistant IA en créant un compte gratuit.',
+      link: '/register',
+      buttonText: 'S\'inscrire',
+      color: 'text-gray-400 dark:text-gray-500',
+      available: false
     },
   ];
 
@@ -84,7 +87,17 @@ export default function GuestDashboardPage() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {guestFeatures.map((feature, index) => (
-              <div key={index} className="card hover:shadow-lg transition-shadow">
+              <div
+                key={index}
+                className={`card transition-shadow ${
+                  feature.available ? 'hover:shadow-lg' : 'opacity-75 relative'
+                }`}
+              >
+                {!feature.available && (
+                  <div className="absolute top-4 right-4 bg-gray-800 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded-full">
+                    Premium
+                  </div>
+                )}
                 <feature.icon className={`h-12 w-12 ${feature.color} mb-4`} />
                 <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                   {feature.title}
@@ -94,7 +107,9 @@ export default function GuestDashboardPage() {
                 </p>
                 <Link
                   to={feature.link}
-                  className="btn-outline w-full text-center"
+                  className={`btn-outline w-full text-center ${
+                    !feature.available ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700' : ''
+                  }`}
                 >
                   {feature.buttonText}
                 </Link>

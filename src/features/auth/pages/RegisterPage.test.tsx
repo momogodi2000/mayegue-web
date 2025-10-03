@@ -246,3 +246,4 @@ describe('RegisterPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/login');
   });
 });
+

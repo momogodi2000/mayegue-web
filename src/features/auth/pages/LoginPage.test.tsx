@@ -209,3 +209,4 @@ describe('LoginPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/forgot-password');
   });
 });
+

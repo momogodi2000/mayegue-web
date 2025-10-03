@@ -152,7 +152,7 @@ export class CamPayService {
 
       // Handle specific errors
       if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
+        const axiosError = error as AxiosError<{code?: string; message?: string}>;
 
         if (axiosError.code === 'ECONNABORTED' || axiosError.code === 'ETIMEDOUT') {
           return {
@@ -169,7 +169,7 @@ export class CamPayService {
           };
         }
 
-        if (axiosError.response?.data?.code === 'INSUFFICIENT_BALANCE') {
+        if ((axiosError.response?.data as any)?.code === 'INSUFFICIENT_BALANCE') {
           return {
             success: false,
             transactionId: '',

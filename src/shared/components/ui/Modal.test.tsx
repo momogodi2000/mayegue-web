@@ -167,3 +167,4 @@ describe('Modal', () => {
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 });
+

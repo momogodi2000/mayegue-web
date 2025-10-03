@@ -161,3 +161,4 @@ describe('AuthStore', () => {
     expect(result.current.error).toBe(errorMessage);
   });
 });
+

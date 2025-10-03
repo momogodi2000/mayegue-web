@@ -1,4 +1,4 @@
-import { camPayService, campayService } from './campay.service';
+import { campayService } from './campay.service';
 import { noupaiService } from './noupai.service';
 import { stripeService } from './stripe.service';
 import { firestoreService } from '../firebase/firestore.service';

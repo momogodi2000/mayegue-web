@@ -295,3 +295,4 @@ export function logSecurityEvent(event: string, details: Record<string, any>): v
     ...details
   });
 }
+
