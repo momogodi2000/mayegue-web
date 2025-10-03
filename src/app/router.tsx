@@ -66,7 +66,8 @@ export function AppRouter() {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<RoleRedirect />} />
-            <Route path="dashboard/learner" element={<LearnerDashboard />} />
+            <Route path="dashboard/apprenant" element={<LearnerDashboard />} />
+            <Route path="dashboard/learner" element={<Navigate to="/dashboard/apprenant" replace />} /> {/* Legacy redirect */}
             <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
               <Route path="dashboard/teacher" element={<TeacherDashboard />} />
               <Route path="teacher/lessons" element={<TeacherLessonManagementPage />} />

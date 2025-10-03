@@ -1,4 +1,4 @@
-import { expect, afterEach } from 'vitest';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -11,12 +11,15 @@ afterEach(() => {
 });
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
-};
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  disconnect: vi.fn(),
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  root: null,
+  rootMargin: '',
+  thresholds: [],
+  takeRecords: vi.fn(),
+}));
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -47,8 +50,10 @@ const localStorageMock = {
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
 };
-global.localStorage = localStorageMock;
+global.localStorage = localStorageMock as any;
 
 // Mock sessionStorage
 const sessionStorageMock = {
@@ -56,8 +61,10 @@ const sessionStorageMock = {
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
 };
-global.sessionStorage = sessionStorageMock;
+global.sessionStorage = sessionStorageMock as any;
 
 // Mock navigator.onLine
 Object.defineProperty(navigator, 'onLine', {
@@ -97,7 +104,7 @@ global.indexedDB = mockIndexedDB as any;
 Object.defineProperty(global, 'crypto', {
   value: {
     randomUUID: vi.fn(() => 'mock-uuid'),
-    getRandomValues: vi.fn((arr) => {
+    getRandomValues: vi.fn((arr: any) => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = Math.floor(Math.random() * 256);
       }

@@ -2,7 +2,14 @@
  * User-related TypeScript types
  */
 
-export type UserRole = 'visitor' | 'learner' | 'teacher' | 'admin';
+export type UserRole = 'visitor' | 'apprenant' | 'teacher' | 'admin';
+
+// Legacy support - mapping old roles to new
+export const ROLE_MAPPING = {
+  learner: 'apprenant',
+  apprenant: 'apprenant',
+  student: 'apprenant',
+} as const;
 
 export interface User {
   id: string;
@@ -10,10 +17,14 @@ export interface User {
   displayName: string;
   photoURL?: string;
   role: UserRole;
+  phoneNumber?: string;
+  emailVerified: boolean;
+  twoFactorEnabled?: boolean;
   createdAt: Date;
   lastLoginAt: Date;
   preferences?: UserPreferences;
   stats?: UserStats;
+  subscriptionStatus?: 'free' | 'premium' | 'trial';
 }
 
 export interface UserPreferences {

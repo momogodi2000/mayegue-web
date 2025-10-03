@@ -46,7 +46,7 @@ export const useProfileStore = create<ProfileState>()(
             email: 'user@example.com',
             displayName: 'John Doe',
             photoURL: '',
-            role: 'learner',
+            role: 'apprenant',
             createdAt: new Date(),
             lastLoginAt: new Date(),
             preferences: {

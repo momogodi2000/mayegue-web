@@ -3,6 +3,8 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { authService } from '@/core/services/firebase/auth.service';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { ThemeToggle } from '@/shared/components/ui/ThemeToggle';
+import { NewsletterSubscription } from '@/shared/components/ui/NewsletterSubscription';
 
 export const Layout = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -70,6 +72,7 @@ export const Layout = () => {
 
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               {isAuthenticated ? (
                 <div className="relative">
                   <button 
@@ -280,6 +283,11 @@ export const Layout = () => {
                 <li><Link to="/terms" className="hover:text-white transition-colors">Conditions</Link></li>
               </ul>
             </div>
+          </div>
+
+          {/* Newsletter Subscription */}
+          <div className="mt-8 pt-6 lg:pt-8 border-t border-gray-800">
+            <NewsletterSubscription />
           </div>
 
           <div className="mt-8 pt-6 lg:pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
