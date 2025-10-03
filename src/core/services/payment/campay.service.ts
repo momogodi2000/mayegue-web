@@ -1,11 +1,10 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { PaymentRequest, PaymentResponse } from './types';
 
 export interface CamPayConfig {
-  apiKey: string;
-  apiSecret: string;
+  username: string;
+  password: string;
   baseUrl: string;
-  webhookSecret: string;
   environment: 'sandbox' | 'production';
 }
 
@@ -16,13 +15,12 @@ export class CamPayService {
   constructor(config?: Partial<CamPayConfig>) {
     // Default configuration - should be loaded from environment
     this.config = {
-      apiKey: config?.apiKey || import.meta.env.VITE_CAMPAY_API_KEY || '',
-      apiSecret: config?.apiSecret || import.meta.env.VITE_CAMPAY_API_SECRET || '',
-      baseUrl: config?.baseUrl || (import.meta.env.VITE_CAMPAY_ENVIRONMENT === 'production' 
-        ? 'https://www.campay.net/api' 
+      username: config?.username || import.meta.env.VITE_CAMPAY_USERNAME || '',
+      password: config?.password || import.meta.env.VITE_CAMPAY_PASSWORD || '',
+      baseUrl: config?.baseUrl || (import.meta.env.VITE_CAMPAY_MODE === 'live'
+        ? 'https://www.campay.net/api'
         : 'https://demo.campay.net/api'),
-      webhookSecret: config?.webhookSecret || import.meta.env.VITE_CAMPAY_WEBHOOK_SECRET || '',
-      environment: (config?.environment || import.meta.env.VITE_CAMPAY_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production'
+      environment: (config?.environment || import.meta.env.VITE_CAMPAY_MODE || 'sandbox') as 'sandbox' | 'production'
     };
   }
 
@@ -34,8 +32,8 @@ export class CamPayService {
 
     try {
       const response = await axios.post(`${this.config.baseUrl}/token/`, {
-        username: this.config.apiKey,
-        password: this.config.apiSecret,
+        username: this.config.username,
+        password: this.config.password,
       });
 
       // Cache token for 50 minutes (tokens usually expire in 1 hour)
@@ -47,8 +45,40 @@ export class CamPayService {
       return response.data.token;
     } catch (error) {
       console.error('Failed to get CamPay token:', error);
-      throw new Error('Authentication failed');
+      throw new Error('Échec d\'authentification avec Campay');
     }
+  }
+
+  /**
+   * Check if Campay service is available
+   */
+  async isAvailable(): Promise<boolean> {
+    try {
+      await this.getToken();
+      return true;
+    } catch (error) {
+      console.error('Campay service unavailable:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Validate phone number for Cameroon operators
+   */
+  private validatePhoneNumber(phone: string): { valid: boolean; operator?: string } {
+    const cleaned = phone.replace(/\D/g, '');
+
+    // MTN Mobile Money (237 6XX XXX XXX)
+    if (/^237(67|650|651|652|653|654|680|681|682|683)/.test(cleaned)) {
+      return { valid: true, operator: 'MTN' };
+    }
+
+    // Orange Money (237 69X XXX XXX or 237 655-659)
+    if (/^237(69|655|656|657|658|659)/.test(cleaned)) {
+      return { valid: true, operator: 'ORANGE' };
+    }
+
+    return { valid: false };
   }
 
   async initiatePayment(request: PaymentRequest): Promise<PaymentResponse> {
