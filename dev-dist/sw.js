@@ -82,7 +82,7 @@ define(['./workbox-a959eb95'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.4jqhfel6d08"
+    "revision": "0.bfndjsbor4"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
@@ -90,34 +90,61 @@ define(['./workbox-a959eb95'], (function (workbox) { 'use strict';
   }));
   workbox.registerRoute(/^https:\/\/firestore\.googleapis\.com\/.*/i, new workbox.NetworkFirst({
     "cacheName": "firestore-cache",
+    "networkTimeoutSeconds": 3,
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 50,
-      maxAgeSeconds: 300
+      maxEntries: 100,
+      maxAgeSeconds: 86400
     }), new workbox.CacheableResponsePlugin({
       statuses: [0, 200]
+    })]
+  }), 'GET');
+  workbox.registerRoute(({
+    request
+  }) => request.mode === "navigate", new workbox.NetworkFirst({
+    "cacheName": "pages-cache",
+    "networkTimeoutSeconds": 3,
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
+      maxAgeSeconds: 86400
     })]
   }), 'GET');
   workbox.registerRoute(/^https:\/\/.*\.firebasestorage\.app\/.*/i, new workbox.CacheFirst({
     "cacheName": "firebase-storage-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 100,
+      maxEntries: 200,
       maxAgeSeconds: 2592000
     }), new workbox.CacheableResponsePlugin({
       statuses: [0, 200]
     })]
   }), 'GET');
-  workbox.registerRoute(/\.(?:png|jpg|jpeg|svg|gif|webp)$/, new workbox.CacheFirst({
+  workbox.registerRoute(/\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/, new workbox.CacheFirst({
     "cacheName": "images-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 100,
+      maxEntries: 200,
       maxAgeSeconds: 2592000
     })]
   }), 'GET');
-  workbox.registerRoute(/\.(?:mp3|wav|ogg)$/, new workbox.CacheFirst({
+  workbox.registerRoute(/\.(?:mp3|wav|ogg|m4a)$/, new workbox.CacheFirst({
     "cacheName": "audio-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 50,
+      maxEntries: 100,
       maxAgeSeconds: 604800
+    })]
+  }), 'GET');
+  workbox.registerRoute(/\.(?:woff|woff2|ttf|eot)$/, new workbox.CacheFirst({
+    "cacheName": "fonts-cache",
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
+      maxAgeSeconds: 31536000
+    })]
+  }), 'GET');
+  workbox.registerRoute(/^https:\/\/api\.openai\.com\/.*/i, new workbox.NetworkFirst({
+    "cacheName": "ai-api-cache",
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
+      maxAgeSeconds: 3600
+    }), new workbox.CacheableResponsePlugin({
+      statuses: [0, 200]
     })]
   }), 'GET');
 

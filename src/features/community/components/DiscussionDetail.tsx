@@ -76,6 +76,7 @@ const DiscussionDetail: React.FC<DiscussionDetailProps> = ({
         content: replyContent.trim(),
         authorId: user.id,
         author: mockUser,
+        discussionId: discussionId,
         parentReplyId: replyingTo || undefined
       });
       

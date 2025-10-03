@@ -1,6 +1,14 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Shield, Lock, Eye, User, Settings, Mail, Phone, MapPin } from 'lucide-react';
+// Replaced lucide-react imports with inline emojis to avoid extra dependency
+const Shield = (props: { className?: string }) => <span className={props.className}>🛡️</span>;
+const Lock = (props: { className?: string }) => <span className={props.className}>🔒</span>;
+const Eye = (props: { className?: string }) => <span className={props.className}>👁️</span>;
+const User = (props: { className?: string }) => <span className={props.className}>👤</span>;
+const Settings = (props: { className?: string }) => <span className={props.className}>⚙️</span>;
+const Mail = (props: { className?: string }) => <span className={props.className}>✉️</span>;
+const Phone = (props: { className?: string }) => <span className={props.className}>📞</span>;
+const MapPin = (props: { className?: string }) => <span className={props.className}>📍</span>;
 
 export const PrivacyPolicyPage: React.FC = () => {
   const sections = [

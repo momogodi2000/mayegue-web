@@ -26,7 +26,7 @@ const CommunityPage: React.FC = () => {
     switch (currentView) {
       case 'discussions':
         return (
-          <DiscussionList onDiscussionSelect={handleDiscussionSelect} />
+          <DiscussionList onDiscussionClick={(d) => handleDiscussionSelect(d.id)} />
         );
       
       case 'discussion-detail':

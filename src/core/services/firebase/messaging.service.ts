@@ -165,9 +165,8 @@ export class MessagingService {
         badge: payload.badge || '/logo.jpg',
         data: payload.data,
         tag: 'Ma’a yegue-notification',
-        renotify: true,
         requireInteraction: false,
-        vibrate: [200, 100, 200],
+        // vibrate: [200, 100, 200], // Not supported in all browsers
       });
     } catch (error) {
       console.error('Error showing notification:', error);

@@ -102,6 +102,13 @@ interface GamificationState {
   showAchievementPopup: Achievement | null;
   showLevelUpPopup: Level | null;
   
+  // Computed properties for compatibility
+  achievements: Achievement[];
+  badges: Badge[];
+  unlockedBadges: Badge[];
+  currentLevel: Level | null;
+  dailyChallenges: DailyChallenge[];
+  
   // Actions
   initializeGamification: (userId: string) => Promise<void>;
   addXP: (points: number, source: string) => Promise<void>;
@@ -203,6 +210,24 @@ export const useGamificationStore = create<GamificationState>()(
       error: null,
       showAchievementPopup: null,
       showLevelUpPopup: null,
+      
+      // Computed properties
+      get achievements() {
+        return get().allAchievements;
+      },
+      get badges() {
+        return get().allBadges;
+      },
+      get unlockedBadges() {
+        return get().earnedBadges;
+      },
+      get currentLevel() {
+        const { userStats, levels } = get();
+        return levels.find(l => l.level === userStats.currentLevel) || null;
+      },
+      get dailyChallenges() {
+        return get().currentChallenges;
+      },
 
       // Actions
       initializeGamification: async (_userId: string) => {

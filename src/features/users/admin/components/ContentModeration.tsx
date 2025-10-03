@@ -30,6 +30,7 @@ const ContentModeration: React.FC = () => {
     type: '',
     status: 'pending',
     language: '',
+    priority: '',
     sortBy: 'createdAt'
   });
 
@@ -51,8 +52,9 @@ const ContentModeration: React.FC = () => {
     const matchesType = !filters.type || item.type === filters.type;
     const matchesStatus = !filters.status || item.status === filters.status;
     const matchesLanguage = !filters.language || item.language === filters.language;
+    const matchesPriority = !filters.priority || item.priority === filters.priority;
 
-    return matchesSearch && matchesType && matchesStatus && matchesLanguage;
+    return matchesSearch && matchesType && matchesStatus && matchesLanguage && matchesPriority;
   }).sort((a: ContentItem, b: ContentItem) => {
     if (filters.sortBy === 'createdAt') {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -160,7 +162,7 @@ const ContentModeration: React.FC = () => {
     return colors[priority as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  if (loading && contentItems.length === 0) {
+  if (loading && content.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
         <Spinner size="lg" />
@@ -273,7 +275,7 @@ const ContentModeration: React.FC = () => {
         <Card>
           <CardContent className="text-center py-6">
             <div className="text-3xl font-bold text-yellow-600 mb-2">
-              {contentItems.filter(item => item.status === 'pending').length}
+              {content.filter(item => item.status === 'pending').length}
             </div>
             <p className="text-gray-600">En attente</p>
           </CardContent>
@@ -282,7 +284,7 @@ const ContentModeration: React.FC = () => {
         <Card>
           <CardContent className="text-center py-6">
             <div className="text-3xl font-bold text-red-600 mb-2">
-              {contentItems.filter(item => item.priority === 'high').length}
+              {content.filter(item => item.priority === 'high').length}
             </div>
             <p className="text-gray-600">Priorité élevée</p>
           </CardContent>
@@ -291,7 +293,7 @@ const ContentModeration: React.FC = () => {
         <Card>
           <CardContent className="text-center py-6">
             <div className="text-3xl font-bold text-green-600 mb-2">
-              {contentItems.filter(item => item.status === 'approved').length}
+              {content.filter(item => item.status === 'approved').length}
             </div>
             <p className="text-gray-600">Approuvés</p>
           </CardContent>
@@ -300,7 +302,7 @@ const ContentModeration: React.FC = () => {
         <Card>
           <CardContent className="text-center py-6">
             <div className="text-3xl font-bold text-gray-600 mb-2">
-              {contentItems.reduce((sum, item) => sum + item.reportCount, 0)}
+              {content.reduce((sum, item) => sum + item.reportCount, 0)}
             </div>
             <p className="text-gray-600">Total signalements</p>
           </CardContent>
@@ -406,7 +408,7 @@ const ContentModeration: React.FC = () => {
 
       {/* Detail Modal */}
       <Modal
-        isOpen={isDetailModalOpen}
+        open={isDetailModalOpen}
         onClose={() => {
           setIsDetailModalOpen(false);
           setSelectedItem(null);
@@ -476,7 +478,7 @@ const ContentModeration: React.FC = () => {
 
       {/* Moderation Action Modal */}
       <Modal
-        isOpen={isModerationModalOpen}
+        open={isModerationModalOpen}
         onClose={() => {
           setIsModerationModalOpen(false);
           setSelectedItem(null);

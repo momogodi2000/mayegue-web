@@ -250,18 +250,18 @@ export const useCommunityStore = create<CommunityState>()(
       fetchDiscussions: async (languageId, category) => {
         set({ loading: true, error: null });
         try {
-          let query = firestoreService.collection('discussions');
+          const whereConditions: [string, any, unknown][] = [];
           
           if (languageId) {
-            query = query.where('languageId', '==', languageId);
+            whereConditions.push(['languageId', '==', languageId]);
           }
           if (category) {
-            query = query.where('category', '==', category);
+            whereConditions.push(['category', '==', category]);
           }
           
-          const discussions = await firestoreService.getDocs(
-            query.orderBy('createdAt', 'desc')
-          ) as Discussion[];
+          const discussions = await firestoreService.getDocs<Discussion>('discussions', {
+            where: whereConditions
+          });
           
           set({ discussions, loading: false });
         } catch (error) {
@@ -605,16 +605,15 @@ export const useCommunityStore = create<CommunityState>()(
       fetchExchanges: async (languageId) => {
         set({ loading: true, error: null });
         try {
-          let query = firestoreService.collection('languageExchanges');
+          const whereConditions: [string, any, unknown][] = [];
           
           if (languageId) {
-            query = query.where('nativeLanguage', '==', languageId)
-                         .or(query.where('targetLanguage', '==', languageId));
+            whereConditions.push(['nativeLanguage', '==', languageId]);
           }
           
-          const exchanges = await firestoreService.getDocs(
-            query.orderBy('createdAt', 'desc')
-          ) as LanguageExchange[];
+          const exchanges = await firestoreService.getDocs<LanguageExchange>('languageExchanges', {
+            where: whereConditions
+          });
           
           set({ exchanges, loading: false });
         } catch (error) {
@@ -799,15 +798,15 @@ export const useCommunityStore = create<CommunityState>()(
 
       searchUsers: async (query) => {
         try {
-          // TODO: Implement proper user search
-          const users = await firestoreService.getDocs(
-            firestoreService.collection('communityUsers')
-              .where('displayName', '>=', query)
-              .where('displayName', '<=', query + '\uf8ff')
-              .limit(10)
-          ) as CommunityUser[];
+          // TODO: Implement proper user search with text search
+          const users = await firestoreService.getDocs<CommunityUser>('communityUsers', {
+            where: [
+              ['displayName', '>=', query],
+              ['displayName', '<=', query + '\uf8ff']
+            ]
+          });
           
-          return users;
+          return users.slice(0, 10);
         } catch (error) {
           set({ error: error instanceof Error ? error.message : 'Failed to search users' });
           return [];

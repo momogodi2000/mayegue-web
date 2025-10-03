@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ENV } from '@/core/config/env.config';
+import config from '@/core/config/env.config';
 
 interface NouPaiPaymentRequest {
   amount: number;
@@ -23,7 +23,7 @@ export class NouPaiService {
       const response = await axios.post(
         `${this.baseURL}/payments`,
         {
-          merchant_id: ENV.NOUPAI_MERCHANT_ID,
+          merchant_id: config.payment.noupai.clientId,
           amount: request.amount,
           currency: request.currency || 'XAF',
           description: request.description,
@@ -32,7 +32,7 @@ export class NouPaiService {
         },
         {
           headers: {
-            'X-API-Key': ENV.NOUPAI_API_KEY,
+            'X-API-Key': config.payment.noupai.clientSecret,
             'Content-Type': 'application/json',
           },
         }
@@ -53,7 +53,7 @@ export class NouPaiService {
     try {
       const response = await axios.get(`${this.baseURL}/payments/${transactionId}`, {
         headers: {
-          'X-API-Key': ENV.NOUPAI_API_KEY,
+          'X-API-Key': config.payment.noupai.clientSecret,
         },
       });
 

@@ -41,6 +41,11 @@ export interface ContentItem {
   reports: ContentReport[];
   language: string;
   category: string;
+  priority: 'low' | 'medium' | 'high';
+  reportCount: number;
+  reportedAt: Date;
+  reportReasons: string[];
+  metadata: Record<string, any>;
 }
 
 export interface ContentReport {
@@ -244,7 +249,12 @@ export const useAdminStore = create<AdminState>()(
               status: 'pending',
               reports: [],
               language: 'Ewondo',
-              category: 'pronunciation'
+              category: 'pronunciation',
+              priority: 'medium',
+              reportCount: 0,
+              reportedAt: new Date(),
+              reportReasons: [],
+              metadata: {}
             }
           ];
 

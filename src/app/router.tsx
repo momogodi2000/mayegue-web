@@ -19,8 +19,11 @@ const ResetPasswordPage = lazy(() => import('@/features/auth/pages/ResetPassword
 const DictionaryPage = lazy(() => import('@/features/dictionary/pages/DictionaryPage'));
 const LessonsPage = lazy(() => import('@/features/lessons/pages/LessonsPage'));
 const LessonDetailPage = lazy(() => import('@/features/lessons/pages/LessonDetailPage'));
-const AboutusPage = lazy(() => import('@/features/home/pages/Aboutus.Page'));
+const AboutusPage = lazy(() => import('@/features/home/pages/AboutUsPage'));
 const ContactusPage = lazy(() => import('@/features/home/pages/ContactusPage'));
+const FAQPage = lazy(() => import('@/features/home/pages/FAQPage'));
+const PartnersPage = lazy(() => import('@/features/home/pages/PartnersPage'));
+const CareersPage = lazy(() => import('@/features/home/pages/CareersPage'));
 const AIAssistantPage = lazy(() => import('@/features/ai-assistant/pages/AIAssistantPage'));
 const GamificationPage = lazy(() => import('@/features/gamification/pages/GamificationPage'));
 const CommunityPage = lazy(() => import('@/features/community/pages/CommunityPage'));
@@ -28,6 +31,7 @@ const ProfilePage = lazy(() => import('@/features/profile/pages/ProfilePage'));
 const SettingsPage = lazy(() => import('@/features/profile/pages/SettingsPage'));
 const PricingPage = lazy(() => import('@/features/payments/pages/PricingPage'));
 const NotFoundPage = lazy(() => import('@/features/errors/pages/NotFoundPage'));
+const OfflinePage = lazy(() => import('@/features/errors/pages/OfflinePage'));
 const TeacherLessonManagementPage = lazy(() => import('@/features/users/teacher/pages/LessonManagementPage'));
 const AdminAnalyticsPage = lazy(() => import('@/features/users/admin/pages/AnalyticsPage'));
 const PrivacyPage = lazy(() => import('@/features/legal/pages/PrivacyPage'));
@@ -50,6 +54,9 @@ export function AppRouter() {
           <Route path="contact" element={<ContactusPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="terms" element={<TermsPage />} />
+          <Route path="faq" element={<FAQPage />} />
+          <Route path="partners" element={<PartnersPage />} />
+          <Route path="careers" element={<CareersPage />} />
           
           {/* Dictionary - Public with limited features */}
           <Route path="dictionary" element={<DictionaryPage />} />
@@ -76,8 +83,9 @@ export function AppRouter() {
             <Route path="checkout" element={<CheckoutPage />} />
           </Route>
           
-          {/* 404 */}
+          {/* Error Pages */}
           <Route path="404" element={<NotFoundPage />} />
+          <Route path="offline" element={<OfflinePage />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Route>
       </Routes>

@@ -401,7 +401,7 @@ const UserManagement: React.FC = () => {
 
       {/* Edit User Modal */}
       <Modal
-        isOpen={isEditModalOpen}
+        open={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
           setSelectedUser(null);
@@ -487,7 +487,7 @@ const UserManagement: React.FC = () => {
 
       {/* Delete User Modal */}
       <Modal
-        isOpen={isDeleteModalOpen}
+        open={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
           setSelectedUser(null);

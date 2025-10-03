@@ -175,7 +175,7 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({ preferences, onUpdate
   const [formData, setFormData] = useState({
     theme: preferences?.theme || 'light',
     language: preferences?.language || 'en',
-    notificationsEnabled: preferences?.notificationsEnabled || true,
+    notificationsEnabled: preferences?.notificationsEnabled ?? true,
     dailyGoalMinutes: preferences?.dailyGoalMinutes || 15,
     targetLanguages: preferences?.targetLanguages || []
   });
@@ -403,7 +403,7 @@ const ProfilePage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-6">
             <AvatarUpload
-              currentAvatar={avatar}
+              currentAvatar={avatar || undefined}
               onUploadStart={() => {}}
               onUploadComplete={uploadAvatar}
               isUploading={isUploading}

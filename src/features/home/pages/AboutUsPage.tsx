@@ -73,12 +73,57 @@ const AboutusPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>À Propos - Ma’a yegue</title>
+        <title>À Propos de Ma'a yegue - Préservation des Langues Camerounaises</title>
         <meta
           name="description"
-          content="Découvrez Ma’a yegue, la plateforme dédiée à l'apprentissage et à la préservation des langues traditionnelles camerounaises."
+          content="Découvrez Ma'a yegue, la plateforme dédiée à l'apprentissage et à la préservation des langues traditionnelles camerounaises. Notre mission, notre équipe et notre impact."
         />
+        <meta name="keywords" content="à propos ma'a yegue, préservation langues camerounaises, équipe linguistes, mission culturelle, histoire projet" />
+        <meta name="author" content="Ma'a yegue" />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={typeof window !== 'undefined' ? `${window.location.origin}/about` : ''} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="À Propos de Ma'a yegue - Préservation des Langues Camerounaises" />
+        <meta property="og:description" content="Découvrez notre mission de préservation des langues traditionnelles camerounaises et notre équipe de linguistes passionnés." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={typeof window !== 'undefined' ? `${window.location.origin}/about` : ''} />
+        <meta property="og:image" content={`${typeof window !== 'undefined' ? window.location.origin : ''}/assets/logo/logo.jpg`} />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:site_name" content="Ma'a yegue" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="À Propos de Ma'a yegue - Préservation des Langues Camerounaises" />
+        <meta name="twitter:description" content="Découvrez notre mission de préservation des langues traditionnelles camerounaises et notre équipe de linguistes passionnés." />
+        <meta name="twitter:image" content={`${typeof window !== 'undefined' ? window.location.origin : ''}/assets/logo/logo.jpg`} />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'AboutPage',
+            name: "À Propos de Ma'a yegue",
+            description: "Découvrez Ma'a yegue, la plateforme dédiée à l'apprentissage et à la préservation des langues traditionnelles camerounaises",
+            url: typeof window !== 'undefined' ? `${window.location.origin}/about` : '',
+            mainEntity: {
+              '@type': 'Organization',
+              name: "Ma'a yegue",
+              description: "Plateforme d'apprentissage des langues traditionnelles camerounaises",
+              foundingDate: "2024",
+              mission: "Préserver, promouvoir et transmettre la richesse des langues traditionnelles camerounaises",
+              numberOfEmployees: "10-20",
+              location: {
+                '@type': 'Place',
+                name: 'Cameroun',
+                address: {
+                  '@type': 'PostalAddress',
+                  addressCountry: 'CM'
+                }
+              }
+            }
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-white">
@@ -175,6 +220,34 @@ const AboutusPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Timeline Section */}
+        <div className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Notre Feuille de Route</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">Des étapes clés jalonnent notre aventure pour préserver et transmettre les langues camerounaises.</p>
+            </div>
+            <div className="relative border-l-2 border-green-200 pl-8 space-y-10">
+              {[{
+                date: '2024', title: 'Lancement du projet', text: 'Constitution de l’équipe et premières maquettes UI/UX.'
+              }, {
+                date: '2025', title: 'MVP Web', text: 'Mise en ligne de la plateforme PWA avec dictionnaire et leçons.'
+              }, {
+                date: '2026', title: 'Extension IA & Jeux', text: 'Assistant conversationnel avancé et nouveaux modules ludiques.'
+              }].map((t, i) => (
+                <div key={i} className="group">
+                  <div className="absolute -left-3 top-1 w-6 h-6 rounded-full bg-green-600 border-4 border-white"></div>
+                  <div className="bg-white rounded-xl shadow p-6">
+                    <div className="text-sm text-green-600 font-semibold mb-1">{t.date}</div>
+                    <div className="text-xl font-bold text-gray-900">{t.title}</div>
+                    <p className="text-gray-600 mt-2">{t.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Story Section */}
         <div className="py-20 bg-gradient-to-r from-green-50 to-yellow-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -261,6 +334,36 @@ const AboutusPage: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Partners & Governance */}
+        <div className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-10">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Partenaires</h3>
+                <p className="text-gray-600 mb-4">Nous travaillons avec des institutions, universités et associations culturelles.</p>
+                <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                  <li>Ministère des Arts et de la Culture</li>
+                  <li>Université de Yaoundé I</li>
+                  <li>Associations culturelles et linguistiques locales</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Gouvernance</h3>
+                <p className="text-gray-600">Un comité scientifique composé de linguistes et d’enseignants valide les contenus pédagogiques et la qualité linguistique.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Careers CTA */}
+        <div className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Rejoignez l’aventure</h3>
+            <p className="text-lg text-gray-600 mb-6">Nous recherchons des linguistes, enseignants, développeurs et créateurs de contenu.</p>
+            <a href="mailto:contact@maayegue.app" className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">Proposer votre candidature</a>
           </div>
         </div>
 

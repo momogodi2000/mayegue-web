@@ -2,7 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppRouter } from './router';
 import { useEffect } from 'react';
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus';
-import { syncService } from '@/core/services/offline/syncService';
+import { syncService } from '@/core/services/offline/sync.service';
 import toast from 'react-hot-toast';
 import { authService } from '@/core/services/firebase/auth.service';
 import { useAuthStore } from '@/features/auth/store/authStore';

@@ -25,7 +25,7 @@ export interface SyncStatus {
 export class SyncService {
   private syncInProgress = false;
   private readonly maxRetries = 3;
-  private readonly retryDelay = 1000; // 1 second
+  // private readonly retryDelay = 1000; // 1 second - unused for now
   private onlineStatusListeners: ((isOnline: boolean) => void)[] = [];
 
   constructor() {
@@ -430,6 +430,15 @@ export class SyncService {
 
   async syncUserData(): Promise<SyncResult> {
     return this.uploadPendingChanges();
+  }
+
+  // Auto sync - performs sync when online
+  async autoSync(): Promise<SyncResult> {
+    if (!navigator.onLine) {
+      console.log('Device is offline - skipping auto sync');
+      return { success: false, synced: 0, failed: 0, errors: ['Device is offline'] };
+    }
+    return this.performFullSync();
   }
 
   // Force sync - ignores online status (for testing)

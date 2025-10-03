@@ -19,19 +19,16 @@ export default function CheckoutPage() {
     try {
       analyticsService.trackPaymentInitiated(plan.amount, 'XAF', plan.name);
       
-      const payment = await campayService.initiatePayment({
+      await campayService.initiatePayment({
         amount: plan.amount,
         currency: 'XAF',
         description: `Abonnement ${plan.name} - Ma’a yegue`,
-        externalReference: `Ma’a yegue-${Date.now()}`,
-        phoneNumber: phoneNumber.replace(/\s/g, ''),
+        customerId: 'current',
+        customerEmail: '',
+        customerPhone: phoneNumber.replace(/\s/g, ''),
       });
 
-      if (payment.ussdCode) {
-        toast.success(`Composez ${payment.ussdCode} pour valider le paiement`);
-      } else {
-        toast.success('Paiement initié avec succès');
-      }
+      toast.success('Paiement initié avec succès');
 
       // Poll for payment status
       setTimeout(() => {

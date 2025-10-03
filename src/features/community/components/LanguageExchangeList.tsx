@@ -19,13 +19,13 @@ const LanguageExchangeList: React.FC = () => {
   const { user } = useAuthStore();
   
   const {
-    languageExchanges,
+    exchanges: languageExchanges,
     loading,
     error,
-    fetchLanguageExchanges,
-    createLanguageExchange,
-    joinLanguageExchange,
-    leaveLanguageExchange
+    fetchExchanges: fetchLanguageExchanges,
+    createExchange: createLanguageExchange,
+    joinExchange: joinLanguageExchange,
+    leaveExchange: leaveLanguageExchange
   } = useCommunityStore();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -48,7 +48,7 @@ const LanguageExchangeList: React.FC = () => {
     }
 
     try {
-      await createLanguageExchange(exchangeData);
+      await createLanguageExchange(exchangeData as any);
       setIsCreateModalOpen(false);
       showSuccess('Échange linguistique créé avec succès');
     } catch (error) {
@@ -83,9 +83,9 @@ const LanguageExchangeList: React.FC = () => {
 
   const filteredExchanges = languageExchanges.filter(exchange => {
     const matchesLanguageOffered = !filters.languageOffered || 
-      exchange.languageOffered.toLowerCase().includes(filters.languageOffered.toLowerCase());
+      exchange.nativeLanguage.toLowerCase().includes(filters.languageOffered.toLowerCase());
     const matchesLanguageWanted = !filters.languageWanted || 
-      exchange.languageWanted.toLowerCase().includes(filters.languageWanted.toLowerCase());
+      exchange.targetLanguage.toLowerCase().includes(filters.languageWanted.toLowerCase());
     const matchesLevel = !filters.level || exchange.level === filters.level;
     const matchesFormat = !filters.format || exchange.format === filters.format;
     const matchesSearch = !filters.searchTerm || 
@@ -263,7 +263,7 @@ const LanguageExchangeList: React.FC = () => {
         <Card>
           <CardContent className="text-center py-6">
             <div className="text-3xl font-bold text-purple-600 mb-2">
-              {new Set(languageExchanges.map(e => e.languageOffered)).size}
+              {new Set(languageExchanges.map(e => e.nativeLanguage)).size}
             </div>
             <p className="text-gray-600">Langues disponibles</p>
           </CardContent>
@@ -350,7 +350,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({
   getFormatIcon
 }) => {
   const isParticipant = currentUserId ? exchange.participants.includes(currentUserId) : false;
-  const isCreator = currentUserId === exchange.creatorId;
+  const isCreator = currentUserId === exchange.hostId;
   const canJoin = currentUserId && !isParticipant && exchange.participants.length < exchange.maxParticipants;
 
   return (
@@ -361,7 +361,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({
             <CardTitle className="text-lg mb-2">{exchange.title}</CardTitle>
             <div className="flex items-center space-x-2 mb-3">
               <Badge variant="info" size="sm">
-                {exchange.languageOffered} → {exchange.languageWanted}
+                {exchange.nativeLanguage} → {exchange.targetLanguage}
               </Badge>
               <Badge variant="secondary" size="sm">
                 {getLevelLabel(exchange.level)}
@@ -385,14 +385,14 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({
             <span>{exchange.participants.length}/{exchange.maxParticipants} participants</span>
           </div>
 
-          {exchange.schedule && (
+            {exchange.scheduledAt && (
             <div className="text-sm text-gray-600">
-              <span className="font-medium">Horaires:</span> {exchange.schedule}
+              <span className="font-medium">Horaires:</span> {exchange.scheduledAt.toLocaleString()}
             </div>
           )}
 
           <div className="flex items-center justify-between text-sm text-gray-500">
-            <span>Créé par {exchange.creator.displayName}</span>
+            <span>Créé par {exchange.host.displayName}</span>
             <span>{formatRelativeTime(exchange.createdAt)}</span>
           </div>
 
@@ -451,6 +451,7 @@ const CreateExchangeModal: React.FC<CreateExchangeModalProps> = ({
   onClose,
   onSubmit
 }) => {
+  const { user } = useAuthStore();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -464,7 +465,18 @@ const CreateExchangeModal: React.FC<CreateExchangeModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      title: formData.title,
+      description: formData.description,
+      hostId: user?.id || 'anonymous',
+      nativeLanguage: formData.languageOffered,
+      targetLanguage: formData.languageWanted,
+      level: formData.level as 'beginner' | 'intermediate' | 'advanced',
+      format: formData.format as 'text' | 'voice' | 'video',
+      duration: 60,
+      maxParticipants: formData.maxParticipants,
+      tags: []
+    });
     setFormData({
       title: '',
       description: '',
@@ -483,7 +495,7 @@ const CreateExchangeModal: React.FC<CreateExchangeModalProps> = ({
   ];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Créer un échange linguistique">
+    <Modal open={isOpen} onClose={onClose} title="Créer un échange linguistique">
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="Titre de l'échange"

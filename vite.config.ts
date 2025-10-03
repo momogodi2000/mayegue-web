@@ -19,20 +19,59 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Ma’a yegue - Langues Camerounaises',
-        short_name: 'Ma’a yegue',
+        name: 'Ma\'a yegue - Langues Camerounaises',
+        short_name: 'Ma\'a yegue',
         description: 'Apprenez les langues traditionnelles camerounaises: Ewondo, Duala, Fulfulde et plus encore.',
         theme_color: '#10B981',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait-primary',
         start_url: '/',
+        scope: '/',
+        lang: 'fr',
+        dir: 'ltr',
         icons: [
+          {
+            src: '/assets/icons/icon-72x72.png',
+            sizes: '72x72',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/assets/icons/icon-96x96.png',
+            sizes: '96x96',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/assets/icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/assets/icons/icon-144x144.png',
+            sizes: '144x144',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/assets/icons/icon-152x152.png',
+            sizes: '152x152',
+            type: 'image/png',
+            purpose: 'any'
+          },
           {
             src: '/assets/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
+          },
+          {
+            src: '/assets/icons/icon-384x384.png',
+            sizes: '384x384',
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: '/assets/icons/icon-512x512.png',
@@ -45,18 +84,56 @@ export default defineConfig({
           {
             name: 'Dictionnaire',
             url: '/dictionary',
-            description: 'Accéder au dictionnaire'
+            description: 'Accéder au dictionnaire',
+            icons: [{ src: '/assets/icons/dictionary-96x96.png', sizes: '96x96' }]
           },
           {
             name: 'Leçons',
             url: '/lessons',
-            description: 'Continuer l\'apprentissage'
+            description: 'Continuer l\'apprentissage',
+            icons: [{ src: '/assets/icons/lessons-96x96.png', sizes: '96x96' }]
+          },
+          {
+            name: 'Assistant IA',
+            url: '/ai-assistant',
+            description: 'Discuter avec l\'assistant IA',
+            icons: [{ src: '/assets/icons/ai-96x96.png', sizes: '96x96' }]
+          },
+          {
+            name: 'Communauté',
+            url: '/community',
+            description: 'Rejoindre la communauté',
+            icons: [{ src: '/assets/icons/community-96x96.png', sizes: '96x96' }]
           }
         ],
-        categories: ['education', 'productivity']
+        categories: ['education', 'productivity', 'lifestyle'],
+        screenshots: [
+          {
+            src: '/assets/screenshots/home-mobile.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Page d\'accueil mobile'
+          },
+          {
+            src: '/assets/screenshots/dictionary-mobile.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Dictionnaire mobile'
+          },
+          {
+            src: '/assets/screenshots/lessons-mobile.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Leçons mobile'
+          }
+        ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
@@ -64,11 +141,24 @@ export default defineConfig({
             options: {
               cacheName: 'firestore-cache',
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 5 // 5 minutes
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
               },
               cacheableResponse: {
                 statuses: [0, 200]
+              },
+              networkTimeoutSeconds: 3
+            }
+          },
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
               }
             }
           },
@@ -78,7 +168,7 @@ export default defineConfig({
             options: {
               cacheName: 'firebase-storage-cache',
               expiration: {
-                maxEntries: 100,
+                maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               },
               cacheableResponse: {
@@ -87,24 +177,49 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'images-cache',
               expiration: {
-                maxEntries: 100,
+                maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               }
             }
           },
           {
-            urlPattern: /\.(?:mp3|wav|ogg)$/,
+            urlPattern: /\.(?:mp3|wav|ogg|m4a)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'audio-cache',
               expiration: {
-                maxEntries: 50,
+                maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:woff|woff2|ttf|eot)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fonts-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/api\.openai\.com\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'ai-api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 // 1 hour
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }

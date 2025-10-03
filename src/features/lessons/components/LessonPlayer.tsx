@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Lesson, LessonContent, ExerciseResult } from '@/shared/types/lesson.types';
+import { Lesson, ContentBlock as LessonContent, ExerciseResult } from '@/shared/types/lesson.types';
 import { QuizComponent } from './QuizComponent';
 import { useLessonsStore } from '../store/lessonsStore';
 import { 
@@ -39,10 +39,10 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
   const { success: showSuccess, error: showError } = useToastActions();
   const {
     currentLesson,
-    isLoading,
+    loading: isLoading,
     fetchLessonById,
-    updateLessonProgress,
-    recordExerciseResult
+    updateProgress: updateLessonProgress,
+    submitExerciseResult: recordExerciseResult
   } = useLessonsStore();
 
   const [state, setState] = useState<PlayerState>({
@@ -70,8 +70,8 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
     const score = totalExercises > 0 ? Math.round((correctAnswers / totalExercises) * 100) : 100;
 
     try {
-      await updateLessonProgress(currentLesson.id, {
-        isCompleted: true,
+      await updateLessonProgress({
+        completed: true,
         score,
         timeSpent,
         completedAt: completionTime,
@@ -206,13 +206,13 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
             
             <div className="flex items-center space-x-3">
               <Badge variant="info">
-                {currentLesson.language}
+                {currentLesson.languageId}
               </Badge>
               <Badge variant="secondary">
-                {currentLesson.difficulty}
+                {currentLesson.level}
               </Badge>
-              <Badge variant="outline">
-                ⏱️ {formatEstimatedTime(currentLesson.estimatedTime)}
+              <Badge outlined>
+                ⏱️ {formatEstimatedTime(currentLesson.estimatedDuration)}
               </Badge>
             </div>
           </div>
@@ -288,51 +288,51 @@ const ContentDisplay: React.FC<ContentDisplayProps> = ({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>{content.title}</CardTitle>
-          <Badge variant="outline">
+          <CardTitle>Contenu {content.order + 1}</CardTitle>
+          <Badge variant="default" outlined>
             {currentIndex + 1} / {totalCount}
           </Badge>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {content.text && (
+        {content.content && (
           <div className="prose max-w-none">
             <p className="text-gray-700 leading-relaxed">
-              {content.text}
+              {content.content}
             </p>
           </div>
         )}
 
-        {content.audioUrl && (
+        {content.mediaUrl && content.type === 'audio' && (
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="text-sm font-medium text-gray-700 mb-3">
               🎵 Audio de la leçon
             </h4>
             <audio controls className="w-full">
-              <source src={content.audioUrl} type="audio/mpeg" />
+              <source src={content.mediaUrl} type="audio/mpeg" />
               Votre navigateur ne supporte pas l'élément audio.
             </audio>
           </div>
         )}
 
-        {content.imageUrl && (
+        {content.mediaUrl && content.type === 'image' && (
           <div className="text-center">
             <img 
-              src={content.imageUrl} 
-              alt={content.title}
+              src={content.mediaUrl} 
+              alt={`Contenu ${content.order + 1}`}
               className="max-w-full h-auto rounded-lg shadow-md mx-auto"
             />
           </div>
         )}
 
-        {content.vocabulary && content.vocabulary.length > 0 && (
+        {content.metadata?.vocabulary && content.metadata.vocabulary.length > 0 && (
           <div className="bg-blue-50 p-4 rounded-lg">
             <h4 className="text-sm font-medium text-blue-700 mb-3">
               📚 Vocabulaire clé
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {content.vocabulary.map((item, index) => (
+              {content.metadata.vocabulary.map((item: any, index: number) => (
                 <div key={index} className="bg-white p-3 rounded border">
                   <div className="font-medium text-gray-900">{item.word}</div>
                   <div className="text-sm text-gray-600">{item.translation}</div>
