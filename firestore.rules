@@ -29,11 +29,14 @@ service cloud.firestore {
     
     // Users collection - users can read/write their own data
     match /users/{userId} {
-      allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Allow users to create their own profile during registration
       allow create: if isAuthenticated() && isOwner(userId);
-      
+      // Allow users to read/write their own data
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      // Admins can access all user data
+      allow read, write: if isAuthenticated() && isAdmin();
       // User profiles can be read by authenticated users (for community features)
-      allow read: if isAuthenticated() && isValidUser();
+      allow read: if isAuthenticated();
       
       // User stats subcollection
       match /stats/{statId} {
@@ -48,7 +51,7 @@ service cloud.firestore {
     
     // Languages collection - read only for all authenticated users
     match /languages/{languageId} {
-      allow read: if isAuthenticated() && isValidUser();
+      allow read: if isAuthenticated(); // Allow all authenticated users
       allow write: if isAdmin();
       
       // Dictionary entries subcollection
@@ -66,7 +69,7 @@ service cloud.firestore {
     
     // Lessons collection
     match /lessons/{lessonId} {
-      allow read: if isAuthenticated() && isValidUser();
+      allow read: if isAuthenticated(); // Allow all authenticated users
       allow write: if isTeacher();
       
       // Lesson progress subcollection

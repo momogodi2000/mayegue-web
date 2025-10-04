@@ -16,13 +16,21 @@ import {
   MultiFactorResolver,
 } from 'firebase/auth';
 import { auth } from '@/core/config/firebase.config';
-import type { User } from '@/shared/types/user.types';
+import type { User, UserRole } from '@/shared/types/user.types';
 import { userService } from './user.service';
 
 async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
-  // Fetch role and profile from Firestore
-  const role = await userService.getUserRole(user.uid);
-  const profile = await userService.getUserProfile(user.uid);
+  // Fetch role and profile from Firestore with error handling
+  let role: UserRole = 'apprenant';
+  let profile: Awaited<ReturnType<typeof userService.getUserProfile>> = null;
+
+  try {
+    role = await userService.getUserRole(user.uid);
+    profile = await userService.getUserProfile(user.uid);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    // Continue with default values if Firestore fetch fails
+  }
 
   return {
     id: user.uid,
@@ -67,29 +75,56 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
 export class AuthService {
   async signInWithEmail(email: string, password: string): Promise<User> {
     const cred = await signInWithEmailAndPassword(auth, email, password);
+
+    // Ensure user profile exists (creates it if it doesn't)
+    try {
+      await userService.ensureUserProfile(cred.user.uid, {
+        email: cred.user.email || '',
+        displayName: cred.user.displayName || cred.user.email || 'Utilisateur',
+        emailVerified: cred.user.emailVerified
+      });
+    } catch (error) {
+      console.error('Error ensuring user profile on login:', error);
+    }
+
     return await mapFirebaseUser(cred.user);
   }
 
   async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User> {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-    // Update profile and send verification email
-    if (displayName) {
-      await updateProfile(cred.user, { displayName });
+      // Update profile first
+      if (displayName) {
+        await updateProfile(cred.user, { displayName });
+      }
+
+      // Create user profile in Firestore with default 'apprenant' role
+      try {
+        await userService.ensureUserProfile(cred.user.uid, {
+          email: cred.user.email || '',
+          displayName: displayName || cred.user.email || 'Utilisateur',
+          emailVerified: false
+        });
+      } catch (profileError) {
+        console.error('Error creating user profile:', profileError);
+        // Continue even if profile creation fails - it will be created on next login
+      }
+
+      // Send verification email
+      try {
+        await sendEmailVerification(cred.user);
+      } catch (emailError) {
+        console.error('Error sending verification email:', emailError);
+        // Continue even if email fails - user can request it later
+      }
+
+      // Return mapped user with proper role
+      return await mapFirebaseUser(cred.user);
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
     }
-    
-    // Create user profile in Firestore with default 'apprenant' role FIRST
-    await userService.ensureUserProfile(cred.user.uid, {
-      email: cred.user.email || '',
-      displayName: displayName || cred.user.email || 'Utilisateur',
-      emailVerified: false
-    });
-
-    // Send verification email after profile creation
-    await sendEmailVerification(cred.user);
-
-    // Return mapped user with proper role
-    return await mapFirebaseUser(cred.user);
   }
 
   async signInWithGoogle(): Promise<User> {
