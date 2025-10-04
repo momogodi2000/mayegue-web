@@ -136,9 +136,12 @@ export interface SubscriptionPlan {
   description: string;
   price: number;
   currency: Currency;
-  interval: 'monthly' | 'yearly';
+  duration: number; // Duration in days
   features: string[];
+  limitations?: string[];
   popular?: boolean;
+  trialDays?: number;
+  customPricing?: boolean;
 }
 
 // Admin wallet types

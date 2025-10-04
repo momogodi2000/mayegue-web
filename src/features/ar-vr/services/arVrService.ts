@@ -5,7 +5,7 @@
  * @author Ma'a yegue Team
  */
 
-import { db } from '@/core/services/firebase/firebase';
+import { db } from '@/core/config/firebase.config';
 import { 
   collection, 
   getDocs, 

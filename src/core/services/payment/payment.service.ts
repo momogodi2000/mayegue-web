@@ -1,6 +1,7 @@
 import { campayService } from './campay.service';
 import { noupaiService } from './noupai.service';
 import { stripeService } from './stripe.service';
+import { receiptService } from './receipt.service';
 import { firestoreService } from '../firebase/firestore.service';
 import { analyticsService } from '../firebase/analytics.service';
 import {
@@ -12,57 +13,160 @@ import {
   PaymentStats,
   WebhookPayload
 } from './types';
+import { User } from '@/shared/types/user.types';
 
 type PaymentProvider = 'campay' | 'noupai' | 'stripe';
 
 export class PaymentService {
   private readonly subscriptionPlans: SubscriptionPlan[] = [
     {
-      id: 'basic_monthly',
-      name: 'Basic Monthly',
-      description: 'Access to basic lessons and dictionary',
-      price: 2500,
+      id: 'freemium',
+      name: 'Freemium',
+      description: 'Parfait pour débuter',
+      price: 0,
       currency: 'XAF',
-      duration: 30,
+      duration: 0, // Permanent
       features: [
-        'Access to all lessons',
-        'Basic dictionary',
-        'Progress tracking',
-        'Mobile access'
+        '5 leçons par mois',
+        'Dictionnaire de base (1,000 mots)',
+        'Assistant IA limité (10 requêtes/jour)',
+        'Mode hors ligne basique',
+        'Support communautaire',
+        'Certificat de participation'
+      ],
+      limitations: [
+        'Pas d\'accès à l\'Atlas Linguistique',
+        'Pas d\'Encyclopédie Culturelle',
+        'Pas d\'expériences AR/VR',
+        'Pas de Marketplace'
       ]
     },
     {
       id: 'premium_monthly',
-      name: 'Premium Monthly',
-      description: 'Full access with AI features and offline content',
+      name: 'Premium',
+      description: 'Le plus populaire',
+      price: 2500,
+      currency: 'XAF',
+      duration: 30,
+      features: [
+        'Leçons illimitées',
+        'Dictionnaire complet (15,000+ mots)',
+        'Assistant IA Gemini illimité',
+        'Atlas Linguistique Interactif',
+        'Encyclopédie Culturelle',
+        'Sites Historiques avec visites virtuelles',
+        'Mode hors ligne complet',
+        'Certificats officiels',
+        'Gamification de base',
+        'Support prioritaire'
+      ],
+      popular: true,
+      trialDays: 7
+    },
+    {
+      id: 'premium_yearly',
+      name: 'Premium Annuel',
+      description: 'Meilleure valeur - Économisez 20%',
+      price: 25000,
+      currency: 'XAF',
+      duration: 365,
+      features: [
+        'Tout Premium +',
+        '2 mois gratuits',
+        'Support client prioritaire',
+        'Accès anticipé aux nouvelles fonctionnalités',
+        'Événements communautaires exclusifs',
+        'Ngondo Coins bonus'
+      ],
+      trialDays: 7
+    },
+    {
+      id: 'family_monthly',
+      name: 'Famille',
+      description: 'Pour toute la famille',
       price: 5000,
       currency: 'XAF',
       duration: 30,
       features: [
-        'All Basic features',
-        'AI pronunciation feedback',
-        'Offline content download',
-        'Advanced progress analytics',
-        'Community features',
-        'Priority support'
-      ],
-      popular: true
+        'Tout Premium +',
+        'Jusqu\'à 6 comptes familiaux',
+        'Mode Famille Intergénérationnel',
+        'Arbre Linguistique Familial',
+        'Mode "Apprendre avec Grand-mère"',
+        'Partage de progression',
+        'Contrôle parental',
+        'Statistiques familiales',
+        'Ngondo Coins partagés'
+      ]
     },
     {
-      id: 'premium_yearly',
-      name: 'Premium Yearly',
-      description: 'Best value - Premium features for a full year',
+      id: 'family_yearly',
+      name: 'Famille Annuel',
+      description: 'Famille - Économisez 20%',
       price: 50000,
       currency: 'XAF',
       duration: 365,
       features: [
-        'All Premium features',
-        '2 months free',
-        'Priority customer support',
-        'Early access to new features',
-        'Exclusive community events'
+        'Tout Famille +',
+        '2 mois gratuits',
+        'Support dédié famille',
+        'Formation parentale incluse',
+        'Événements familiaux exclusifs'
+      ]
+    },
+    {
+      id: 'teacher_monthly',
+      name: 'Enseignant',
+      description: 'Pour les éducateurs',
+      price: 8000,
+      currency: 'XAF',
+      duration: 30,
+      features: [
+        'Tout Premium +',
+        'Gestion de classes (jusqu\'à 100 élèves)',
+        'Création de contenu personnalisé',
+        'Analytics avancés des élèves',
+        'Outils d\'évaluation',
+        'Certificats personnalisés',
+        'Support dédié',
+        'Formation et webinaires',
+        'Accès aux ressources pédagogiques'
+      ]
+    },
+    {
+      id: 'teacher_yearly',
+      name: 'Enseignant Annuel',
+      description: 'Enseignant - Économisez 20%',
+      price: 80000,
+      currency: 'XAF',
+      duration: 365,
+      features: [
+        'Tout Enseignant +',
+        '2 mois gratuits',
+        'Support pédagogique dédié',
+        'Formation continue incluse',
+        'Ressources pédagogiques exclusives'
+      ]
+    },
+    {
+      id: 'enterprise',
+      name: 'Entreprise',
+      description: 'Pour les organisations',
+      price: 0, // Custom pricing
+      currency: 'XAF',
+      duration: 365,
+      features: [
+        'Tout Teacher +',
+        'Gestion multi-utilisateurs illimitée',
+        'API et intégrations',
+        'Support 24/7',
+        'Formation personnalisée',
+        'Branding personnalisé',
+        'Analytics avancés',
+        'Sécurité renforcée',
+        'Conformité RGPD'
       ],
-      trialDays: 7
+      customPricing: true
     }
   ];
 
@@ -82,10 +186,12 @@ export class PaymentService {
         throw new Error('Invalid subscription plan');
       }
 
-      // Check if user already has an active subscription
-      const existingSubscription = await this.getUserActiveSubscription(userId);
-      if (existingSubscription && existingSubscription.status === 'active') {
-        throw new Error('User already has an active subscription');
+      // Check if user already has an active subscription (except for freemium)
+      if (planId !== 'freemium') {
+        const existingSubscription = await this.getUserActiveSubscription(userId);
+        if (existingSubscription && existingSubscription.status === 'active') {
+          throw new Error('User already has an active subscription');
+        }
       }
 
       // Create payment request
@@ -108,15 +214,32 @@ export class PaymentService {
       let paymentResponse: PaymentResponse;
       let provider: PaymentProvider;
 
-      // Process based on payment method
-      if (paymentMethod === 'mobile_money') {
-        // Try Mobile Money with automatic fallback
-        paymentResponse = await this.processMobileMoneyPayment(paymentRequest);
-        provider = (paymentResponse as any).provider || 'campay';
+      // Handle freemium plan (no payment required)
+      if (planId === 'freemium') {
+        paymentResponse = {
+          success: true,
+          transactionId: `freemium_${userId}_${Date.now()}`,
+          reference: `FREEMIUM_${Date.now()}`,
+          status: 'successful',
+          amount: 0,
+          currency: plan.currency,
+          fees: 0,
+          netAmount: 0,
+          message: 'Plan Freemium activé avec succès',
+          timestamp: new Date()
+        };
+        provider = 'campay'; // Use campay as default provider for tracking
       } else {
-        // Use Stripe for credit card
-        paymentResponse = await this.processCreditCardPayment(paymentRequest);
-        provider = 'stripe';
+        // Process based on payment method
+        if (paymentMethod === 'mobile_money') {
+          // Try Mobile Money with automatic fallback
+          paymentResponse = await this.processMobileMoneyPayment(paymentRequest);
+          provider = (paymentResponse as any).provider || 'campay';
+        } else {
+          // Use Stripe for credit card
+          paymentResponse = await this.processCreditCardPayment(paymentRequest);
+          provider = 'stripe';
+        }
       }
 
       // Store payment history
@@ -143,6 +266,35 @@ export class PaymentService {
         provider,
         userId
       });
+
+      // Generate receipt for completed payments
+      if (paymentResponse.success && paymentResponse.status === 'successful') {
+        try {
+          const user = await firestoreService.getDocument<User>('users', userId);
+          if (user) {
+            await receiptService.generateReceipt({
+              id: paymentResponse.transactionId,
+              userId,
+              userEmail: user.email,
+              amount: paymentResponse.amount,
+              currency: paymentResponse.currency as any,
+              provider: provider as any,
+              method: paymentMethod as any,
+              status: paymentResponse.status as any,
+              description: paymentRequest.description,
+              externalReference: paymentResponse.reference,
+              providerTransactionId: paymentResponse.transactionId,
+              metadata: paymentRequest.metadata,
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+              completedAt: Date.now()
+            }, user);
+          }
+        } catch (error) {
+          console.error('Failed to generate receipt:', error);
+          // Don't throw error - payment was successful
+        }
+      }
 
       return paymentResponse;
     } catch (error) {
@@ -540,9 +692,14 @@ export class PaymentService {
 
       // Check if plan includes the requested feature
       const featureMap: Record<string, string[]> = {
-        'basic_monthly': ['lessons', 'dictionary', 'progress'],
-        'premium_monthly': ['lessons', 'dictionary', 'progress', 'ai_features', 'offline', 'community'],
-        'premium_yearly': ['lessons', 'dictionary', 'progress', 'ai_features', 'offline', 'community', 'priority_support']
+        'freemium': ['basic_lessons', 'basic_dictionary', 'basic_offline', 'community_support'],
+        'premium_monthly': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support'],
+        'premium_yearly': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support', 'early_access', 'exclusive_events', 'ngondo_coins'],
+        'family_monthly': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support', 'family_mode', 'family_tree', 'grandmother_mode', 'progress_sharing', 'parental_controls', 'family_stats', 'shared_coins'],
+        'family_yearly': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support', 'family_mode', 'family_tree', 'grandmother_mode', 'progress_sharing', 'parental_controls', 'family_stats', 'shared_coins', 'family_support', 'parent_training', 'family_events'],
+        'teacher_monthly': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support', 'class_management', 'content_creation', 'student_analytics', 'assessment_tools', 'custom_certificates', 'dedicated_support', 'training_webinars', 'educational_resources'],
+        'teacher_yearly': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support', 'class_management', 'content_creation', 'student_analytics', 'assessment_tools', 'custom_certificates', 'dedicated_support', 'training_webinars', 'educational_resources', 'continuous_training', 'exclusive_resources'],
+        'enterprise': ['unlimited_lessons', 'full_dictionary', 'gemini_ai', 'atlas_linguistique', 'encyclopedia_culturelle', 'sites_historiques', 'full_offline', 'certificates', 'basic_gamification', 'priority_support', 'class_management', 'content_creation', 'student_analytics', 'assessment_tools', 'custom_certificates', 'dedicated_support', 'training_webinars', 'educational_resources', 'unlimited_users', 'api_integrations', '24_7_support', 'custom_training', 'custom_branding', 'advanced_analytics', 'enhanced_security', 'gdpr_compliance']
       };
 
       const planFeatures = featureMap[plan.id] || [];

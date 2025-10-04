@@ -5,41 +5,32 @@
  * @author Ma'a yegue Team
  */
 
-import { db } from '@/core/services/firebase/firebase';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  startAfter,
+import { db } from '@/core/config/firebase.config';
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+  orderBy,
+  limit,
   addDoc,
   updateDoc,
-  deleteDoc,
   Timestamp,
   increment,
   arrayUnion,
-  arrayRemove,
   writeBatch
 } from 'firebase/firestore';
-import { 
-  Player, 
-  Achievement, 
-  Quest, 
-  Competition, 
-  League, 
-  NgondoEconomy,
-  NgondoShop,
-  NgondoAuction,
+import {
+  Player,
+  Achievement,
+  Quest,
   PlayerQuest,
   Reward,
   InventoryItem,
   EquipmentItem,
-  PlayerSkill,
-  SocialAchievement
+  PlayerSkill
 } from '../types/rpg.types';
 
 const PLAYERS_COLLECTION = 'rpg_players';
@@ -109,13 +100,13 @@ export const rpgService = {
       
       if (playerDoc.exists()) {
         const player = playerDoc.data();
-        const newExperience = player.experience + amount;
+        let newExperience = player.experience + amount;
         const newTotalExperience = player.totalExperience + amount;
-        
+
         // Check for level up
         let newLevel = player.level;
         let newExperienceToNext = player.experienceToNext;
-        
+
         while (newExperience >= newExperienceToNext) {
           newLevel++;
           newExperience -= newExperienceToNext;
@@ -256,8 +247,8 @@ export const rpgService = {
   async checkCoinAchievements(playerId: string, amount: number): Promise<void> {
     try {
       const achievements = await this.getAllAchievements();
-      const coinAchievements = achievements.filter(achievement => 
-        achievement.requirements.some(req => req.type === 'ngondo_coins' && req.value <= amount)
+      const coinAchievements = achievements.filter(achievement =>
+        achievement.requirements.some(req => req.type === 'custom' && req.value <= amount)
       );
       
       for (const achievement of coinAchievements) {
@@ -400,14 +391,14 @@ export const rpgService = {
         if (skillIndex !== -1) {
           const updatedSkills = [...player.skills];
           const skill = updatedSkills[skillIndex];
-          
-          const newExperience = skill.experience + amount;
+
+          let newExperience = skill.experience + amount;
           const newTotalExperience = skill.totalExperience + amount;
-          
+
           // Check for skill level up
           let newLevel = skill.level;
           let newExperienceToNext = skill.experienceToNext;
-          
+
           while (newExperience >= newExperienceToNext) {
             newLevel++;
             newExperience -= newExperienceToNext;
@@ -814,10 +805,10 @@ export const rpgService = {
   },
 
   // Leaderboards
-  async getLeaderboard(type: 'level' | 'experience' | 'achievements' | 'coins', limit: number = 10): Promise<any[]> {
+  async getLeaderboard(type: 'level' | 'experience' | 'achievements' | 'coins', limitCount: number = 10): Promise<any[]> {
     try {
       let orderField = 'level';
-      
+
       switch (type) {
         case 'level':
           orderField = 'level';
@@ -832,11 +823,11 @@ export const rpgService = {
           orderField = 'ngondoCoins';
           break;
       }
-      
+
       const q = query(
         collection(db, PLAYERS_COLLECTION),
         orderBy(orderField, 'desc'),
-        limit(limit)
+        limit(limitCount)
       );
       
       const querySnapshot = await getDocs(q);

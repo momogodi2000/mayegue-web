@@ -274,7 +274,7 @@ const VRSceneViewer: React.FC<VRSceneViewerProps> = ({
           <p className="text-sm text-gray-300 mt-2">{scene.name}</p>
           <div className="mt-4 text-sm text-gray-400">
             <p>Optimisation pour casque VR...</p>
-            <p>90 FPS • Latence < 20ms</p>
+            <p>90 FPS • Latence &lt; 20ms</p>
           </div>
         </div>
       </div>

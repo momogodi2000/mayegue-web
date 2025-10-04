@@ -1,16 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@/shared/components/ui';
 import { DiscussionList } from '../components/DiscussionList';
 import { DiscussionDetail } from '../components/DiscussionDetail';
 import { LanguageExchangeList } from '../components/LanguageExchangeList';
 import { CommunityChallengelist } from '../components/CommunityChallengelist';
 import { StudyGroupsList } from '../components/StudyGroupsList';
+import { AnimatedSection, FloatingCard, CountUp } from '@/shared/components/ui/AnimatedComponents';
+import { VERSION_INFO } from '@/shared/constants/version';
+import { 
+  UserGroupIcon,
+  ChatBubbleLeftRightIcon,
+  LanguageIcon,
+  TrophyIcon,
+  AcademicCapIcon,
+  ShoppingBagIcon,
+  SparklesIcon,
+  StarIcon,
+  HeartIcon,
+  ShareIcon
+} from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { paymentService } from '@/core/services/payment/payment.service';
 
-type CommunityView = 'overview' | 'discussions' | 'discussion-detail' | 'exchanges' | 'challenges' | 'groups';
+type CommunityView = 'overview' | 'discussions' | 'discussion-detail' | 'exchanges' | 'challenges' | 'groups' | 'marketplace';
 
 const CommunityPage: React.FC = () => {
   const [currentView, setCurrentView] = useState<CommunityView>('overview');
   const [selectedDiscussionId, setSelectedDiscussionId] = useState<string | null>(null);
+  
+  // V1.1 New State
+  const { user } = useAuthStore();
+  const [hasFullAccess, setHasFullAccess] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [communityStats, setCommunityStats] = useState({
+    totalMembers: 1250,
+    activeDiscussions: 45,
+    languageExchanges: 89,
+    challengesCompleted: 234,
+    marketplaceItems: 67
+  });
 
   const handleDiscussionSelect = (discussionId: string) => {
     setSelectedDiscussionId(discussionId);
@@ -21,6 +50,23 @@ const CommunityPage: React.FC = () => {
     setSelectedDiscussionId(null);
     setCurrentView('discussions');
   };
+
+  // Check user access level
+  useEffect(() => {
+    const checkAccess = async () => {
+      if (user?.id) {
+        try {
+          const hasAccess = await paymentService.userHasAccess(user.id, 'community_features');
+          setHasFullAccess(hasAccess);
+        } catch (error) {
+          console.error('Error checking user access:', error);
+          setHasFullAccess(false);
+        }
+      }
+    };
+
+    checkAccess();
+  }, [user]);
 
   const renderContent = () => {
     switch (currentView) {
@@ -46,36 +92,76 @@ const CommunityPage: React.FC = () => {
       case 'groups':
         return <StudyGroupsList />;
       
+      case 'marketplace':
+        return <MarketplaceView />;
+      
       default:
         return <CommunityOverview onNavigate={setCurrentView} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <Helmet>
+        <title>Communauté V1.1 - Ma'a yegue | Marketplace & Échanges Linguistiques</title>
+        <meta name="description" content="Rejoignez la communauté Ma'a yegue V1.1 : discussions, échanges linguistiques, défis et marketplace culturel." />
+      </Helmet>
+
+      <div className="container-custom py-8">
         {currentView === 'overview' && (
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Communauté Ma’a yegue
+          <AnimatedSection className="text-center mb-12">
+            <div className="inline-flex items-center px-4 py-2 mb-6 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+              🆕 Version {VERSION_INFO.version} - {VERSION_INFO.name}
+            </div>
+            <h1 className="heading-1 mb-6">
+              👥 Communauté Ma'a yegue V1.1
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-6">
               Rejoignez une communauté dynamique d'apprenants des langues camerounaises. 
               Participez aux discussions, échangez avec d'autres locuteurs, relevez des défis 
               et apprenez ensemble dans nos groupes d'étude.
+              {!hasFullAccess && (
+                <span className="block mt-2 text-sm text-orange-600 dark:text-orange-400">
+                  Accès limité - Passez à Premium pour débloquer toutes les fonctionnalités
+                </span>
+              )}
             </p>
-          </div>
+
+            {/* V1.1 Features Banner */}
+            <div className="bg-gradient-to-r from-primary-500 to-purple-600 rounded-xl p-6 text-white mb-8">
+              <h2 className="text-2xl font-bold mb-4">Nouvelles Fonctionnalités V1.1</h2>
+              <div className="grid md:grid-cols-4 gap-4">
+                <div className="flex items-center space-x-2">
+                  <ShoppingBagIcon className="w-6 h-6" />
+                  <span className="text-sm">Marketplace Culturel</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <SparklesIcon className="w-6 h-6" />
+                  <span className="text-sm">IA Modération</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <TrophyIcon className="w-6 h-6" />
+                  <span className="text-sm">Compétitions</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <HeartIcon className="w-6 h-6" />
+                  <span className="text-sm">Contributions</span>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
         )}
         
         {currentView !== 'overview' && (
-          <div className="mb-6">
+          <AnimatedSection className="mb-6">
             <Button 
               variant="outline" 
               onClick={() => setCurrentView('overview')}
+              className="dark:bg-gray-700 dark:text-white"
             >
               ← Retour à l'accueil communauté
             </Button>
-          </div>
+          </AnimatedSection>
         )}
 
         {renderContent()}
@@ -133,6 +219,18 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
         { label: 'Groupes actifs', value: '45+' },
         { label: 'Sessions programmées', value: '80+' }
       ]
+    },
+    {
+      id: 'marketplace',
+      title: 'Marketplace Culturel',
+      description: 'Achetez et vendez des objets culturels, cours privés et expériences',
+      icon: '🛒',
+      color: 'from-pink-500 to-pink-600',
+      stats: [
+        { label: 'Articles disponibles', value: '67+' },
+        { label: 'Vendeurs certifiés', value: '25+' }
+      ],
+      premium: true
     }
   ];
 
@@ -180,32 +278,42 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
   return (
     <div className="space-y-8">
       {/* Feature Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {features.map((feature) => (
-          <Card
+      <AnimatedSection delay={200} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {features.map((feature, index) => (
+          <FloatingCard
             key={feature.id}
-            className="group hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+            className="group hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative"
+            delay={index * 100}
             onClick={() => onNavigate(feature.id as CommunityView)}
           >
+            {/* Premium Badge */}
+            {feature.premium && (
+              <div className="absolute top-2 right-2">
+                <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                  Premium
+                </Badge>
+              </div>
+            )}
+
             <CardHeader className="pb-3">
               <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center text-2xl text-white mb-4 mx-auto group-hover:scale-110 transition-transform`}>
                 {feature.icon}
               </div>
-              <CardTitle className="text-xl text-center group-hover:text-blue-600 transition-colors">
+              <CardTitle className="text-xl text-center group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors text-gray-900 dark:text-white">
                 {feature.title}
               </CardTitle>
             </CardHeader>
             
             <CardContent>
-              <p className="text-gray-600 text-center mb-4 line-clamp-3">
+              <p className="text-gray-600 dark:text-gray-400 text-center mb-4 line-clamp-3">
                 {feature.description}
               </p>
               
               <div className="space-y-2">
                 {feature.stats.map((stat, index) => (
                   <div key={index} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500">{stat.label}</span>
-                    <Badge variant="secondary" size="sm">
+                    <span className="text-gray-500 dark:text-gray-400">{stat.label}</span>
+                    <Badge variant="secondary" size="sm" className="dark:bg-gray-700 dark:text-white">
                       {stat.value}
                     </Badge>
                   </div>
@@ -213,51 +321,63 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
               </div>
               
               <Button 
-                className="w-full mt-4 group-hover:bg-blue-600 transition-colors"
+                className="w-full mt-4 group-hover:bg-primary-600 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   onNavigate(feature.id as CommunityView);
                 }}
+                disabled={feature.premium}
               >
-                Explorer
+                {feature.premium ? 'Premium requis' : 'Explorer'}
               </Button>
             </CardContent>
-          </Card>
+          </FloatingCard>
         ))}
-      </div>
+      </AnimatedSection>
 
       {/* Community Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center">📊 Statistiques de la Communauté</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">2,847</div>
-              <p className="text-gray-600">Membres actifs</p>
+      <AnimatedSection delay={400}>
+        <FloatingCard>
+          <CardHeader>
+            <CardTitle className="text-center text-gray-900 dark:text-white">📊 Statistiques de la Communauté</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div>
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  <CountUp end={2847} />
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">Membres actifs</p>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                  <CountUp end={1256} />
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">Discussions créées</p>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                  <CountUp end={89} />
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">Échanges en cours</p>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-2">
+                  <CountUp end={45} />
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">Groupes d'étude</p>
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">1,256</div>
-              <p className="text-gray-600">Discussions créées</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-purple-600 mb-2">89</div>
-              <p className="text-gray-600">Échanges en cours</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-orange-600 mb-2">45</div>
-              <p className="text-gray-600">Groupes d'étude</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </FloatingCard>
+      </AnimatedSection>
 
       {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>🔥 Activité Récente</CardTitle>
-        </CardHeader>
+      <AnimatedSection delay={600}>
+        <FloatingCard>
+          <CardHeader>
+            <CardTitle className="text-gray-900 dark:text-white">🔥 Activité Récente</CardTitle>
+          </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
@@ -312,13 +432,15 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
             ))}
           </div>
         </CardContent>
-      </Card>
+        </FloatingCard>
+      </AnimatedSection>
 
       {/* Community Guidelines */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-blue-900">📋 Règles de la Communauté</CardTitle>
-        </CardHeader>
+      <AnimatedSection delay={700}>
+        <FloatingCard className="bg-blue-50 border-blue-200">
+          <CardHeader>
+            <CardTitle className="text-blue-900">📋 Règles de la Communauté</CardTitle>
+          </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-blue-800">
             <div>
@@ -354,11 +476,13 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
             </div>
           </div>
         </CardContent>
-      </Card>
+        </FloatingCard>
+      </AnimatedSection>
 
       {/* Call to Action */}
-      <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-        <CardContent className="text-center py-12">
+      <AnimatedSection delay={800}>
+        <FloatingCard className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+          <CardContent className="text-center py-12">
           <div className="text-4xl mb-4">🎉</div>
           <h3 className="text-2xl font-bold mb-4">
             Prêt à Rejoindre notre Communauté ?
@@ -392,7 +516,8 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </FloatingCard>
+      </AnimatedSection>
     </div>
   );
 };

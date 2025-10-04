@@ -2,7 +2,9 @@
  * User-related TypeScript types
  */
 
-export type UserRole = 'visitor' | 'apprenant' | 'teacher' | 'admin';
+export type UserRole = 'visitor' | 'apprenant' | 'teacher' | 'admin' | 'family_member';
+export type SubscriptionPlan = 'freemium' | 'premium_monthly' | 'premium_yearly' | 'family_monthly' | 'family_yearly' | 'teacher_monthly' | 'teacher_yearly' | 'enterprise';
+export type SubscriptionStatus = 'active' | 'inactive' | 'expired' | 'cancelled' | 'trial';
 
 // Legacy support - mapping old roles to new
 export const ROLE_MAPPING = {
@@ -24,7 +26,9 @@ export interface User {
   lastLoginAt: Date;
   preferences?: UserPreferences;
   stats?: UserStats;
-  subscriptionStatus?: 'free' | 'premium' | 'trial';
+  subscription?: UserSubscription;
+  familyId?: string; // For family members
+  ngondoCoins?: number; // Virtual currency
 }
 
 export interface UserPreferences {
@@ -44,6 +48,40 @@ export interface UserStats {
   badgesEarned: number;
   level: number;
   xp: number;
+  // V1.1 New Stats
+  atlasExplorations: number;
+  encyclopediaEntries: number;
+  historicalSitesVisited: number;
+  arVrExperiences: number;
+  marketplacePurchases: number;
+  familyContributions: number;
+  ngondoCoinsEarned: number;
+  achievementsUnlocked: number;
+}
+
+export interface UserSubscription {
+  id: string;
+  userId: string;
+  planId: SubscriptionPlan;
+  status: SubscriptionStatus;
+  startDate: Date;
+  endDate: Date;
+  autoRenew: boolean;
+  lastPaymentId?: string;
+  trialUsed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  cancellationReason?: string;
+}
+
+export interface FamilyAccount {
+  id: string;
+  ownerId: string;
+  members: string[]; // User IDs
+  maxMembers: number;
+  sharedCoins: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AuthState {

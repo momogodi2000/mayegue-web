@@ -33,7 +33,7 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
     emailVerified: user.emailVerified,
     twoFactorEnabled: multiFactor(user).enrolledFactors.length > 0,
     role,
-    subscriptionStatus: profile?.subscriptionStatus || 'free',
+    subscription: profile?.subscription,
     createdAt: new Date(user.metadata.creationTime || Date.now()),
     lastLoginAt: new Date(user.metadata.lastSignInTime || Date.now()),
     preferences: profile?.preferences || {
@@ -52,6 +52,14 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
       badgesEarned: 0,
       level: 1,
       xp: 0,
+      atlasExplorations: 0,
+      encyclopediaEntries: 0,
+      historicalSitesVisited: 0,
+      arVrExperiences: 0,
+      marketplacePurchases: 0,
+      familyContributions: 0,
+      ngondoCoinsEarned: 0,
+      achievementsUnlocked: 0,
     },
   };
 }

@@ -1,12 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, UserPreferences } from '@/shared/types/user.types';
+import { RPGStats, FamilyTree, VARKProfile, PerformanceAnalytics, CulturalProgress } from '../types/rpg.types';
 
 interface ProfileState {
   // Core data
   profile: User | null;
   preferences: UserPreferences | null;
   avatar: string | null;
+  
+  // V1.1 RPG Data
+  rpgStats: RPGStats | null;
+  familyTree: FamilyTree | null;
+  varkProfile: VARKProfile | null;
+  performanceAnalytics: PerformanceAnalytics | null;
+  culturalProgress: CulturalProgress | null;
   
   // UI state
   isLoading: boolean;
@@ -21,6 +29,18 @@ interface ProfileState {
   exportData: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   clearError: () => void;
+  
+  // V1.1 RPG Actions
+  fetchRPGData: () => Promise<void>;
+  updateRPGStats: (updates: Partial<RPGStats>) => Promise<void>;
+  fetchFamilyTree: () => Promise<void>;
+  updateVARKProfile: (profile: VARKProfile) => Promise<void>;
+  fetchPerformanceAnalytics: () => Promise<void>;
+  fetchCulturalProgress: () => Promise<void>;
+  earnXP: (amount: number, source: string) => Promise<void>;
+  spendCoins: (amount: number, item: string) => Promise<void>;
+  unlockAchievement: (achievementId: string) => Promise<void>;
+  completeQuest: (questId: string) => Promise<void>;
 }
 
 export const useProfileStore = create<ProfileState>()(
@@ -30,6 +50,11 @@ export const useProfileStore = create<ProfileState>()(
       profile: null,
       preferences: null,
       avatar: null,
+      rpgStats: null,
+      familyTree: null,
+      varkProfile: null,
+      performanceAnalytics: null,
+      culturalProgress: null,
       isLoading: false,
       isUploading: false,
       error: null,
@@ -69,10 +94,145 @@ export const useProfileStore = create<ProfileState>()(
             }
           };
           
+          // Mock RPG data
+          const mockRPGStats: RPGStats = {
+            level: 15,
+            xp: 8500,
+            xpToNextLevel: 10000,
+            totalXp: 25000,
+            ngondoCoins: 1250,
+            achievements: [
+              {
+                id: 'first_lesson',
+                name: 'Première Leçon',
+                description: 'Complétez votre première leçon',
+                icon: '🎓',
+                category: 'learning',
+                rarity: 'common',
+                unlockedAt: new Date('2024-01-01'),
+                progress: 1,
+                maxProgress: 1,
+                reward: { xp: 50, coins: 10 }
+              }
+            ],
+            skills: [
+              {
+                id: 'pronunciation',
+                name: 'Prononciation',
+                category: 'pronunciation',
+                level: 8,
+                xp: 750,
+                xpToNext: 1000,
+                description: 'Maîtrise de la prononciation',
+                icon: '🗣️',
+                unlockedAt: new Date('2024-01-01')
+              }
+            ],
+            equipment: [],
+            quests: [],
+            dailyStreak: 12,
+            weeklyGoal: 300,
+            monthlyGoal: 1200,
+            rank: 'Expert',
+            title: 'Maître des Langues',
+            avatar: {
+              base: 'default',
+              accessories: [],
+              background: 'forest',
+              title: 'Maître des Langues',
+              badge: 'explorer',
+              customizations: {
+                skinColor: '#FDBCB4',
+                hairColor: '#8B4513',
+                eyeColor: '#000000',
+                clothing: 'traditional'
+              }
+            }
+          };
+
+          const mockFamilyTree: FamilyTree = {
+            id: 'family_1',
+            name: 'Famille Nguema',
+            members: [
+              {
+                id: 'user_1',
+                userId: '1',
+                displayName: 'Jean Nguema',
+                avatar: '',
+                role: 'parent',
+                level: 15,
+                xp: 25000,
+                joinedAt: new Date('2024-01-01'),
+                lastActiveAt: new Date(),
+                contributions: 500,
+                achievements: 25,
+                isOnline: true
+              }
+            ],
+            sharedGoals: [],
+            totalXp: 25000,
+            totalCoins: 1250,
+            level: 8,
+            createdAt: new Date('2024-01-01'),
+            settings: {
+              privacy: 'family_only',
+              allowChildAccounts: true,
+              sharedProgress: true,
+              parentalControls: false
+            }
+          };
+
+          const mockVARKProfile: VARKProfile = {
+            visual: 75,
+            auditory: 60,
+            reading: 45,
+            kinesthetic: 80,
+            dominantStyle: 'kinesthetic',
+            learningRecommendations: [
+              'Essayez des exercices pratiques et interactifs',
+              'Utilisez des simulations AR/VR pour l\'immersion',
+              'Participez à des activités culturelles en groupe'
+            ],
+            lastUpdated: new Date()
+          };
+
+          const mockPerformanceAnalytics: PerformanceAnalytics = {
+            accuracy: 85,
+            speed: 45,
+            consistency: 78,
+            improvement: 12,
+            weakAreas: ['Grammaire avancée', 'Prononciation des tons'],
+            strongAreas: ['Vocabulaire de base', 'Compréhension orale'],
+            recommendations: [
+              'Pratiquez la grammaire 15 minutes par jour',
+              'Écoutez des podcasts en langue cible',
+              'Participez à des conversations avec des natifs'
+            ],
+            lastAnalyzed: new Date()
+          };
+
+          const mockCulturalProgress: CulturalProgress = {
+            ethnicGroupsExplored: 12,
+            traditionsLearned: 8,
+            sitesVisited: 5,
+            recipesTried: 3,
+            craftsDiscovered: 2,
+            storiesRead: 15,
+            languagesStudied: 3,
+            culturalPoints: 450,
+            badges: ['Explorateur Culturel', 'Garde des Traditions'],
+            lastActivity: new Date()
+          };
+
           set({ 
             profile: mockProfile,
             preferences: mockProfile.preferences,
             avatar: mockProfile.photoURL,
+            rpgStats: mockRPGStats,
+            familyTree: mockFamilyTree,
+            varkProfile: mockVARKProfile,
+            performanceAnalytics: mockPerformanceAnalytics,
+            culturalProgress: mockCulturalProgress,
             isLoading: false 
           });
           
@@ -192,6 +352,180 @@ export const useProfileStore = create<ProfileState>()(
 
       clearError: () => {
         set({ error: null });
+      },
+
+      // V1.1 RPG Actions
+      fetchRPGData: async () => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // RPG data is already loaded in fetchProfile
+          set({ isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to fetch RPG data',
+            isLoading: false 
+          });
+        }
+      },
+
+      updateRPGStats: async (updates: Partial<RPGStats>) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          const { rpgStats } = get();
+          if (rpgStats) {
+            const updatedStats = { ...rpgStats, ...updates };
+            set({ 
+              rpgStats: updatedStats,
+              isLoading: false 
+            });
+          }
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to update RPG stats',
+            isLoading: false 
+          });
+        }
+      },
+
+      fetchFamilyTree: async () => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Family tree data is already loaded in fetchProfile
+          set({ isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to fetch family tree',
+            isLoading: false 
+          });
+        }
+      },
+
+      updateVARKProfile: async (profile: VARKProfile) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          set({ 
+            varkProfile: profile,
+            isLoading: false 
+          });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to update VARK profile',
+            isLoading: false 
+          });
+        }
+      },
+
+      fetchPerformanceAnalytics: async () => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Performance analytics data is already loaded in fetchProfile
+          set({ isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to fetch performance analytics',
+            isLoading: false 
+          });
+        }
+      },
+
+      fetchCulturalProgress: async () => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Cultural progress data is already loaded in fetchProfile
+          set({ isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to fetch cultural progress',
+            isLoading: false 
+          });
+        }
+      },
+
+      earnXP: async (amount: number, source: string) => {
+        const { rpgStats } = get();
+        if (rpgStats) {
+          const newXP = rpgStats.xp + amount;
+          const newTotalXP = rpgStats.totalXp + amount;
+          
+          // Check for level up
+          let newLevel = rpgStats.level;
+          let newXPToNext = rpgStats.xpToNextLevel;
+          
+          if (newXP >= rpgStats.xpToNextLevel) {
+            newLevel += 1;
+            newXPToNext = newLevel * 1000; // Simple level progression
+          }
+          
+          await get().updateRPGStats({
+            xp: newXP,
+            totalXp: newTotalXP,
+            level: newLevel,
+            xpToNextLevel: newXPToNext
+          });
+        }
+      },
+
+      spendCoins: async (amount: number, item: string) => {
+        const { rpgStats } = get();
+        if (rpgStats && rpgStats.ngondoCoins >= amount) {
+          await get().updateRPGStats({
+            ngondoCoins: rpgStats.ngondoCoins - amount
+          });
+        }
+      },
+
+      unlockAchievement: async (achievementId: string) => {
+        const { rpgStats } = get();
+        if (rpgStats) {
+          const achievement = rpgStats.achievements.find(a => a.id === achievementId);
+          if (achievement && !achievement.unlockedAt) {
+            achievement.unlockedAt = new Date();
+            achievement.progress = achievement.maxProgress;
+            
+            // Award rewards
+            await get().earnXP(achievement.reward.xp, 'achievement');
+            await get().updateRPGStats({
+              ngondoCoins: rpgStats.ngondoCoins + achievement.reward.coins
+            });
+          }
+        }
+      },
+
+      completeQuest: async (questId: string) => {
+        const { rpgStats } = get();
+        if (rpgStats) {
+          const quest = rpgStats.quests.find(q => q.id === questId);
+          if (quest && quest.status === 'in_progress') {
+            quest.status = 'completed';
+            quest.completedAt = new Date();
+            quest.progress = quest.maxProgress;
+            
+            // Award rewards
+            for (const reward of quest.rewards) {
+              if (reward.type === 'xp') {
+                await get().earnXP(reward.amount, 'quest');
+              } else if (reward.type === 'coins') {
+                await get().updateRPGStats({
+                  ngondoCoins: rpgStats.ngondoCoins + reward.amount
+                });
+              }
+            }
+          }
+        }
       }
     }),
     {
@@ -199,7 +533,12 @@ export const useProfileStore = create<ProfileState>()(
       partialize: (state) => ({
         profile: state.profile,
         preferences: state.preferences,
-        avatar: state.avatar
+        avatar: state.avatar,
+        rpgStats: state.rpgStats,
+        familyTree: state.familyTree,
+        varkProfile: state.varkProfile,
+        performanceAnalytics: state.performanceAnalytics,
+        culturalProgress: state.culturalProgress
       })
     }
   )

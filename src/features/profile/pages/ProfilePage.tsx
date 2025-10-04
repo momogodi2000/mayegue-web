@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useProfileStore } from '../store/profileStore';
 import type { User, UserPreferences } from '@/shared/types/user.types';
+import { RPGStatsCard, FamilyTreeCard, LearningAnalyticsCard } from '../components';
+import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
+import { Helmet } from 'react-helmet-async';
 
 interface TabProps {
   id: string;
@@ -307,6 +310,11 @@ const ProfilePage: React.FC = () => {
     profile,
     preferences,
     avatar,
+    rpgStats,
+    familyTree,
+    varkProfile,
+    performanceAnalytics,
+    culturalProgress,
     isUploading,
     isLoading,
     error,
@@ -315,7 +323,11 @@ const ProfilePage: React.FC = () => {
     updatePreferences,
     uploadAvatar,
     exportData,
-    deleteAccount
+    deleteAccount,
+    fetchRPGData,
+    fetchFamilyTree,
+    fetchPerformanceAnalytics,
+    fetchCulturalProgress
   } = useProfileStore();
 
   const [activeTab, setActiveTab] = useState('profile');
@@ -323,30 +335,58 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile]);
+    fetchRPGData();
+    fetchFamilyTree();
+    fetchPerformanceAnalytics();
+    fetchCulturalProgress();
+  }, [fetchProfile, fetchRPGData, fetchFamilyTree, fetchPerformanceAnalytics, fetchCulturalProgress]);
 
   const tabs = [
     {
+      id: 'overview',
+      label: 'Vue d\'ensemble',
+      icon: '🏠'
+    },
+    {
       id: 'profile',
-      label: 'Profile',
+      label: 'Profil',
       icon: '👤'
     },
     {
+      id: 'rpg',
+      label: 'RPG',
+      icon: '🎮'
+    },
+    {
+      id: 'family',
+      label: 'Famille',
+      icon: '👨‍👩‍👧‍👦'
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: '📊'
+    },
+    {
       id: 'preferences',
-      label: 'Preferences',
+      label: 'Préférences',
       icon: '⚙️'
     },
     {
       id: 'privacy',
-      label: 'Privacy',
+      label: 'Confidentialité',
       icon: '🛡️'
     },
     {
       id: 'data',
-      label: 'Data',
-      icon: '📊'
+      label: 'Données',
+      icon: '💾'
     }
   ];
+
+  const handleNavigation = (section: string) => {
+    setActiveTab(section);
+  };
 
   const handleExportData = async () => {
     try {
@@ -397,26 +437,42 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Helmet>
+        <title>Profil - Ma'a yegue</title>
+        <meta name="description" content="Gérez votre profil, vos statistiques RPG, votre arbre familial et vos analytics d'apprentissage." />
+      </Helmet>
+
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-6">
-            <AvatarUpload
-              currentAvatar={avatar || undefined}
-              onUploadStart={() => {}}
-              onUploadComplete={uploadAvatar}
-              isUploading={isUploading}
-            />
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{profile?.displayName || 'Your Profile'}</h1>
-              <p className="text-gray-600">{profile?.email}</p>
-              <span className="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                {profile?.role || 'learner'}
-              </span>
+        <AnimatedSection>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex items-center gap-6">
+              <AvatarUpload
+                currentAvatar={avatar || undefined}
+                onUploadStart={() => {}}
+                onUploadComplete={uploadAvatar}
+                isUploading={isUploading}
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {profile?.displayName || 'Votre Profil'}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">{profile?.email}</p>
+                <div className="flex items-center space-x-4 mt-2">
+                  <span className="inline-block px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm">
+                    {profile?.role || 'apprenant'}
+                  </span>
+                  {rpgStats && (
+                    <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm">
+                      Niveau {rpgStats.level} - {rpgStats.rank}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-2 mb-6">
@@ -433,159 +489,300 @@ const ProfilePage: React.FC = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          {activeTab === 'overview' && (
+            <AnimatedSection>
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                  Vue d'ensemble du Profil
+                </h2>
+                
+                {/* RPG Stats and Family Tree */}
+                <div className="grid lg:grid-cols-2 gap-6 mb-6">
+                  {rpgStats && (
+                    <RPGStatsCard 
+                      stats={rpgStats} 
+                      onNavigate={handleNavigation}
+                    />
+                  )}
+                  
+                  {familyTree && (
+                    <FamilyTreeCard 
+                      familyTree={familyTree} 
+                      onNavigate={handleNavigation}
+                      onInviteMember={() => handleNavigation('family')}
+                    />
+                  )}
+                </div>
+
+                {/* Learning Analytics */}
+                {varkProfile && performanceAnalytics && culturalProgress && (
+                  <LearningAnalyticsCard 
+                    varkProfile={varkProfile}
+                    performance={performanceAnalytics}
+                    culturalProgress={culturalProgress}
+                    onNavigate={handleNavigation}
+                  />
+                )}
+              </div>
+            </AnimatedSection>
+          )}
+
           {activeTab === 'profile' && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Personal Information</h2>
-              <PersonalInfoForm
-                profile={profile}
-                onUpdateProfile={updateProfile}
-              />
-            </div>
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Informations Personnelles
+                </h2>
+                <PersonalInfoForm
+                  profile={profile}
+                  onUpdateProfile={updateProfile}
+                />
+              </div>
+            </AnimatedSection>
+          )}
+
+          {activeTab === 'rpg' && (
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Statistiques RPG
+                </h2>
+                {rpgStats ? (
+                  <RPGStatsCard 
+                    stats={rpgStats} 
+                    onNavigate={handleNavigation}
+                  />
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Chargement des statistiques RPG...
+                  </p>
+                )}
+              </div>
+            </AnimatedSection>
+          )}
+
+          {activeTab === 'family' && (
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Arbre Familial
+                </h2>
+                {familyTree ? (
+                  <FamilyTreeCard 
+                    familyTree={familyTree} 
+                    onNavigate={handleNavigation}
+                    onInviteMember={() => {}}
+                  />
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Chargement de l'arbre familial...
+                  </p>
+                )}
+              </div>
+            </AnimatedSection>
+          )}
+
+          {activeTab === 'analytics' && (
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Analytics d'Apprentissage
+                </h2>
+                {varkProfile && performanceAnalytics && culturalProgress ? (
+                  <LearningAnalyticsCard 
+                    varkProfile={varkProfile}
+                    performance={performanceAnalytics}
+                    culturalProgress={culturalProgress}
+                    onNavigate={handleNavigation}
+                  />
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Chargement des analytics...
+                  </p>
+                )}
+              </div>
+            </AnimatedSection>
           )}
 
           {activeTab === 'preferences' && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">App Preferences</h2>
-              <PreferencesForm
-                preferences={preferences}
-                onUpdatePreferences={updatePreferences}
-              />
-            </div>
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Préférences de l'App
+                </h2>
+                <PreferencesForm
+                  preferences={preferences}
+                  onUpdatePreferences={updatePreferences}
+                />
+              </div>
+            </AnimatedSection>
           )}
 
           {activeTab === 'privacy' && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Privacy Settings</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Visibility</h3>
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="visibility"
-                        value="public"
-                        defaultChecked
-                        className="text-green-600 focus:ring-green-500"
-                      />
-                      <div>
-                        <span className="font-medium">Public</span>
-                        <p className="text-sm text-gray-600">Your profile is visible to everyone</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="visibility"
-                        value="friends"
-                        className="text-green-600 focus:ring-green-500"
-                      />
-                      <div>
-                        <span className="font-medium">Friends Only</span>
-                        <p className="text-sm text-gray-600">Only your friends can see your profile</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="visibility"
-                        value="private"
-                        className="text-green-600 focus:ring-green-500"
-                      />
-                      <div>
-                        <span className="font-medium">Private</span>
-                        <p className="text-sm text-gray-600">Your profile is completely private</p>
-                      </div>
-                    </label>
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Paramètres de Confidentialité
+                </h2>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                      Visibilité du Profil
+                    </h3>
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="visibility"
+                          value="public"
+                          defaultChecked
+                          className="text-green-600 focus:ring-green-500"
+                        />
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">Public</span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Votre profil est visible par tous
+                          </p>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="visibility"
+                          value="friends"
+                          className="text-green-600 focus:ring-green-500"
+                        />
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">Amis Seulement</span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Seuls vos amis peuvent voir votre profil
+                          </p>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="visibility"
+                          value="private"
+                          className="text-green-600 focus:ring-green-500"
+                        />
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">Privé</span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Votre profil est complètement privé
+                          </p>
+                        </div>
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Data Sharing</h3>
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        defaultChecked
-                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                      />
-                      <div>
-                        <span className="font-medium">Learning Analytics</span>
-                        <p className="text-sm text-gray-600">Help improve the app with anonymous usage data</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                      />
-                      <div>
-                        <span className="font-medium">Marketing Communications</span>
-                        <p className="text-sm text-gray-600">Receive personalized learning recommendations</p>
-                      </div>
-                    </label>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                      Partage de Données
+                    </h3>
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          defaultChecked
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        />
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            Analytics d'Apprentissage
+                          </span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Aidez à améliorer l'app avec des données d'usage anonymes
+                          </p>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        />
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            Communications Marketing
+                          </span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Recevez des recommandations d'apprentissage personnalisées
+                          </p>
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </AnimatedSection>
           )}
 
           {activeTab === 'data' && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Data Management</h2>
-              <div className="space-y-6">
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Export Your Data</h3>
-                  <p className="text-gray-600 mb-4">
-                    Download a copy of all your learning data, progress, and account information.
-                  </p>
-                  <button
-                    onClick={handleExportData}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <span>📥</span>
-                    Export Data
-                  </button>
-                </div>
-
-                <div className="border border-red-200 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-red-900 mb-2">Delete Account</h3>
-                  <p className="text-red-700 mb-4">
-                    Permanently delete your account and all associated data. This action cannot be undone.
-                  </p>
-                  {!showDeleteConfirm ? (
+            <AnimatedSection>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Gestion des Données
+                </h2>
+                <div className="space-y-6">
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      Exporter Vos Données
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Téléchargez une copie de toutes vos données d'apprentissage, 
+                      progrès et informations de compte.
+                    </p>
                     <button
-                      onClick={handleDeleteAccount}
-                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      onClick={handleExportData}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                      <span>🗑️</span>
-                      Delete Account
+                      <span>📥</span>
+                      Exporter les Données
                     </button>
-                  ) : (
-                    <div className="space-y-3">
-                      <p className="text-red-800 font-medium">
-                        Are you absolutely sure? This will permanently delete your account.
-                      </p>
-                      <div className="flex gap-3">
-                        <button
-                          onClick={handleDeleteAccount}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                        >
-                          Yes, Delete My Account
-                        </button>
-                        <button
-                          onClick={() => setShowDeleteConfirm(false)}
-                          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                        >
-                          Cancel
-                        </button>
+                  </div>
+
+                  <div className="border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-red-900 dark:text-red-400 mb-2">
+                      Supprimer le Compte
+                    </h3>
+                    <p className="text-red-700 dark:text-red-300 mb-4">
+                      Supprimez définitivement votre compte et toutes les données associées. 
+                      Cette action ne peut pas être annulée.
+                    </p>
+                    {!showDeleteConfirm ? (
+                      <button
+                        onClick={handleDeleteAccount}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        <span>🗑️</span>
+                        Supprimer le Compte
+                      </button>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="text-red-800 dark:text-red-200 font-medium">
+                          Êtes-vous absolument sûr ? Cela supprimera définitivement votre compte.
+                        </p>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={handleDeleteAccount}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                          >
+                            Oui, Supprimer Mon Compte
+                          </button>
+                          <button
+                            onClick={() => setShowDeleteConfirm(false)}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                          >
+                            Annuler
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </AnimatedSection>
           )}
         </div>
       </div>
