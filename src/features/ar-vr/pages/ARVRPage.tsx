@@ -36,6 +36,259 @@ import { CountUp } from '@/shared/components/ui/AnimatedComponents';
 import { LoadingSpinner } from '@/shared/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/shared/components/ui/ErrorMessage';
 
+// Mock data for demo purposes
+const getMockScenes = (): ARScene[] => {
+  const now = new Date();
+
+  return [
+    {
+      id: 'demo-market-1',
+      name: 'Marché de Mokolo',
+      description: 'Explorez le célèbre marché de Mokolo à Yaoundé, découvrez les étals colorés, négociez avec les vendeurs et apprenez le vocabulaire du commerce en langue locale.',
+      type: 'market',
+      category: 'cultural',
+      language: 'Français',
+      culturalGroup: 'Beti',
+      region: 'Centre',
+      difficulty: 'beginner',
+      duration: 15,
+      thumbnailUrl: '/images/market-mokolo.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Vocabulaire du marché', 'Négociation', 'Culture locale'],
+      prerequisites: [],
+      targetAudience: ['Débutants', 'Étudiants'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: true,
+      rating: 4.8,
+      totalUsers: 1250,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-village-1',
+      name: 'Village Bamiléké',
+      description: 'Visitez un village traditionnel Bamiléké dans l\'Ouest du Cameroun. Découvrez l\'architecture traditionnelle, les chefferies et les coutumes ancestrales.',
+      type: 'village',
+      category: 'educational',
+      language: 'Français',
+      culturalGroup: 'Bamiléké',
+      region: 'Ouest',
+      difficulty: 'intermediate',
+      duration: 25,
+      thumbnailUrl: '/images/village-bamileke.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Architecture traditionnelle', 'Hiérarchie sociale', 'Artisanat'],
+      prerequisites: ['Niveau débutant complété'],
+      targetAudience: ['Intermédiaires', 'Passionnés de culture'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: true,
+      rating: 4.9,
+      totalUsers: 980,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-ceremony-1',
+      name: 'Cérémonie Ngondo',
+      description: 'Participez à la cérémonie traditionnelle Ngondo du peuple Sawa. Assistez aux danses rituelles, aux offrandes à l\'eau et aux festivités culturelles.',
+      type: 'ceremony',
+      category: 'cultural',
+      language: 'Français',
+      culturalGroup: 'Sawa',
+      region: 'Littoral',
+      difficulty: 'advanced',
+      duration: 30,
+      thumbnailUrl: '/images/ceremony-ngondo.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Rites traditionnels', 'Symbolisme culturel', 'Histoire du peuple Sawa'],
+      prerequisites: ['Niveau intermédiaire complété'],
+      targetAudience: ['Avancés', 'Chercheurs'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: true,
+      rating: 4.7,
+      totalUsers: 650,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-conversation-1',
+      name: 'Conversation au Restaurant',
+      description: 'Pratiquez vos compétences linguistiques dans un restaurant camerounais. Commandez des plats locaux, discutez avec le serveur et apprenez les expressions courantes.',
+      type: 'conversation',
+      category: 'educational',
+      language: 'Français',
+      culturalGroup: 'Multi-ethnique',
+      region: 'Littoral',
+      difficulty: 'beginner',
+      duration: 10,
+      thumbnailUrl: '/images/restaurant-conversation.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Vocabulaire culinaire', 'Phrases de politesse', 'Expressions courantes'],
+      prerequisites: [],
+      targetAudience: ['Débutants', 'Touristes'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: true,
+      rating: 4.6,
+      totalUsers: 1580,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-workshop-1',
+      name: 'Atelier de Poterie',
+      description: 'Apprenez l\'art traditionnel de la poterie avec un artisan local. Découvrez les techniques ancestrales et créez votre propre pièce de céramique.',
+      type: 'workshop',
+      category: 'educational',
+      language: 'Français',
+      culturalGroup: 'Bamoun',
+      region: 'Ouest',
+      difficulty: 'intermediate',
+      duration: 20,
+      thumbnailUrl: '/images/pottery-workshop.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Techniques de poterie', 'Motifs traditionnels', 'Artisanat local'],
+      prerequisites: ['Intérêt pour l\'artisanat'],
+      targetAudience: ['Intermédiaires', 'Artistes'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: false,
+      rating: 4.5,
+      totalUsers: 420,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-museum-1',
+      name: 'Musée des Civilisations',
+      description: 'Explorez un musée virtuel présentant les différentes civilisations du Cameroun. Découvrez les artefacts, les costumes traditionnels et l\'histoire de chaque peuple.',
+      type: 'museum',
+      category: 'educational',
+      language: 'Français',
+      culturalGroup: 'Multi-ethnique',
+      region: 'Centre',
+      difficulty: 'beginner',
+      duration: 18,
+      thumbnailUrl: '/images/museum-virtual.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Histoire du Cameroun', 'Diversité culturelle', 'Patrimoine'],
+      prerequisites: [],
+      targetAudience: ['Tous niveaux', 'Étudiants'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: true,
+      rating: 4.8,
+      totalUsers: 1120,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-market-2',
+      name: 'Marché Sandaga',
+      description: 'Découvrez le marché Sandaga de Douala, le plus grand marché d\'Afrique Centrale. Explorez les différents quartiers, des textiles aux épices.',
+      type: 'market',
+      category: 'cultural',
+      language: 'Français',
+      culturalGroup: 'Sawa',
+      region: 'Littoral',
+      difficulty: 'intermediate',
+      duration: 22,
+      thumbnailUrl: '/images/market-sandaga.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Commerce international', 'Diversité des produits', 'Négociation avancée'],
+      prerequisites: ['Marché de Mokolo'],
+      targetAudience: ['Intermédiaires', 'Commerçants'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: false,
+      rating: 4.7,
+      totalUsers: 890,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'demo-village-2',
+      name: 'Village Pygmée',
+      description: 'Immergez-vous dans la vie d\'un village pygmée dans la forêt équatoriale. Apprenez les techniques de chasse, de cueillette et les traditions de ce peuple forestier.',
+      type: 'village',
+      category: 'cultural',
+      language: 'Français',
+      culturalGroup: 'Pygmée',
+      region: 'Est',
+      difficulty: 'advanced',
+      duration: 28,
+      thumbnailUrl: '/images/village-pygmee.jpg',
+      arContent: {} as any,
+      interactions: [],
+      learningObjectives: ['Vie en forêt', 'Techniques de survie', 'Harmonie avec la nature'],
+      prerequisites: ['Village Bamiléké'],
+      targetAudience: ['Avancés', 'Anthropologues'],
+      accessibility: {} as any,
+      metadata: {} as any,
+      isActive: true,
+      isFeatured: true,
+      rating: 4.9,
+      totalUsers: 520,
+      createdAt: now,
+      updatedAt: now
+    }
+  ];
+};
+
+const getMockStats = (): ARStats => {
+  return {
+    totalScenes: 8,
+    totalUsers: 7410,
+    totalSessions: 15230,
+    averageSessionDuration: 18.5,
+    completionRate: 0.78,
+    userSatisfaction: 4.7,
+    topScenes: [
+      { sceneId: 'demo-conversation-1', sceneName: 'Conversation au Restaurant', sessions: 3250, completionRate: 0.85, averageRating: 4.6, averageDuration: 10 },
+      { sceneId: 'demo-market-1', sceneName: 'Marché de Mokolo', sessions: 2850, completionRate: 0.82, averageRating: 4.8, averageDuration: 15 },
+      { sceneId: 'demo-museum-1', sceneName: 'Musée des Civilisations', sessions: 2420, completionRate: 0.75, averageRating: 4.8, averageDuration: 18 }
+    ],
+    topLanguages: [
+      { language: 'Français', scenes: 8, sessions: 15230, completionRate: 0.78, averageRating: 4.7 },
+      { language: 'Anglais', scenes: 5, sessions: 8420, completionRate: 0.72, averageRating: 4.5 },
+      { language: 'Duala', scenes: 3, sessions: 4120, completionRate: 0.68, averageRating: 4.6 }
+    ],
+    topRegions: [
+      { region: 'Littoral', scenes: 3, sessions: 6250, completionRate: 0.80, averageRating: 4.7 },
+      { region: 'Centre', scenes: 2, sessions: 4820, completionRate: 0.76, averageRating: 4.8 },
+      { region: 'Ouest', scenes: 2, sessions: 3180, completionRate: 0.74, averageRating: 4.7 }
+    ],
+    deviceStats: [
+      { device: 'iOS', sessions: 7250, averagePerformance: 95, errorRate: 0.02, userSatisfaction: 4.8 },
+      { device: 'Android', sessions: 6420, averagePerformance: 88, errorRate: 0.04, userSatisfaction: 4.6 },
+      { device: 'Web', sessions: 1560, averagePerformance: 82, errorRate: 0.06, userSatisfaction: 4.4 }
+    ],
+    performanceStats: [
+      { metric: 'Taux de rafraîchissement', average: 58, min: 30, max: 60, trend: 'stable' },
+      { metric: 'Latence', average: 18, min: 10, max: 35, trend: 'improving' },
+      { metric: 'Usage mémoire', average: 485, min: 280, max: 920, trend: 'stable' }
+    ],
+    lastUpdated: new Date()
+  };
+};
+
 const ARVRPage: React.FC = () => {
   // State management
   const [scenes, setScenes] = useState<ARScene[]>([]);
@@ -75,17 +328,29 @@ const ARVRPage: React.FC = () => {
       setError(null);
 
       const [scenesData, featuredData, statsData] = await Promise.all([
-        arVrService.getAllScenes(),
-        arVrService.getFeaturedScenes(),
-        arVrService.getARStats()
+        arVrService.getAllScenes().catch(() => []),
+        arVrService.getFeaturedScenes().catch(() => []),
+        arVrService.getARStats().catch(() => null)
       ]);
 
-      setScenes(scenesData);
-      setFeaturedScenes(featuredData);
-      setStats(statsData);
+      // Use mock data if no data is available
+      if (scenesData.length === 0) {
+        const mockScenes = getMockScenes();
+        setScenes(mockScenes);
+        setFeaturedScenes(mockScenes.filter(s => s.isFeatured).slice(0, 6));
+        setStats(getMockStats());
+      } else {
+        setScenes(scenesData);
+        setFeaturedScenes(featuredData);
+        setStats(statsData || getMockStats());
+      }
     } catch (err) {
       console.error('Error loading AR/VR data:', err);
-      setError('Erreur lors du chargement des expériences AR/VR');
+      // Use mock data on error
+      const mockScenes = getMockScenes();
+      setScenes(mockScenes);
+      setFeaturedScenes(mockScenes.filter(s => s.isFeatured).slice(0, 6));
+      setStats(getMockStats());
     } finally {
       setLoading(false);
     }
@@ -93,25 +358,84 @@ const ARVRPage: React.FC = () => {
 
   const loadFilteredData = async () => {
     try {
-      const filteredScenes = await arVrService.searchScenes('', filters);
-      // Convert search results back to full scene objects
-      const fullScenes = await Promise.all(
-        filteredScenes.map(result => arVrService.getSceneById(result.id))
-      );
-      setScenes(fullScenes.filter(Boolean) as ARScene[]);
+      const filteredScenes = await arVrService.searchScenes('', filters).catch(() => []);
+
+      if (filteredScenes.length === 0) {
+        // Use mock data if no filtered results
+        const mockScenes = getMockScenes();
+        const filtered = mockScenes.filter(scene => {
+          if (filters.type && filters.type.length > 0 && !filters.type.includes(scene.type)) return false;
+          if (filters.difficulty && filters.difficulty.length > 0 && !filters.difficulty.includes(scene.difficulty)) return false;
+          if (filters.language && filters.language.length > 0 && !filters.language.includes(scene.language)) return false;
+          if (filters.isFeatured !== undefined && scene.isFeatured !== filters.isFeatured) return false;
+          if (filters.duration) {
+            if (scene.duration < filters.duration.min || scene.duration > filters.duration.max) return false;
+          }
+          return true;
+        });
+        setScenes(filtered);
+      } else {
+        // Convert search results back to full scene objects
+        const fullScenes = await Promise.all(
+          filteredScenes.map(result => arVrService.getSceneById(result.id).catch(() => null))
+        );
+        setScenes(fullScenes.filter(Boolean) as ARScene[]);
+      }
     } catch (err) {
       console.error('Error loading filtered data:', err);
-      setError('Erreur lors du filtrage des données');
+      // Use mock data on error
+      setScenes(getMockScenes());
     }
   };
 
   const performSearch = async () => {
     try {
-      const results = await arVrService.searchScenes(searchQuery, filters);
-      setSearchResults(results);
+      const results = await arVrService.searchScenes(searchQuery, filters).catch(() => []);
+
+      if (results.length === 0) {
+        // Search in mock data
+        const mockScenes = getMockScenes();
+        const lowerQuery = searchQuery.toLowerCase();
+        const filtered = mockScenes.filter(scene => {
+          const matchesSearch =
+            scene.name.toLowerCase().includes(lowerQuery) ||
+            scene.description.toLowerCase().includes(lowerQuery) ||
+            scene.culturalGroup.toLowerCase().includes(lowerQuery) ||
+            scene.region.toLowerCase().includes(lowerQuery);
+
+          if (!matchesSearch) return false;
+          if (filters.type && filters.type.length > 0 && !filters.type.includes(scene.type)) return false;
+          if (filters.difficulty && filters.difficulty.length > 0 && !filters.difficulty.includes(scene.difficulty)) return false;
+          if (filters.language && filters.language.length > 0 && !filters.language.includes(scene.language)) return false;
+          if (filters.isFeatured !== undefined && scene.isFeatured !== filters.isFeatured) return false;
+          if (filters.duration) {
+            if (scene.duration < filters.duration.min || scene.duration > filters.duration.max) return false;
+          }
+          return true;
+        });
+
+        const searchResults: ARSearchResult[] = filtered.map(scene => ({
+          id: scene.id,
+          name: scene.name,
+          type: scene.type,
+          category: scene.category,
+          language: scene.language,
+          culturalGroup: scene.culturalGroup,
+          region: scene.region,
+          difficulty: scene.difficulty,
+          duration: scene.duration,
+          rating: scene.rating,
+          thumbnailUrl: scene.thumbnailUrl,
+          relevanceScore: 0
+        }));
+        setSearchResults(searchResults);
+      } else {
+        setSearchResults(results);
+      }
     } catch (err) {
       console.error('Error performing search:', err);
-      setError('Erreur lors de la recherche');
+      // Don't set error, just return empty results
+      setSearchResults([]);
     }
   };
 
@@ -169,21 +493,78 @@ const ARVRPage: React.FC = () => {
     );
   }
 
-  if (error) {
+  // Show welcome screen if no scenes and no loading
+  if (!loading && scenes.length === 0 && !error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Erreur de chargement
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-          <button 
-            onClick={loadInitialData}
-            className="btn-primary btn"
-          >
-            Réessayer
-          </button>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Helmet>
+          <title>Système d'Immersion AR/VR - Ma'a yegue</title>
+          <meta name="description" content="Explorez la culture camerounaise en réalité augmentée et virtuelle" />
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center max-w-2xl px-4">
+            <div className="mb-8">
+              <CameraIcon className="w-24 h-24 text-primary-600 mx-auto mb-6" />
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Bienvenue dans le Système d'Immersion AR/VR
+              </h1>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                Plongez au cœur de la culture camerounaise avec nos expériences de réalité augmentée et virtuelle.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                Aucune expérience disponible pour le moment
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Les expériences AR/VR sont en cours de préparation. Revenez bientôt pour découvrir nos immersions culturelles interactives.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6 text-left">
+                <div className="flex items-start">
+                  <GlobeAltIcon className="w-6 h-6 text-primary-600 mr-3 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Marchés Traditionnels</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Explorez des marchés authentiques en réalité virtuelle
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <UsersIcon className="w-6 h-6 text-primary-600 mr-3 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Villages Traditionnels</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Visitez des villages et découvrez les traditions
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <SparklesIcon className="w-6 h-6 text-primary-600 mr-3 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Cérémonies Culturelles</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Participez à des cérémonies traditionnelles
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <MicrophoneIcon className="w-6 h-6 text-primary-600 mr-3 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Conversations Guidées</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Dialoguez avec des locuteurs natifs
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={loadInitialData}
+              className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+            >
+              Actualiser la page
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -206,13 +587,27 @@ const ARVRPage: React.FC = () => {
                 Système d'Immersion AR/VR
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                Plongez au cœur de la culture camerounaise avec nos expériences de réalité augmentée et virtuelle. 
+                Plongez au cœur de la culture camerounaise avec nos expériences de réalité augmentée et virtuelle.
                 Explorez des marchés traditionnels, visitez des villages, participez à des cérémonies et conversez avec des locuteurs natifs.
               </p>
             </div>
           </AnimatedSection>
         </div>
       </div>
+
+      {/* Demo Mode Banner */}
+      {scenes.length > 0 && scenes[0]?.id.startsWith('demo-') && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+          <div className="container-custom py-3">
+            <div className="flex items-center justify-center text-sm">
+              <SparklesIcon className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
+              <p className="text-blue-800 dark:text-blue-300">
+                <strong>Mode Démo :</strong> Vous explorez des données de démonstration. Les expériences réelles seront bientôt disponibles.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Statistics */}
       {stats && (
@@ -609,10 +1004,10 @@ const ARVRPage: React.FC = () => {
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
                           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {activeTab === 'scenes' ? 'Toutes les expériences' : getSceneTypeLabel(activeTab)} ({scenes.length})
+                            {activeTab === 'scenes' ? 'Toutes les expériences' : getSceneTypeLabel(activeTab)} ({scenes.filter(scene => activeTab === 'scenes' || scene.type === activeTab).length})
                           </h2>
                         </div>
-                        
+
                         {searchResults.length > 0 ? (
                           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {searchResults.map((result) => {
@@ -656,7 +1051,7 @@ const ARVRPage: React.FC = () => {
                               );
                             })}
                           </div>
-                        ) : (
+                        ) : scenes.filter(scene => activeTab === 'scenes' || scene.type === activeTab).length > 0 ? (
                           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {scenes
                               .filter(scene => activeTab === 'scenes' || scene.type === activeTab)
@@ -703,6 +1098,25 @@ const ARVRPage: React.FC = () => {
                                   </div>
                                 );
                               })}
+                          </div>
+                        ) : (
+                          <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-12 text-center">
+                            <CameraIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                              Aucune expérience trouvée
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-4">
+                              Aucune expérience ne correspond à vos critères de recherche. Essayez de modifier vos filtres.
+                            </p>
+                            <button
+                              onClick={() => {
+                                setFilters({});
+                                setSearchQuery('');
+                              }}
+                              className="text-primary-600 hover:text-primary-700 font-medium"
+                            >
+                              Réinitialiser les filtres
+                            </button>
                           </div>
                         )}
                       </div>

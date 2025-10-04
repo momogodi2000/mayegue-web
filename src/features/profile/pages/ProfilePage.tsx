@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useProfileStore } from '../store/profileStore';
 import type { User, UserPreferences } from '@/shared/types/user.types';
 import { RPGStatsCard, FamilyTreeCard, LearningAnalyticsCard } from '../components';
-import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
+import { AnimatedSection, FloatingCard } from '@/shared/components/ui/AnimatedComponents';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 
 interface TabProps {
   id: string;
@@ -14,17 +15,27 @@ interface TabProps {
 }
 
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
-  <button
+  <motion.button
     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
       isActive
-        ? 'bg-green-600 text-white'
-        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        ? 'bg-primary-600 dark:bg-primary-500 text-white'
+        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
     }`}
     onClick={onClick}
+    whileHover={{ scale: 1.05, y: -2 }}
+    whileTap={{ scale: 0.95 }}
+    animate={isActive ? { scale: [1, 1.05, 1] } : {}}
+    transition={{ duration: 0.2 }}
   >
-    <span className="text-lg">{icon}</span>
+    <motion.span
+      className="text-lg"
+      animate={isActive ? { rotate: [0, 10, -10, 0] } : {}}
+      transition={{ duration: 0.5 }}
+    >
+      {icon}
+    </motion.span>
     <span className="hidden sm:inline">{label}</span>
-  </button>
+  </motion.button>
 );
 
 interface AvatarUploadProps {
@@ -68,27 +79,42 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative">
-        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+        <motion.div
+          className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.2 }}
+        >
           {currentAvatar ? (
-            <img
+            <motion.img
               src={currentAvatar}
               alt="Profile avatar"
               className="w-full h-full object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <span className="text-3xl">👤</span>
+              <motion.span
+                className="text-3xl"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                👤
+              </motion.span>
             </div>
           )}
-        </div>
-        <label
+        </motion.div>
+        <motion.label
           htmlFor="avatar-upload"
-          className={`absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full cursor-pointer hover:bg-green-700 transition-colors ${
+          className={`absolute bottom-0 right-0 bg-primary-600 text-white p-2 rounded-full cursor-pointer hover:bg-primary-700 transition-colors ${
             isUploading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
+          whileHover={{ scale: 1.2, rotate: 15 }}
+          whileTap={{ scale: 0.9 }}
         >
           <span className="text-sm">📷</span>
-        </label>
+        </motion.label>
         <input
           id="avatar-upload"
           type="file"
@@ -99,7 +125,21 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
         />
       </div>
       {isUploading && (
-        <div className="text-sm text-gray-600">Uploading...</div>
+        <motion.div
+          className="text-sm text-gray-600 dark:text-gray-400"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="flex items-center gap-2">
+            <motion.div
+              className="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            Téléchargement...
+          </div>
+        </motion.div>
       )}
     </div>
   );

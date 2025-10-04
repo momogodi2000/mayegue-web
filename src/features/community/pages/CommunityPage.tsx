@@ -8,7 +8,7 @@ import { CommunityChallengelist } from '../components/CommunityChallengelist';
 import { StudyGroupsList } from '../components/StudyGroupsList';
 import { AnimatedSection, FloatingCard, CountUp } from '@/shared/components/ui/AnimatedComponents';
 import { VERSION_INFO } from '@/shared/constants/version';
-import { 
+import {
   TrophyIcon,
   ShoppingBagIcon,
   SparklesIcon,
@@ -18,6 +18,50 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { paymentService } from '@/core/services/payment/payment.service';
 
 type CommunityView = 'overview' | 'discussions' | 'discussion-detail' | 'exchanges' | 'challenges' | 'groups' | 'marketplace';
+
+// Error Boundary Component
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode; fallback?: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Community Error Boundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-8">
+          <Card className="max-w-md w-full">
+            <CardContent className="text-center py-12">
+              <div className="text-6xl mb-4">😕</div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                Une erreur est survenue
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Nous rencontrons des difficultés techniques. Veuillez réessayer.
+              </p>
+              <Button onClick={() => window.location.reload()}>
+                Recharger la page
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const CommunityPage: React.FC = () => {
   const [currentView, setCurrentView] = useState<CommunityView>('overview');
@@ -55,47 +99,87 @@ const CommunityPage: React.FC = () => {
   }, [user]);
 
   const renderContent = () => {
-    switch (currentView) {
-      case 'discussions':
-        return (
-          <DiscussionList onDiscussionClick={(d) => handleDiscussionSelect(d.id)} />
-        );
-      
-      case 'discussion-detail':
-        return selectedDiscussionId ? (
-          <DiscussionDetail
-            discussionId={selectedDiscussionId}
-            onBack={handleBackToDiscussions}
-          />
-        ) : null;
-      
-      case 'exchanges':
-        return <LanguageExchangeList />;
-      
-      case 'challenges':
-        return <CommunityChallengelist />;
-      
-      case 'groups':
-        return <StudyGroupsList />;
-      
-      case 'marketplace':
-        return (
-          <div className="text-center py-8">
-            <ShoppingBagIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+    try {
+      switch (currentView) {
+        case 'discussions':
+          return (
+            <ErrorBoundary>
+              <DiscussionList onDiscussionClick={(d) => handleDiscussionSelect(d.id)} />
+            </ErrorBoundary>
+          );
+
+        case 'discussion-detail':
+          return selectedDiscussionId ? (
+            <ErrorBoundary>
+              <DiscussionDetail
+                discussionId={selectedDiscussionId}
+                onBack={handleBackToDiscussions}
+              />
+            </ErrorBoundary>
+          ) : null;
+
+        case 'exchanges':
+          return (
+            <ErrorBoundary>
+              <LanguageExchangeList />
+            </ErrorBoundary>
+          );
+
+        case 'challenges':
+          return (
+            <ErrorBoundary>
+              <CommunityChallengelist />
+            </ErrorBoundary>
+          );
+
+        case 'groups':
+          return (
+            <ErrorBoundary>
+              <StudyGroupsList />
+            </ErrorBoundary>
+          );
+
+        case 'marketplace':
+          return (
+            <div className="text-center py-8">
+              <ShoppingBagIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                Marketplace
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Découvrez des produits culturels et linguistiques uniques.
+              </p>
+              <Button onClick={() => window.location.href = '/marketplace'}>
+                Visiter le Marketplace
+              </Button>
+            </div>
+          );
+
+        default:
+          return (
+            <ErrorBoundary>
+              <CommunityOverview onNavigate={setCurrentView} />
+            </ErrorBoundary>
+          );
+      }
+    } catch (error) {
+      console.error('Error rendering community content:', error);
+      return (
+        <Card>
+          <CardContent className="text-center py-12">
+            <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Marketplace
+              Erreur de chargement
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Découvrez des produits culturels et linguistiques uniques.
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Une erreur s'est produite lors du chargement du contenu.
             </p>
-            <Button onClick={() => window.location.href = '/marketplace'}>
-              Visiter le Marketplace
+            <Button onClick={() => setCurrentView('overview')}>
+              Retour à l'accueil
             </Button>
-          </div>
-        );
-      
-      default:
-        return <CommunityOverview onNavigate={setCurrentView} />;
+          </CardContent>
+        </Card>
+      );
     }
   };
 
@@ -382,7 +466,7 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
             {recentActivity.map((activity, index) => (
               <div
                 key={index}
-                className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
                 onClick={() => onNavigate(activity.type as CommunityView)}
               >
                 <div className="text-2xl">
@@ -390,10 +474,10 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
                 </div>
                 
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-1">
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                     {activity.title}
                   </h4>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                     <span>par {activity.author}</span>
                     <span>•</span>
                     <span>il y a {activity.time}</span>
@@ -424,7 +508,7 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
                   </div>
                 </div>
                 
-                <div className="text-blue-500">
+                <div className="text-blue-500 dark:text-blue-400">
                   →
                 </div>
               </div>
@@ -436,12 +520,12 @@ const CommunityOverview: React.FC<CommunityOverviewProps> = ({ onNavigate }) => 
 
       {/* Community Guidelines */}
       <AnimatedSection delay={700}>
-        <FloatingCard className="bg-blue-50 border-blue-200">
+        <FloatingCard className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
           <CardHeader>
-            <CardTitle className="text-blue-900">📋 Règles de la Communauté</CardTitle>
+            <CardTitle className="text-blue-900 dark:text-blue-100">📋 Règles de la Communauté</CardTitle>
           </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-blue-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-blue-800 dark:text-blue-200">
             <div>
               <h4 className="font-semibold mb-2">🤝 Respect et Bienveillance</h4>
               <p className="text-sm">

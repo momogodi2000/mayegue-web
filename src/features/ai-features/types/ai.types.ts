@@ -7,6 +7,7 @@
 
 export interface AIMentor {
   id: string;
+  userId: string;
   name: string;
   personality: MentorPersonality;
   expertise: string[];
@@ -234,6 +235,7 @@ export interface RecommendationResource {
 
 export interface VirtualGrandmother {
   id: string;
+  userId: string;
   name: string;
   culturalBackground: string;
   region: string;

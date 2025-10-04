@@ -29,6 +29,7 @@ import {
 } from '../types/ai.types';
 import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
 import { CountUp } from '@/shared/components/ui/AnimatedComponents';
+import ErrorBoundary from '@/shared/components/ui/ErrorBoundary';
 
 const AIFeaturesPage: React.FC = () => {
   // State management
@@ -40,6 +41,8 @@ const AIFeaturesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'mentor' | 'grandmother' | 'adaptive' | 'insights'>('overview');
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [hasData, setHasData] = useState(false);
 
   // Mock user ID - in real app, get from auth context
   const userId = 'mock-user-id';
@@ -67,16 +70,340 @@ const AIFeaturesPage: React.FC = () => {
       setGrandmother(grandmotherData);
       setAdaptiveLearning(adaptiveData);
 
+      // Check if any data exists
+      setHasData(mentorData !== null || grandmotherData !== null || adaptiveData !== null);
+
       // Load conversation history if mentor exists
       if (mentorData) {
-        const history = await aiFeaturesService.getConversationHistory(mentorData.id);
-        setConversationHistory(history);
+        try {
+          const history = await aiFeaturesService.getConversationHistory(mentorData.id);
+          setConversationHistory(history);
+        } catch (err) {
+          console.error('Error loading conversation history:', err);
+          // Don't set error for conversation history failure
+          setConversationHistory([]);
+        }
       }
     } catch (err) {
       console.error('Error loading AI features data:', err);
-      setError('Erreur lors du chargement des fonctionnalités IA');
+      // Only set error for actual Firebase errors, not for missing data
+      if (err instanceof Error && !err.message.includes('not found')) {
+        setError('Erreur de connexion à la base de données. Veuillez réessayer.');
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const initializeAIFeatures = async () => {
+    try {
+      setIsInitializing(true);
+      setError(null);
+
+      // Create default AI Mentor
+      const defaultMentor: Omit<AIMentor, 'id'> = {
+        userId,
+        name: 'Mentor Ma\'a yegue',
+        personality: {
+          type: 'patient',
+          traits: ['bienveillant', 'encourageant', 'culturellement sensible'],
+          communicationStyle: 'modern',
+          patience: 9,
+          enthusiasm: 8,
+          strictness: 5,
+          humor: 7,
+          wisdom: 8
+        },
+        expertise: ['Langues camerounaises', 'Culture camerounaise', 'Histoire du Cameroun'],
+        language: 'fr',
+        culturalBackground: 'Camerounais',
+        availability: {
+          timezone: 'Africa/Douala',
+          workingHours: [],
+          breakTimes: [],
+          isOnline: true,
+          lastSeen: new Date(),
+          autoResponse: true,
+          busyMessage: 'Je reviendrai bientôt !'
+        },
+        settings: {
+          responseSpeed: 'normal',
+          detailLevel: 'intermediate',
+          culturalSensitivity: true,
+          adaptiveDifficulty: true,
+          emotionalSupport: true,
+          progressTracking: true,
+          reminderFrequency: 'daily',
+          language: 'fr',
+          voice: {
+            voiceId: 'default',
+            language: 'fr',
+            accent: 'camerounais',
+            speed: 1.0,
+            pitch: 1.0,
+            volume: 0.8,
+            emotion: 'encouraging'
+          },
+          appearance: {
+            avatar: '/assets/mentor-avatar.png',
+            clothing: ['tenue traditionnelle'],
+            accessories: [],
+            expressions: ['souriant', 'encourageant'],
+            gestures: ['accueillant'],
+            culturalElements: ['éléments camerounais']
+          }
+        },
+        conversationHistory: [],
+        learningProgress: {
+          currentLevel: 1,
+          experience: 0,
+          skills: [],
+          achievements: [],
+          goals: [],
+          challenges: [],
+          insights: [],
+          recommendations: [],
+          lastUpdated: new Date()
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Create default Virtual Grandmother
+      const defaultGrandmother: Omit<VirtualGrandmother, 'id'> = {
+        userId,
+        name: 'Grand-mère Marie',
+        culturalBackground: 'Camerounaise',
+        region: 'Littoral',
+        language: 'fr',
+        personality: {
+          warmth: 10,
+          wisdom: 9,
+          storytelling: 10,
+          cooking: 9,
+          patience: 10,
+          humor: 8,
+          traditions: 10,
+          modernity: 6,
+          traits: ['chaleureuse', 'sage', 'conteuse'],
+          sayings: ['Petit à petit, l\'oiseau fait son nid', 'L\'union fait la force'],
+          values: ['famille', 'respect', 'tradition', 'partage']
+        },
+        stories: [],
+        recipes: [],
+        wisdom: [],
+        memories: [],
+        relationships: [],
+        settings: {
+          voice: {
+            voiceId: 'grandmother',
+            language: 'fr',
+            accent: 'camerounais',
+            speed: 0.9,
+            pitch: 1.1,
+            volume: 0.8,
+            emotion: 'warm'
+          },
+          appearance: {
+            avatar: '/assets/grandmother-avatar.png',
+            clothing: ['pagne traditionnel'],
+            accessories: ['bijoux traditionnels'],
+            expressions: ['souriant', 'bienveillant'],
+            gestures: ['accueillant'],
+            culturalElements: ['éléments traditionnels'],
+            age: 70,
+            style: 'traditional'
+          },
+          interaction: {
+            greetingStyle: 'affectionate',
+            storytellingStyle: 'animated',
+            teachingStyle: 'storytelling',
+            responseTime: 'slow',
+            detailLevel: 'detailed',
+            culturalSensitivity: true,
+            emotionalSupport: true,
+            humor: true
+          },
+          content: {
+            storyTypes: ['folktale', 'personal', 'moral'],
+            recipeTypes: ['traditional', 'family'],
+            wisdomTypes: ['proverb', 'advice', 'life_lesson'],
+            culturalFocus: ['Cameroun'],
+            languageLevel: 'intermediate',
+            ageAppropriate: true,
+            educationalValue: true,
+            entertainmentValue: true
+          },
+          privacy: {
+            shareStories: true,
+            shareRecipes: true,
+            shareWisdom: true,
+            shareMemories: false,
+            allowRecording: false,
+            dataCollection: false,
+            thirdPartySharing: false
+          }
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Create default Adaptive Learning profile
+      const defaultAdaptiveLearning: Omit<AdaptiveLearning, 'id'> = {
+        userId,
+        learningStyle: {
+          varkProfile: {
+            visual: 40,
+            auditory: 30,
+            reading: 20,
+            kinesthetic: 10,
+            dominant: 'visual',
+            preferences: ['images', 'vidéos', 'diagrammes']
+          },
+          cognitiveStyle: {
+            processing: 'balanced',
+            perception: 'balanced',
+            response: 'balanced',
+            understanding: 'balanced'
+          },
+          motivationStyle: {
+            intrinsic: 70,
+            extrinsic: 30,
+            achievement: 80,
+            affiliation: 60,
+            power: 40,
+            autonomy: 70,
+            mastery: 80,
+            purpose: 75
+          },
+          culturalPreferences: {
+            culturalGroups: ['Camerounais'],
+            regions: ['Cameroun'],
+            languages: ['français', 'langues camerounaises'],
+            traditions: ['contes', 'cuisine traditionnelle'],
+            values: ['communauté', 'respect', 'famille'],
+            communicationStyle: 'contextual',
+            learningApproach: 'mixed'
+          },
+          accessibilityNeeds: {
+            visual: {
+              highContrast: false,
+              largeText: false,
+              colorBlindSupport: false,
+              screenReader: false,
+              magnification: false,
+              audioDescription: false
+            },
+            auditory: {
+              subtitles: false,
+              signLanguage: false,
+              visualIndicators: false,
+              hapticFeedback: false,
+              volumeControl: false,
+              noiseReduction: false
+            },
+            motor: {
+              voiceControl: false,
+              eyeTracking: false,
+              switchControl: false,
+              gestureControl: false,
+              adaptiveInput: false,
+              timeExtensions: false
+            },
+            cognitive: {
+              simplifiedUI: false,
+              clearInstructions: true,
+              progressIndicators: true,
+              errorPrevention: true,
+              memoryAids: false,
+              distractionReduction: false
+            },
+            language: {
+              nativeLanguage: 'fr',
+              proficiency: 'intermediate',
+              translationSupport: false,
+              culturalContext: true,
+              simplifiedLanguage: false,
+              visualAids: true
+            }
+          }
+        },
+        performanceData: {
+          accuracy: 75,
+          speed: 10,
+          consistency: 70,
+          engagement: 80,
+          retention: 65,
+          application: 70,
+          creativity: 75,
+          collaboration: 60,
+          culturalUnderstanding: 70,
+          languageProficiency: 65,
+          trends: [],
+          patterns: [],
+          anomalies: []
+        },
+        adaptationRules: [],
+        personalizedContent: [],
+        learningPath: {
+          id: 'default-path',
+          name: 'Parcours Personnalisé',
+          description: 'Votre parcours d\'apprentissage adaptatif',
+          objectives: [],
+          milestones: [],
+          content: [],
+          assessments: [],
+          adaptations: [],
+          progress: {
+            overall: 0,
+            objectives: {},
+            milestones: {},
+            content: {},
+            assessments: {},
+            timeSpent: 0,
+            efficiency: 0,
+            quality: 0,
+            engagement: 0,
+            lastUpdated: new Date()
+          },
+          estimatedDuration: 30,
+          difficulty: 'intermediate',
+          culturalFocus: ['Cameroun'],
+          language: 'fr',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        progress: {
+          currentLevel: 1,
+          experience: 0,
+          skills: [],
+          goals: [],
+          challenges: [],
+          insights: [],
+          recommendations: [],
+          lastUpdated: new Date()
+        },
+        insights: [],
+        recommendations: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Create the data in Firebase
+      const [mentorId, grandmotherId, adaptiveLearningId] = await Promise.all([
+        aiFeaturesService.createMentor(defaultMentor),
+        aiFeaturesService.createVirtualGrandmother(defaultGrandmother),
+        aiFeaturesService.createAdaptiveLearning(defaultAdaptiveLearning)
+      ]);
+
+      // Reload data
+      await loadInitialData();
+
+      setIsInitializing(false);
+    } catch (err) {
+      console.error('Error initializing AI features:', err);
+      setError('Erreur lors de l\'initialisation des fonctionnalités IA. Veuillez réessayer.');
+      setIsInitializing(false);
     }
   };
 
@@ -99,7 +426,15 @@ const AIFeaturesPage: React.FC = () => {
       setConversationHistory(prev => [...prev, aiResponse]);
     } catch (err) {
       console.error('Error sending message:', err);
-      setError('Erreur lors de l\'envoi du message');
+      // Add error message to conversation
+      const errorMessage: ConversationMessage = {
+        id: `msg-error-${Date.now()}`,
+        type: 'system',
+        content: 'Désolé, je n\'ai pas pu envoyer votre message. Veuillez réessayer.',
+        timestamp: new Date(),
+        language: 'fr'
+      };
+      setConversationHistory(prev => [...prev, errorMessage]);
     }
   }, [currentMessage, mentor]);
 
@@ -141,19 +476,132 @@ const AIFeaturesPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center max-w-md mx-auto p-8">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Erreur de chargement
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-          <button 
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+          <button
             onClick={loadInitialData}
             className="btn-primary btn"
           >
             Réessayer
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show welcome/initialization screen if no data exists
+  if (!loading && !hasData && !error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Helmet>
+          <title>Fonctionnalités IA - Ma'a yegue</title>
+        </Helmet>
+
+        {/* Welcome Screen */}
+        <div className="container-custom py-12">
+          <AnimatedSection>
+            <div className="max-w-4xl mx-auto">
+              {/* Header */}
+              <div className="text-center mb-12">
+                <div className="text-6xl mb-6">🤖</div>
+                <h1 className="heading-1 mb-4">
+                  Bienvenue dans les Fonctionnalités IA
+                </h1>
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  Découvrez une expérience d'apprentissage personnalisée avec notre intelligence artificielle avancée.
+                </p>
+              </div>
+
+              {/* Features Preview */}
+              <div className="grid md:grid-cols-3 gap-6 mb-12">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
+                  <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <AcademicCapIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Mentor IA
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Un mentor virtuel qui vous guide dans votre apprentissage culturel et linguistique.
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
+                  <div className="bg-pink-100 dark:bg-pink-900/30 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <HeartIcon className="w-8 h-8 text-pink-600 dark:text-pink-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Grand-mère Virtuelle
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Découvrez contes, recettes et sagesse traditionnelle camerounaise.
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
+                  <div className="bg-green-100 dark:bg-green-900/30 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <ChartBarIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Apprentissage Adaptatif
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Un système qui s'adapte à votre style d'apprentissage unique.
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  Prêt à commencer ?
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  Initialisez vos fonctionnalités IA pour commencer votre voyage d'apprentissage personnalisé.
+                </p>
+                <button
+                  onClick={initializeAIFeatures}
+                  disabled={isInitializing}
+                  className="btn-primary btn inline-flex items-center"
+                >
+                  {isInitializing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Initialisation en cours...
+                    </>
+                  ) : (
+                    <>
+                      <SparklesIcon className="w-5 h-5 mr-2" />
+                      Initialiser les Fonctionnalités IA
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Info Section */}
+              <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
+                <div className="flex items-start">
+                  <LightBulbIcon className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                      Qu'est-ce qui sera créé ?
+                    </h3>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                      <li>• Un profil de mentor IA personnalisé adapté à vos besoins</li>
+                      <li>• Une grand-mère virtuelle avec des contes et recettes camerounais</li>
+                      <li>• Un système d'apprentissage adaptatif qui suit vos progrès</li>
+                      <li>• Des recommandations personnalisées basées sur vos préférences</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
         </div>
       </div>
     );
@@ -798,4 +1246,11 @@ const AIFeaturesPage: React.FC = () => {
   );
 };
 
-export default AIFeaturesPage;
+// Wrap with ErrorBoundary to catch and handle React errors
+const AIFeaturesPageWithErrorBoundary: React.FC = () => (
+  <ErrorBoundary>
+    <AIFeaturesPage />
+  </ErrorBoundary>
+);
+
+export default AIFeaturesPageWithErrorBoundary;

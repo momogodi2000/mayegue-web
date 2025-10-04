@@ -227,7 +227,7 @@ const LanguageMap: React.FC<LanguageMapProps> = ({
   // Filter languages based on settings
   const filteredLanguages = languages.filter(language => {
     if (settings.showEndangeredOnly) {
-      return language.status === 'endangered' || 
+      return language.status === 'endangered' ||
              language.status === 'critically_endangered' ||
              language.status === 'threatened';
     }
@@ -238,6 +238,79 @@ const LanguageMap: React.FC<LanguageMapProps> = ({
     setMapLoaded(true);
   }, []);
 
+  // Show placeholder if no languages or map library not available
+  if (languages.length === 0) {
+    return (
+      <div className="h-96 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+        <div className="text-center p-8">
+          <div className="text-5xl mb-4">🗺️</div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Carte interactive
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Les langues apparaîtront ici sur une carte interactive.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show map placeholder since react-leaflet is not installed yet
+  return (
+    <div className="h-96 bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-800 dark:to-gray-700 rounded-lg flex items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <svg className="w-full h-full" viewBox="0 0 800 600" fill="none">
+          <path d="M100 100 L700 100 L700 500 L100 500 Z" stroke="currentColor" strokeWidth="2" strokeDasharray="10,5"/>
+          <circle cx="400" cy="300" r="150" stroke="currentColor" strokeWidth="2" fill="none"/>
+          <path d="M250 250 L350 350 L450 250 L550 350" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      </div>
+      <div className="text-center z-10 p-8 max-w-2xl">
+        <div className="text-6xl mb-4">🗺️</div>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Carte Interactive du Cameroun
+        </h3>
+        <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+          {filteredLanguages.length} {filteredLanguages.length === 1 ? 'langue' : 'langues'} disponibles
+        </p>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-lg p-6 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            La carte interactive sera disponible une fois les bibliothèques cartographiques installées.
+            En attendant, voici les langues disponibles :
+          </p>
+          <div className="grid grid-cols-2 gap-4 max-h-48 overflow-y-auto">
+            {filteredLanguages.slice(0, 12).map(lang => (
+              <button
+                key={lang.id}
+                onClick={() => onLanguageSelect(lang)}
+                className="text-left p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors"
+              >
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  {lang.name}
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  {lang.region} - {lang.speakers.toLocaleString()} locuteurs
+                </div>
+              </button>
+            ))}
+          </div>
+          {filteredLanguages.length > 12 && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Et {filteredLanguages.length - 12} autres langues...
+            </p>
+          )}
+        </div>
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Cliquez sur une langue pour voir les détails</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Original map code (currently unreachable due to stub libraries)
   if (!mapLoaded) {
     return (
       <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">

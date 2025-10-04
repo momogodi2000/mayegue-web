@@ -18,31 +18,59 @@ class GeminiService {
 
   private async initialize() {
     try {
-      // In a real implementation, this would come from environment variables
-      // For now, we'll use a placeholder that can be configured later
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      
-      if (apiKey) {
+      const modelName = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.0-flash-exp';
+
+      if (apiKey && apiKey !== 'demo-gemini-key') {
         this.genAI = new GoogleGenerativeAI(apiKey);
-        this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+        this.model = this.genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 2048,
+          }
+        });
+        console.log('✅ Gemini AI initialized with model:', modelName);
+      } else {
+        console.warn('⚠️ Gemini AI not configured - API key missing or demo key used');
       }
     } catch (error) {
-      console.warn('Gemini AI not configured:', error);
+      console.error('❌ Gemini AI initialization error:', error);
     }
   }
 
   async generateResponse(prompt: string): Promise<string> {
     if (!this.model) {
-      return "Gemini AI n'est pas encore configuré. Cette fonctionnalité sera disponible bientôt.";
+      return "❌ L'assistant IA Gemini n'est pas configuré. Veuillez vérifier votre clé API dans les paramètres.";
     }
 
     try {
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
-      return response.text();
-    } catch (error) {
-      console.error('Error generating response:', error);
-      return "Désolé, je ne peux pas répondre pour le moment. Veuillez réessayer plus tard.";
+      const text = response.text();
+
+      if (!text || text.trim() === '') {
+        return "⚠️ Aucune réponse générée. Veuillez reformuler votre question.";
+      }
+
+      return text;
+    } catch (error: any) {
+      console.error('❌ Gemini API error:', error);
+
+      // Handle specific error cases
+      if (error?.message?.includes('API key')) {
+        return "❌ Clé API invalide. Veuillez configurer une clé API Gemini valide.";
+      }
+      if (error?.message?.includes('quota')) {
+        return "⚠️ Quota API dépassé. Veuillez réessayer plus tard.";
+      }
+      if (error?.message?.includes('SAFETY')) {
+        return "⚠️ Votre message a été bloqué par les filtres de sécurité. Veuillez reformuler.";
+      }
+
+      return `❌ Erreur: ${error?.message || 'Une erreur est survenue. Veuillez réessayer.'}`;
     }
   }
 

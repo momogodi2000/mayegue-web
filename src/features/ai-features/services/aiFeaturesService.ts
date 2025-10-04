@@ -49,7 +49,7 @@ export const aiFeaturesService = {
     try {
       const q = query(collection(db, AI_MENTORS_COLLECTION), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
         return {
@@ -59,10 +59,12 @@ export const aiFeaturesService = {
           updatedAt: doc.data().updatedAt?.toDate() || new Date()
         } as AIMentor;
       }
+      // Return null if no data exists (this is not an error)
       return null;
     } catch (error) {
       console.error('Error fetching AI mentor:', error);
-      throw new Error('Failed to fetch AI mentor');
+      // Only throw for actual Firebase errors
+      throw error;
     }
   },
 
@@ -147,15 +149,17 @@ export const aiFeaturesService = {
     try {
       const docRef = doc(db, CONVERSATIONS_COLLECTION, mentorId);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         const conversationHistory = docSnap.data().conversationHistory || [];
         return conversationHistory.slice(-limit);
       }
+      // Return empty array if no conversation history exists
       return [];
     } catch (error) {
       console.error('Error fetching conversation history:', error);
-      throw new Error('Failed to fetch conversation history');
+      // Return empty array instead of throwing to prevent page crash
+      return [];
     }
   },
 
@@ -164,7 +168,7 @@ export const aiFeaturesService = {
     try {
       const q = query(collection(db, VIRTUAL_GRANDMOTHERS_COLLECTION), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
         return {
@@ -174,10 +178,12 @@ export const aiFeaturesService = {
           updatedAt: doc.data().updatedAt?.toDate() || new Date()
         } as VirtualGrandmother;
       }
+      // Return null if no data exists (this is not an error)
       return null;
     } catch (error) {
       console.error('Error fetching virtual grandmother:', error);
-      throw new Error('Failed to fetch virtual grandmother');
+      // Only throw for actual Firebase errors
+      throw error;
     }
   },
 
@@ -199,14 +205,15 @@ export const aiFeaturesService = {
     try {
       const docRef = doc(db, VIRTUAL_GRANDMOTHERS_COLLECTION, grandmotherId);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return docSnap.data().stories || [];
       }
       return [];
     } catch (error) {
       console.error('Error fetching grandmother stories:', error);
-      throw new Error('Failed to fetch grandmother stories');
+      // Return empty array instead of throwing
+      return [];
     }
   },
 
@@ -214,14 +221,15 @@ export const aiFeaturesService = {
     try {
       const docRef = doc(db, VIRTUAL_GRANDMOTHERS_COLLECTION, grandmotherId);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return docSnap.data().recipes || [];
       }
       return [];
     } catch (error) {
       console.error('Error fetching grandmother recipes:', error);
-      throw new Error('Failed to fetch grandmother recipes');
+      // Return empty array instead of throwing
+      return [];
     }
   },
 
@@ -229,14 +237,15 @@ export const aiFeaturesService = {
     try {
       const docRef = doc(db, VIRTUAL_GRANDMOTHERS_COLLECTION, grandmotherId);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return docSnap.data().wisdom || [];
       }
       return [];
     } catch (error) {
       console.error('Error fetching grandmother wisdom:', error);
-      throw new Error('Failed to fetch grandmother wisdom');
+      // Return empty array instead of throwing
+      return [];
     }
   },
 
@@ -244,14 +253,15 @@ export const aiFeaturesService = {
     try {
       const docRef = doc(db, VIRTUAL_GRANDMOTHERS_COLLECTION, grandmotherId);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return docSnap.data().memories || [];
       }
       return [];
     } catch (error) {
       console.error('Error fetching grandmother memories:', error);
-      throw new Error('Failed to fetch grandmother memories');
+      // Return empty array instead of throwing
+      return [];
     }
   },
 
@@ -260,7 +270,7 @@ export const aiFeaturesService = {
     try {
       const q = query(collection(db, ADAPTIVE_LEARNING_COLLECTION), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
         return {
@@ -270,10 +280,12 @@ export const aiFeaturesService = {
           updatedAt: doc.data().updatedAt?.toDate() || new Date()
         } as AdaptiveLearning;
       }
+      // Return null if no data exists (this is not an error)
       return null;
     } catch (error) {
       console.error('Error fetching adaptive learning:', error);
-      throw new Error('Failed to fetch adaptive learning');
+      // Only throw for actual Firebase errors
+      throw error;
     }
   },
 

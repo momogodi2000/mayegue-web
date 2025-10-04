@@ -706,56 +706,284 @@ export const useCommunityStore = create<CommunityState>()(
         }
       },
 
-      // Placeholder implementations for other features
-      fetchChallenges: async () => {
-        // TODO: Implement challenges fetching
-        set({ challenges: [] });
+      // Community Challenges implementations
+      fetchChallenges: async (languageId) => {
+        set({ loading: true, error: null });
+        try {
+          const whereConditions: [string, any, unknown][] = [];
+
+          if (languageId) {
+            whereConditions.push(['languageId', '==', languageId]);
+          }
+
+          const challenges = await firestoreService.getDocs<CommunityChallenge>('challenges', {
+            where: whereConditions
+          });
+
+          set({ challenges, loading: false });
+        } catch (error) {
+          console.error('Failed to fetch challenges:', error);
+          set({ challenges: [], loading: false });
+        }
       },
 
-      createChallenge: async () => {
-        // TODO: Implement challenge creation
-        return 'challenge-id';
+      createChallenge: async (challengeData) => {
+        try {
+          const challenge: Omit<CommunityChallenge, 'id'> = {
+            ...challengeData,
+            participants: [],
+            submissions: [],
+            status: 'upcoming'
+          };
+
+          const id = await firestoreService.addDoc('challenges', challenge);
+          const newChallenge = { ...challenge, id } as CommunityChallenge;
+
+          set(state => ({
+            challenges: [newChallenge, ...state.challenges]
+          }));
+
+          return id;
+        } catch (error) {
+          console.error('Failed to create challenge:', error);
+          throw error;
+        }
       },
 
-      joinChallenge: async () => {
-        // TODO: Implement challenge joining
+      joinChallenge: async (challengeId, userId) => {
+        try {
+          const state = get();
+          const challenge = state.challenges.find(c => c.id === challengeId);
+
+          if (!challenge || challenge.participants.includes(userId)) return;
+
+          const newParticipants = [...challenge.participants, userId];
+
+          await firestoreService.updateDoc('challenges', challengeId, {
+            participants: newParticipants
+          });
+
+          set(state => ({
+            challenges: state.challenges.map(c =>
+              c.id === challengeId ? { ...c, participants: newParticipants } : c
+            )
+          }));
+        } catch (error) {
+          console.error('Failed to join challenge:', error);
+        }
       },
 
-      submitToChallenge: async () => {
-        // TODO: Implement challenge submission
-        return 'submission-id';
+      submitToChallenge: async (submissionData) => {
+        try {
+          const submission: Omit<ChallengeSubmission, 'id'> = {
+            ...submissionData,
+            submittedAt: new Date(),
+            votes: 0,
+            votedBy: []
+          };
+
+          const id = await firestoreService.addDoc('challengeSubmissions', submission);
+          const newSubmission = { ...submission, id } as ChallengeSubmission;
+
+          set(state => ({
+            challenges: state.challenges.map(c =>
+              c.id === submissionData.challengeId
+                ? { ...c, submissions: [...c.submissions, newSubmission] }
+                : c
+            )
+          }));
+
+          return id;
+        } catch (error) {
+          console.error('Failed to submit to challenge:', error);
+          throw error;
+        }
       },
 
-      voteSubmission: async () => {
-        // TODO: Implement submission voting
+      voteSubmission: async (submissionId, userId) => {
+        try {
+          const state = get();
+          let submission: ChallengeSubmission | undefined;
+          let challengeId: string | undefined;
+
+          for (const challenge of state.challenges) {
+            const found = challenge.submissions.find(s => s.id === submissionId);
+            if (found) {
+              submission = found;
+              challengeId = challenge.id;
+              break;
+            }
+          }
+
+          if (!submission || !challengeId) return;
+
+          const isVoted = submission.votedBy.includes(userId);
+          const newVotedBy = isVoted
+            ? submission.votedBy.filter(id => id !== userId)
+            : [...submission.votedBy, userId];
+
+          await firestoreService.updateDoc('challengeSubmissions', submissionId, {
+            votes: newVotedBy.length,
+            votedBy: newVotedBy
+          });
+
+          set(state => ({
+            challenges: state.challenges.map(c =>
+              c.id === challengeId ? {
+                ...c,
+                submissions: c.submissions.map(s =>
+                  s.id === submissionId
+                    ? { ...s, votes: newVotedBy.length, votedBy: newVotedBy }
+                    : s
+                )
+              } : c
+            )
+          }));
+        } catch (error) {
+          console.error('Failed to vote submission:', error);
+        }
       },
 
-      fetchStudyGroups: async () => {
-        // TODO: Implement study groups fetching
-        set({ studyGroups: [] });
+      // Study Groups implementations
+      fetchStudyGroups: async (languageId) => {
+        set({ loading: true, error: null });
+        try {
+          const whereConditions: [string, any, unknown][] = [];
+
+          if (languageId) {
+            whereConditions.push(['languageId', '==', languageId]);
+          }
+
+          const studyGroups = await firestoreService.getDocs<StudyGroup>('studyGroups', {
+            where: whereConditions
+          });
+
+          set({ studyGroups, loading: false });
+        } catch (error) {
+          console.error('Failed to fetch study groups:', error);
+          set({ studyGroups: [], loading: false });
+        }
       },
 
-      createStudyGroup: async () => {
-        // TODO: Implement study group creation
-        return 'group-id';
+      createStudyGroup: async (groupData) => {
+        try {
+          const group: Omit<StudyGroup, 'id'> = {
+            ...groupData,
+            members: [groupData.createdBy],
+            createdAt: new Date(),
+            lastActivity: new Date()
+          };
+
+          const id = await firestoreService.addDoc('studyGroups', group);
+          const newGroup = { ...group, id } as StudyGroup;
+
+          set(state => ({
+            studyGroups: [newGroup, ...state.studyGroups]
+          }));
+
+          return id;
+        } catch (error) {
+          console.error('Failed to create study group:', error);
+          throw error;
+        }
       },
 
-      joinStudyGroup: async () => {
-        // TODO: Implement study group joining
+      joinStudyGroup: async (groupId, userId) => {
+        try {
+          const state = get();
+          const group = state.studyGroups.find(g => g.id === groupId);
+
+          if (!group || group.members.includes(userId)) return;
+
+          const newMembers = [...group.members, userId];
+
+          await firestoreService.updateDoc('studyGroups', groupId, {
+            members: newMembers,
+            lastActivity: new Date()
+          });
+
+          set(state => ({
+            studyGroups: state.studyGroups.map(g =>
+              g.id === groupId ? { ...g, members: newMembers, lastActivity: new Date() } : g
+            )
+          }));
+        } catch (error) {
+          console.error('Failed to join study group:', error);
+        }
       },
 
-      leaveStudyGroup: async () => {
-        // TODO: Implement study group leaving
+      leaveStudyGroup: async (groupId, userId) => {
+        try {
+          const state = get();
+          const group = state.studyGroups.find(g => g.id === groupId);
+
+          if (!group) return;
+
+          const newMembers = group.members.filter(id => id !== userId);
+
+          await firestoreService.updateDoc('studyGroups', groupId, {
+            members: newMembers,
+            lastActivity: new Date()
+          });
+
+          set(state => ({
+            studyGroups: state.studyGroups.map(g =>
+              g.id === groupId ? { ...g, members: newMembers, lastActivity: new Date() } : g
+            )
+          }));
+        } catch (error) {
+          console.error('Failed to leave study group:', error);
+        }
       },
 
-      addGroupSchedule: async () => {
-        // TODO: Implement group schedule addition
-        return 'schedule-id';
+      addGroupSchedule: async (groupId, scheduleData) => {
+        try {
+          const schedule: Omit<GroupSchedule, 'id'> = {
+            ...scheduleData,
+            participants: []
+          };
+
+          const id = await firestoreService.addDoc('groupSchedules', { ...schedule, groupId });
+          const newSchedule = { ...schedule, id } as GroupSchedule;
+
+          set(state => ({
+            studyGroups: state.studyGroups.map(g =>
+              g.id === groupId
+                ? { ...g, schedules: [...g.schedules, newSchedule], lastActivity: new Date() }
+                : g
+            )
+          }));
+
+          return id;
+        } catch (error) {
+          console.error('Failed to add group schedule:', error);
+          throw error;
+        }
       },
 
-      addGroupResource: async () => {
-        // TODO: Implement group resource addition
-        return 'resource-id';
+      addGroupResource: async (groupId, resourceData) => {
+        try {
+          const resource: Omit<GroupResource, 'id'> = {
+            ...resourceData,
+            uploadedAt: new Date()
+          };
+
+          const id = await firestoreService.addDoc('groupResources', { ...resource, groupId });
+          const newResource = { ...resource, id } as GroupResource;
+
+          set(state => ({
+            studyGroups: state.studyGroups.map(g =>
+              g.id === groupId
+                ? { ...g, resources: [...g.resources, newResource], lastActivity: new Date() }
+                : g
+            )
+          }));
+
+          return id;
+        } catch (error) {
+          console.error('Failed to add group resource:', error);
+          throw error;
+        }
       },
 
       fetchCommunityUser: async (userId) => {

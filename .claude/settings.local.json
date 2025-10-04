@@ -6,7 +6,13 @@
       "Bash(npm run build:*)",
       "Bash(firebase deploy:*)",
       "Bash(1)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(test:*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 30 npm run dev)",
+      "Bash(pkill:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
