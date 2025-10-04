@@ -9,16 +9,10 @@ import { StudyGroupsList } from '../components/StudyGroupsList';
 import { AnimatedSection, FloatingCard, CountUp } from '@/shared/components/ui/AnimatedComponents';
 import { VERSION_INFO } from '@/shared/constants/version';
 import { 
-  UserGroupIcon,
-  ChatBubbleLeftRightIcon,
-  LanguageIcon,
   TrophyIcon,
-  AcademicCapIcon,
   ShoppingBagIcon,
   SparklesIcon,
-  StarIcon,
-  HeartIcon,
-  ShareIcon
+  HeartIcon
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { paymentService } from '@/core/services/payment/payment.service';
@@ -32,14 +26,6 @@ const CommunityPage: React.FC = () => {
   // V1.1 New State
   const { user } = useAuthStore();
   const [hasFullAccess, setHasFullAccess] = useState(false);
-  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
-  const [communityStats, setCommunityStats] = useState({
-    totalMembers: 1250,
-    activeDiscussions: 45,
-    languageExchanges: 89,
-    challengesCompleted: 234,
-    marketplaceItems: 67
-  });
 
   const handleDiscussionSelect = (discussionId: string) => {
     setSelectedDiscussionId(discussionId);
@@ -93,7 +79,20 @@ const CommunityPage: React.FC = () => {
         return <StudyGroupsList />;
       
       case 'marketplace':
-        return <MarketplaceView />;
+        return (
+          <div className="text-center py-8">
+            <ShoppingBagIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Marketplace
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Découvrez des produits culturels et linguistiques uniques.
+            </p>
+            <Button onClick={() => window.location.href = '/marketplace'}>
+              Visiter le Marketplace
+            </Button>
+          </div>
+        );
       
       default:
         return <CommunityOverview onNavigate={setCurrentView} />;

@@ -90,7 +90,15 @@ export const useProfileStore = create<ProfileState>()(
               longestStreak: 12,
               badgesEarned: 3,
               level: 2,
-              xp: 450
+              xp: 450,
+              atlasExplorations: 0,
+              encyclopediaEntries: 0,
+              historicalSitesVisited: 0,
+              arVrExperiences: 0,
+              marketplacePurchases: 0,
+              familyContributions: 0,
+              ngondoCoinsEarned: 0,
+              achievementsUnlocked: 0
             }
           };
           

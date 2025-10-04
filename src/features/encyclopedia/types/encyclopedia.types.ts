@@ -24,7 +24,7 @@ export interface EthnicGroup {
   music: MusicItem[];
   dances: Dance[];
   ceremonies: Ceremony[];
-  symbols: Symbol[];
+  symbols: symbol[];
   artifacts: Artifact[];
   images: string[];
   videos: string[];
@@ -342,6 +342,7 @@ export interface Artifact {
 
 export interface EncyclopediaFilters {
   regions?: string[];
+  region?: string;
   categories?: string[];
   types?: string[];
   searchQuery?: string;
@@ -359,9 +360,11 @@ export interface EncyclopediaStats {
   totalMusicItems: number;
   totalDances: number;
   totalCeremonies: number;
-  totalArtifacts: number;
   regions: number;
   languages: number;
+  totalMediaItems: number;
+  regionsCovered: number;
+  lastUpdated: Date;
 }
 
 export interface EncyclopediaSearchResult {
@@ -377,6 +380,17 @@ export interface EncyclopediaSearchResult {
   totalResults: number;
   searchTime: number;
   suggestions?: string[];
+}
+
+export interface SearchResult {
+  id: string;
+  type: 'ethnic-group' | 'tradition' | 'cuisine' | 'craft' | 'story' | 'proverb' | 'music' | 'dance' | 'ceremony';
+  title: string;
+  description: string;
+  category: string;
+  region: string;
+  imageUrl?: string;
+  relevanceScore: number;
 }
 
 // Component Props types

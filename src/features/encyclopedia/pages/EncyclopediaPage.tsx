@@ -11,26 +11,26 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useInView } from 'react-intersection-observer';
-import { 
-  EthnicGroupCard, 
-  TraditionCard, 
-  CuisineCard, 
-  CraftCard, 
+import {
+  EthnicGroupCard,
+  TraditionCard,
+  CuisineCard,
+  CraftCard,
   StoryCard,
   EncyclopediaFilters,
   EncyclopediaSearch,
-  EncyclopediaStats,
+  EncyclopediaStats as EncyclopediaStatsComponent,
   EncyclopediaNavigation
 } from '../components';
 import { encyclopediaService } from '../services/encyclopediaService';
-import { 
-  EthnicGroup, 
-  Tradition, 
-  CuisineItem, 
-  Craft, 
-  Story, 
-  EncyclopediaFilters as Filters, 
-  EncyclopediaStats 
+import {
+  EthnicGroup,
+  Tradition,
+  CuisineItem,
+  Craft,
+  Story,
+  EncyclopediaFilters as Filters,
+  EncyclopediaStats
 } from '../types/encyclopedia.types';
 import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
 import { 
@@ -201,8 +201,8 @@ const EncyclopediaPage: React.FC = () => {
 
       {/* Statistics */}
       {stats && (
-        <AnimatedSection ref={statsRef} className="container-custom py-8">
-          <EncyclopediaStats onStatsLoad={setStats} />
+        <AnimatedSection className="container-custom py-8">
+          <EncyclopediaStatsComponent onStatsLoad={setStats} />
         </AnimatedSection>
       )}
 
@@ -222,6 +222,12 @@ const EncyclopediaPage: React.FC = () => {
                   totalCuisineItems: 0,
                   totalCrafts: 0,
                   totalStories: 0,
+                  totalProverbs: 0,
+                  totalMusicItems: 0,
+                  totalDances: 0,
+                  totalCeremonies: 0,
+                  regions: 0,
+                  languages: 0,
                   totalMediaItems: 0,
                   regionsCovered: 0,
                   lastUpdated: new Date()
@@ -281,7 +287,7 @@ const EncyclopediaPage: React.FC = () => {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  <AnimatedSection ref={contentRef}>
+                  <AnimatedSection>
                     {activeTab === 'overview' && (
                       <div className="space-y-6">
                         <div className="text-center">

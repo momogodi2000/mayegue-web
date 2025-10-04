@@ -18,6 +18,8 @@ export interface Lesson {
   content: ContentBlock[];
   exercises: Exercise[];
   estimatedDuration: number; // minutes
+  duration: number; // minutes (alias for estimatedDuration)
+  studentsCount?: number; // number of students who took this lesson
   thumbnailUrl?: string;
   audioUrl?: string;
   videoUrl?: string;

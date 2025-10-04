@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
+import {
   PlayIcon,
   PauseIcon,
   SpeakerWaveIcon,
@@ -16,7 +16,7 @@ import {
   ListBulletIcon,
   XMarkIcon,
   ClockIcon,
-  DownloadIcon,
+  ArrowDownTrayIcon,
   ShareIcon,
   HeartIcon,
   AdjustmentsHorizontalIcon
@@ -233,7 +233,7 @@ const AudioGuidePlayer: React.FC<AudioGuidePlayerProps> = ({
               onClick={onDownload}
               className="p-2 text-gray-400 hover:text-green-500 transition-colors"
             >
-              <DownloadIcon className="w-5 h-5" />
+              <ArrowDownTrayIcon className="w-5 h-5" />
             </button>
             <button
               onClick={onClose}
@@ -434,8 +434,6 @@ const AudioGuidePlayer: React.FC<AudioGuidePlayerProps> = ({
         ref={audioRef}
         preload="metadata"
         muted={isMuted}
-        volume={volume}
-        playbackRate={playbackRate}
       />
     </div>
   );

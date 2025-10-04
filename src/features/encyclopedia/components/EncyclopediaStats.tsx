@@ -15,7 +15,7 @@ import {
   SpeakerWaveIcon,
   MapPinIcon,
   CalendarIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
 import { EncyclopediaStats } from '../types/encyclopedia.types';
@@ -35,6 +35,12 @@ const EncyclopediaStatsComponent: React.FC<EncyclopediaStatsProps> = ({
     totalCuisineItems: 0,
     totalCrafts: 0,
     totalStories: 0,
+    totalProverbs: 0,
+    totalMusicItems: 0,
+    totalDances: 0,
+    totalCeremonies: 0,
+    regions: 0,
+    languages: 0,
     totalMediaItems: 0,
     regionsCovered: 0,
     lastUpdated: new Date()
@@ -51,16 +57,16 @@ const EncyclopediaStatsComponent: React.FC<EncyclopediaStatsProps> = ({
       setLoading(true);
       setError(null);
 
-      const ethnicGroups = await encyclopediaService.getAllEthnicGroups();
-      
+      const ethnicGroups = await encyclopediaService.getEthnicGroups();
+
       // Calculate statistics
       const totalGroups = ethnicGroups.length;
-      const totalTraditions = ethnicGroups.reduce((sum, group) => sum + group.traditions.length, 0);
-      const totalCuisineItems = ethnicGroups.reduce((sum, group) => sum + group.cuisine.length, 0);
-      const totalCrafts = ethnicGroups.reduce((sum, group) => sum + group.crafts.length, 0);
-      const totalStories = ethnicGroups.reduce((sum, group) => sum + group.proverbs.length + group.contes.length, 0);
-      const totalMediaItems = ethnicGroups.filter(group => group.imageUrl).length;
-      const regionsCovered = new Set(ethnicGroups.map(group => group.region)).size;
+      const totalTraditions = ethnicGroups.reduce((sum: number, group: any) => sum + group.traditions.length, 0);
+      const totalCuisineItems = ethnicGroups.reduce((sum: number, group: any) => sum + group.cuisine.length, 0);
+      const totalCrafts = ethnicGroups.reduce((sum: number, group: any) => sum + group.crafts.length, 0);
+      const totalStories = ethnicGroups.reduce((sum: number, group: any) => sum + group.proverbs.length + group.contes.length, 0);
+      const totalMediaItems = ethnicGroups.filter((group: any) => group.imageUrl).length;
+      const regionsCovered = new Set(ethnicGroups.map((group: any) => group.region)).size;
 
       const newStats: EncyclopediaStats = {
         totalGroups,
@@ -68,6 +74,12 @@ const EncyclopediaStatsComponent: React.FC<EncyclopediaStatsProps> = ({
         totalCuisineItems,
         totalCrafts,
         totalStories,
+        totalProverbs: 0,
+        totalMusicItems: 0,
+        totalDances: 0,
+        totalCeremonies: 0,
+        regions: regionsCovered,
+        languages: 0,
         totalMediaItems,
         regionsCovered,
         lastUpdated: new Date()
@@ -188,7 +200,7 @@ const EncyclopediaStatsComponent: React.FC<EncyclopediaStatsProps> = ({
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-          <TrendingUpIcon className="w-5 h-5 mr-2" />
+          <ArrowTrendingUpIcon className="w-5 h-5 mr-2" />
           Statistiques de l'Encyclopédie
         </h3>
         <button

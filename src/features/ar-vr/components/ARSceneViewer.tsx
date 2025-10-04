@@ -6,21 +6,16 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
+import {
   PlayIcon,
   PauseIcon,
   StopIcon,
-  VolumeUpIcon,
-  VolumeXIcon,
-  SettingsIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  Cog6ToothIcon,
   InformationCircleIcon,
   XMarkIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   EyeIcon,
-  HandRaisedIcon,
-  MicrophoneIcon,
-  CameraIcon,
   TrophyIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
@@ -323,7 +318,7 @@ const ARSceneViewer: React.FC<ARSceneViewerProps> = ({
                 onClick={() => setShowSettings(!showSettings)}
                 className="p-2 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors"
               >
-                <SettingsIcon className="w-5 h-5" />
+                <Cog6ToothIcon className="w-5 h-5" />
               </button>
               {onToggleFullscreen && (
                 <button

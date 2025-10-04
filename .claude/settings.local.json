@@ -4,7 +4,9 @@
       "Bash(npm run type-check:*)",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(firebase deploy:*)"
+      "Bash(firebase deploy:*)",
+      "Bash(1)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

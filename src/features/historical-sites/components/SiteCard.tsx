@@ -18,7 +18,7 @@ import {
   PhoneIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
-import { HistoricalSite } from '../types/historical-sites.types';
+import { HistoricalSite, TimeSlot } from '../types/historical-sites.types';
 import { FloatingCard } from '@/shared/components/ui/AnimatedComponents';
 
 interface SiteCardProps {
@@ -78,12 +78,14 @@ const SiteCard: React.FC<SiteCardProps> = ({
 
   const formatOpeningHours = () => {
     if (!site.openingHours) return 'Horaires non disponibles';
-    
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'lowercase' });
+
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     const todayHours = site.openingHours[today as keyof typeof site.openingHours];
-    
-    if (todayHours?.isClosed) return 'Fermé aujourd\'hui';
-    if (todayHours) return `Ouvert ${todayHours.open} - ${todayHours.close}`;
+
+    if (Array.isArray(todayHours)) return 'Horaires spéciaux';
+    const timeSlot = todayHours as TimeSlot;
+    if (timeSlot?.isClosed) return 'Fermé aujourd\'hui';
+    if (timeSlot) return `Ouvert ${timeSlot.open} - ${timeSlot.close}`;
     return 'Horaires non disponibles';
   };
 

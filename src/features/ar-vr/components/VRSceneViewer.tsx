@@ -6,23 +6,20 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
+import {
   PlayIcon,
   PauseIcon,
   StopIcon,
-  VolumeUpIcon,
-  VolumeXIcon,
-  SettingsIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  Cog6ToothIcon,
   InformationCircleIcon,
   XMarkIcon,
   EyeIcon,
-  HandRaisedIcon,
-  MicrophoneIcon,
-  CameraIcon,
-  TrophyIcon,
-  ClockIcon,
   ArrowsPointingOutIcon,
-  ArrowsPointingInIcon
+  ArrowsPointingInIcon,
+  ClockIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline';
 import { ARScene, ARSession } from '../types/ar-vr.types';
 import { arVrService } from '../services/arVrService';
@@ -358,7 +355,7 @@ const VRSceneViewer: React.FC<VRSceneViewerProps> = ({
                 onClick={() => setShowSettings(!showSettings)}
                 className="p-2 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors"
               >
-                <SettingsIcon className="w-5 h-5" />
+                <Cog6ToothIcon className="w-5 h-5" />
               </button>
               {onToggleFullscreen && (
                 <button

@@ -6,40 +6,31 @@
  */
 
 import { db } from '@/core/config/firebase.config';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  startAfter,
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+  orderBy,
+  limit,
   addDoc,
   updateDoc,
   deleteDoc,
   Timestamp,
-  increment,
-  arrayUnion,
-  arrayRemove
+  arrayUnion
 } from 'firebase/firestore';
-import { 
-  ARScene, 
-  ARSession, 
-  ARFilter, 
-  ARSearchResult, 
-  ARStats,
-  AR_SCENE_TYPES,
-  AR_CATEGORIES,
-  AR_DIFFICULTIES,
-  CAMEROON_REGIONS
+import {
+  ARScene,
+  ARSession,
+  ARFilter,
+  ARSearchResult,
+  ARStats
 } from '../types/ar-vr.types';
 
 const AR_SCENES_COLLECTION = 'ar_scenes';
 const AR_SESSIONS_COLLECTION = 'ar_sessions';
-const AR_ACHIEVEMENTS_COLLECTION = 'ar_achievements';
-const AR_ANALYTICS_COLLECTION = 'ar_analytics';
 
 export const arVrService = {
   // AR Scenes CRUD operations
@@ -142,7 +133,7 @@ export const arVrService = {
     }
   },
 
-  async searchScenes(query: string, filters?: ARFilter): Promise<ARSearchResult[]> {
+  async searchScenes(searchQuery: string, filters?: ARFilter): Promise<ARSearchResult[]> {
     try {
       let q = query(collection(db, AR_SCENES_COLLECTION), where('isActive', '==', true));
 
@@ -174,7 +165,7 @@ export const arVrService = {
 
       const querySnapshot = await getDocs(q);
       let results = querySnapshot.docs.map(doc => {
-        const data = doc.data();
+        const data = doc.data() as any;
         return {
           id: doc.id,
           name: data.name,
@@ -192,9 +183,9 @@ export const arVrService = {
       });
 
       // Filter by search query
-      if (query) {
-        const lowerQuery = query.toLowerCase();
-        results = results.filter(scene => 
+      if (searchQuery) {
+        const lowerQuery = searchQuery.toLowerCase();
+        results = results.filter(scene =>
           scene.name.toLowerCase().includes(lowerQuery) ||
           scene.language.toLowerCase().includes(lowerQuery) ||
           scene.culturalGroup.toLowerCase().includes(lowerQuery) ||
@@ -221,8 +212,8 @@ export const arVrService = {
       // Calculate relevance scores
       results.forEach(scene => {
         let score = 0;
-        if (query) {
-          const lowerQuery = query.toLowerCase();
+        if (searchQuery) {
+          const lowerQuery = searchQuery.toLowerCase();
           if (scene.name.toLowerCase().includes(lowerQuery)) score += 10;
           if (scene.language.toLowerCase().includes(lowerQuery)) score += 8;
           if (scene.culturalGroup.toLowerCase().includes(lowerQuery)) score += 6;
@@ -422,7 +413,8 @@ export const arVrService = {
       }));
 
       // Calculate region stats
-      const regionStats = CAMEROON_REGIONS.map(region => ({
+      const cameroonRegions = ['Adamaoua', 'Centre', 'Est', 'Extrême-Nord', 'Littoral', 'Nord', 'Nord-Ouest', 'Ouest', 'Sud', 'Sud-Ouest'];
+      const regionStats = cameroonRegions.map((region: string) => ({
         region,
         scenes: scenes.filter(s => s.region === region).length,
         sessions: sessions.docs.filter(doc => {

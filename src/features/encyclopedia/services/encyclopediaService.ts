@@ -531,7 +531,10 @@ class EncyclopediaService {
         totalDances: dances.length,
         totalCeremonies: ceremonies.length,
         regions: new Set(groups.map(g => g.region)).size,
-        languages: new Set(groups.flatMap(g => g.languages)).size
+        languages: new Set(groups.flatMap(g => g.languages)).size,
+        totalMediaItems: groups.filter(g => g.images && g.images.length > 0).length,
+        regionsCovered: new Set(groups.map(g => g.region)).size,
+        lastUpdated: new Date()
       };
 
       this.setCache(cacheKey, stats);

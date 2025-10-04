@@ -1,10 +1,10 @@
 import React from 'react';
 import { VARKProfile, PerformanceAnalytics, CulturalProgress } from '../types/rpg.types';
 import { FloatingCard } from '@/shared/components/ui/AnimatedComponents';
-import { 
+import {
   ChartBarIcon,
   EyeIcon,
-  EarIcon,
+  SpeakerWaveIcon,
   BookOpenIcon,
   HandRaisedIcon,
   GlobeAltIcon,
@@ -38,7 +38,7 @@ export const LearningAnalyticsCard: React.FC<LearningAnalyticsCardProps> = ({
   const getVARKIcon = (style: string) => {
     switch (style) {
       case 'visual': return EyeIcon;
-      case 'auditory': return EarIcon;
+      case 'auditory': return SpeakerWaveIcon;
       case 'reading': return BookOpenIcon;
       case 'kinesthetic': return HandRaisedIcon;
       default: return ChartBarIcon;

@@ -7,7 +7,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useInView } from 'react-intersection-observer';
 import { 
   CameraIcon,
   PlayIcon,
@@ -48,17 +47,6 @@ const ARVRPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'scenes' | 'market' | 'village' | 'ceremony' | 'conversation'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Intersection observer for animations
-  const [statsRef, statsInView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
-
-  const [contentRef, contentInView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
 
   // Load initial data
   useEffect(() => {
@@ -228,7 +216,7 @@ const ARVRPage: React.FC = () => {
 
       {/* Statistics */}
       {stats && (
-        <AnimatedSection ref={statsRef} className="container-custom py-8">
+        <AnimatedSection className="container-custom py-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
               Statistiques AR/VR
@@ -479,7 +467,7 @@ const ARVRPage: React.FC = () => {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  <AnimatedSection ref={contentRef}>
+                  <AnimatedSection>
                     {activeTab === 'overview' && (
                       <div className="space-y-6">
                         <div className="text-center">

@@ -33,7 +33,7 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
     emailVerified: user.emailVerified,
     twoFactorEnabled: multiFactor(user).enrolledFactors.length > 0,
     role,
-    subscription: profile?.subscription,
+    subscription: typeof profile?.subscription === 'string' ? undefined : profile?.subscription,
     createdAt: new Date(user.metadata.creationTime || Date.now()),
     lastLoginAt: new Date(user.metadata.lastSignInTime || Date.now()),
     preferences: profile?.preferences || {

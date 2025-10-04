@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { Language, CulturalContext, MigrationEvent } from '../types/atlas.types';
 import { FloatingCard } from '@/shared/components/ui/AnimatedComponents';
-import { 
+import {
   XMarkIcon,
   MapPinIcon,
   UsersIcon,
@@ -19,7 +19,7 @@ import {
   ArrowRightIcon,
   PlayIcon,
   PauseIcon,
-  VolumeUpIcon
+  SpeakerWaveIcon
 } from '@heroicons/react/24/outline';
 
 interface LanguageDetailProps {

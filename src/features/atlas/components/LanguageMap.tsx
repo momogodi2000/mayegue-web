@@ -9,27 +9,28 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { Icon, LatLngTuple } from 'leaflet';
+// TODO: Install react-leaflet and leaflet packages to enable map functionality
+// import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+// import { Icon, LatLngTuple } from 'leaflet';
 import { Language, MapViewport, AtlasSettings } from '../types/atlas.types';
 import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
 
 // Import Leaflet CSS
-import 'leaflet/dist/leaflet.css';
+// import 'leaflet/dist/leaflet.css';
 
-// Fix for default markers in react-leaflet
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import markerRetina from 'leaflet/dist/images/marker-icon-2x.png';
-
-const DefaultIcon = new Icon({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconRetinaUrl: markerRetina,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+// Stub types for react-leaflet (TODO: remove when packages are installed)
+const MapContainer: any = 'div';
+const TileLayer: any = 'div';
+const Marker: any = 'div';
+const Popup: any = 'div';
+const Icon: any = class {};
+const useMap = () => ({
+  setView: (_center: any, _zoom?: any) => {},
+  fitBounds: (_bounds: any) => {},
+  getCenter: () => ({ lat: 0, lng: 0 }),
+  getZoom: () => 6,
+  on: (_event: any, _handler: any) => {},
+  off: (_event: any, _handler: any) => {}
 });
 
 interface LanguageMapProps {

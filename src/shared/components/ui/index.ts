@@ -26,7 +26,4 @@ export type { Toast, ToastType, ToastPosition } from './Toast';
 export { Form, FormGroup, FormActions, FormError, FormSuccess } from './Form';
 export type { FormProps, FormGroupProps, FormActionsProps, FormErrorProps, FormSuccessProps } from './Form';
 
-// Legacy exports (to maintain compatibility)
-export { Dropdown } from './Dropdown';
-export { LoadingScreen } from './LoadingScreen';
-export { Tabs } from './Tabs';
+export { AnimatedSection, FloatingCard, CountUp, ParallaxHero } from './AnimatedComponents';

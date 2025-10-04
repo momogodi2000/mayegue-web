@@ -46,8 +46,10 @@ export interface SubscriptionPlan {
   currency: string;
   duration: number; // days
   features: string[];
+  limitations?: string[];
   popular?: boolean;
   trialDays?: number;
+  customPricing?: boolean;
 }
 
 export interface PaymentHistory {

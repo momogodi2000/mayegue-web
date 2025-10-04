@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { CogIcon, UsersIcon, StarIcon } from '@heroicons/react/24/outline';
 import { Craft } from '../types/encyclopedia.types';
 
 interface CraftCardProps {

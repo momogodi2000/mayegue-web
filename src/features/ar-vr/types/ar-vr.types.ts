@@ -79,6 +79,13 @@ export interface ARObject {
   learningContent?: string;
 }
 
+export interface ARAnimation {
+  name: string;
+  duration: number;
+  loop: boolean;
+  speed: number;
+}
+
 export interface ARCharacter {
   id: string;
   name: string;

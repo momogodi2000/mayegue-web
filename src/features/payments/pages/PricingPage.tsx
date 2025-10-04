@@ -1,24 +1,22 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { 
-  CheckIcon, 
-  StarIcon, 
-  SparklesIcon, 
-  GlobeAltIcon, 
+import {
+  CheckIcon,
+  StarIcon,
+  SparklesIcon,
+  GlobeAltIcon,
   TrophyIcon,
-  HeartIcon,
-  AcademicCapIcon,
-  BuildingOfficeIcon
+  HeartIcon
 } from '@heroicons/react/24/outline';
-import { AnimatedSection, CountUp, FloatingCard } from '@/shared/components/ui/AnimatedComponents';
+import { AnimatedSection, FloatingCard } from '@/shared/components/ui/AnimatedComponents';
 import { VERSION_INFO } from '@/shared/constants/version';
 
 export default function PricingPage() {
   const navigate = useNavigate();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
-  const handleUpgrade = (plan: { name: string; amount: number; features: string[] }) => {
+  const handleUpgrade = (plan: { id: string; name: string; price: number | string; features: string[] }) => {
     navigate('/checkout', { state: { plan } });
   };
 

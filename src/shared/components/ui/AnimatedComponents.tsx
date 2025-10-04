@@ -68,20 +68,25 @@ interface FloatingCardProps {
   children: React.ReactNode;
   className?: string;
   hoverScale?: number;
+  delay?: number;
+  onClick?: () => void;
 }
 
-export const FloatingCard: React.FC<FloatingCardProps> = ({ 
-  children, 
-  className = '', 
-  hoverScale = 1.05 
+export const FloatingCard: React.FC<FloatingCardProps> = ({
+  children,
+  className = '',
+  hoverScale = 1.05,
+  delay = 0,
+  onClick
 }) => {
   const [hovered, setHovered] = useState(false);
-  
+
   const cardAnimation = useSpring({
     transform: hovered ? `scale(${hoverScale})` : 'scale(1)',
-    boxShadow: hovered 
-      ? '0 20px 40px rgba(0,0,0,0.15)' 
+    boxShadow: hovered
+      ? '0 20px 40px rgba(0,0,0,0.15)'
       : '0 10px 20px rgba(0,0,0,0.1)',
+    delay: delay,
     config: { tension: 300, friction: 10 },
   });
 
@@ -91,11 +96,14 @@ export const FloatingCard: React.FC<FloatingCardProps> = ({
       className={`cursor-pointer transition-all duration-200 ${className}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
     >
       {children}
     </animated.div>
   );
 };
+
+export type { AnimatedSectionProps, FloatingCardProps, CountUpProps, ParallaxHeroProps };
 
 interface ParallaxHeroProps {
   children: React.ReactNode;

@@ -5,51 +5,32 @@
  * @author Ma'a yegue Team
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useInView } from 'react-intersection-observer';
-import { 
+import {
   UserIcon,
   TrophyIcon,
   BookOpenIcon,
   ShoppingBagIcon,
   UsersIcon,
   ChartBarIcon,
-  StarIcon,
-  GiftIcon,
-  FireIcon,
-  ClockIcon,
   CurrencyDollarIcon,
-  AcademicCapIcon,
-  PuzzlePieceIcon,
-  SparklesIcon,
-  HeartIcon,
-  ShieldCheckIcon
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 import { rpgService } from '../services/rpgService';
-import { 
-  Player, 
-  Achievement, 
-  Quest, 
-  Competition, 
-  League, 
-  NgondoShop,
-  NgondoAuction
+import {
+  Player,
+  Achievement,
+  Quest
 } from '../types/rpg.types';
 import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
 import { CountUp } from '@/shared/components/ui/AnimatedComponents';
-import { LoadingSpinner } from '@/shared/components/ui/LoadingSpinner';
-import { ErrorMessage } from '@/shared/components/ui/ErrorMessage';
 
 const RPGGamificationPage: React.FC = () => {
   // State management
   const [player, setPlayer] = useState<Player | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [quests, setQuests] = useState<Quest[]>([]);
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
-  const [leagues, setLeagues] = useState<League[]>([]);
-  const [shops, setShops] = useState<NgondoShop[]>([]);
-  const [auctions, setAuctions] = useState<NgondoAuction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'character' | 'quests' | 'achievements' | 'competitions' | 'economy'>('overview');
@@ -57,16 +38,7 @@ const RPGGamificationPage: React.FC = () => {
   // Mock user ID - in real app, get from auth context
   const userId = 'mock-user-id';
 
-  // Intersection observer for animations
-  const [statsRef, statsInView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
-
-  const [contentRef, contentInView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
+  // Intersection observer for animations - not needed, AnimatedSection has its own
 
   // Load initial data
   useEffect(() => {
@@ -263,26 +235,18 @@ const RPGGamificationPage: React.FC = () => {
           updatedAt: new Date()
         };
 
-        const playerId = await rpgService.createPlayer(newPlayer);
+        await rpgService.createPlayer(newPlayer);
         playerData = await rpgService.getPlayer(userId);
       }
 
-      const [achievementsData, questsData, competitionsData, leaguesData, shopsData, auctionsData] = await Promise.all([
+      const [achievementsData, questsData] = await Promise.all([
         rpgService.getAllAchievements(),
-        rpgService.getAllQuests(),
-        rpgService.getAllCompetitions(),
-        rpgService.getAllLeagues(),
-        rpgService.getAllShops(),
-        rpgService.getAllAuctions()
+        rpgService.getAllQuests()
       ]);
 
       setPlayer(playerData);
       setAchievements(achievementsData);
       setQuests(questsData);
-      setCompetitions(competitionsData);
-      setLeagues(leaguesData);
-      setShops(shopsData);
-      setAuctions(auctionsData);
     } catch (err) {
       console.error('Error loading RPG data:', err);
       setError('Erreur lors du chargement du système RPG');
@@ -370,7 +334,7 @@ const RPGGamificationPage: React.FC = () => {
 
       {/* Player Stats */}
       {player && (
-        <AnimatedSection ref={statsRef} className="container-custom py-8">
+        <AnimatedSection className="container-custom py-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
               Votre Progression
@@ -507,7 +471,7 @@ const RPGGamificationPage: React.FC = () => {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  <AnimatedSection ref={contentRef}>
+                  <AnimatedSection>
                     {activeTab === 'overview' && (
                       <div className="space-y-6">
                         <div className="text-center">
@@ -754,32 +718,14 @@ const RPGGamificationPage: React.FC = () => {
 
                     {activeTab === 'competitions' && (
                       <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Compétitions ({competitions.length})
-                          </h2>
-                        </div>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {competitions.slice(0, 9).map((competition) => (
-                            <div key={competition.id} className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRarityColor(competition.difficulty)}`}>
-                                  {competition.difficulty}
-                                </span>
-                                <span className="text-sm text-gray-500">{competition.participants.length} participants</span>
-                              </div>
-                              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{competition.name}</h3>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-                                {competition.description}
-                              </p>
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-500">{competition.type}</span>
-                                <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                                  Participer →
-                                </button>
-                              </div>
-                            </div>
-                          ))}
+                        <div className="text-center py-12">
+                          <TrophyIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            Compétitions à venir
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            Les compétitions seront disponibles prochainement.
+                          </p>
                         </div>
                       </div>
                     )}
@@ -799,49 +745,15 @@ const RPGGamificationPage: React.FC = () => {
                             </div>
                           )}
                         </div>
-                        
-                        <div className="grid md:grid-cols-2 gap-6">
-                          {/* Shops */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                              Boutiques ({shops.length})
-                            </h3>
-                            <div className="space-y-4">
-                              {shops.slice(0, 3).map((shop) => (
-                                <div key={shop.id} className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4">
-                                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{shop.name}</h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{shop.description}</p>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500">{shop.category}</span>
-                                    <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                                      Visiter →
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
 
-                          {/* Auctions */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                              Enchères ({auctions.length})
-                            </h3>
-                            <div className="space-y-4">
-                              {auctions.slice(0, 3).map((auction) => (
-                                <div key={auction.id} className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4">
-                                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{auction.name}</h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{auction.description}</p>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-sm font-semibold text-green-600">{auction.currentBid} Ngondo Coins</span>
-                                    <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                                      Enchérir →
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                        <div className="text-center py-12">
+                          <ShoppingBagIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            Économie Ngondo à venir
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            Le système économique Ngondo (boutiques et enchères) sera disponible prochainement.
+                          </p>
                         </div>
                       </div>
                     )}

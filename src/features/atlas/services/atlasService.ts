@@ -5,7 +5,7 @@
  * @author Ma'a yegue Team
  */
 
-import { db } from '@/core/services/firebase/firebase';
+import { db } from '@/core/config/firebase.config';
 import { 
   collection, 
   getDocs, 
@@ -16,7 +16,10 @@ import {
   orderBy, 
   limit,
   startAfter,
-  DocumentSnapshot
+  DocumentSnapshot,
+  Query,
+  CollectionReference,
+  DocumentData
 } from 'firebase/firestore';
 import { 
   Language, 
@@ -41,7 +44,7 @@ class AtlasService {
    */
   async getLanguages(filters?: AtlasFilters, limitCount?: number): Promise<Language[]> {
     try {
-      let q = collection(db, LANGUAGES_COLLECTION);
+      let q: Query<DocumentData, DocumentData> | CollectionReference<DocumentData, DocumentData> = collection(db, LANGUAGES_COLLECTION);
 
       // Apply filters
       if (filters?.families && filters.families.length > 0) {

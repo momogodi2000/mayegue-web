@@ -12,7 +12,7 @@ interface AIMentorChatProps {
   mentorId?: string;
 }
 
-const AIMentorChat: React.FC<AIMentorChatProps> = ({ userId, mentorId }) => {
+const AIMentorChat: React.FC<AIMentorChatProps> = () => {
   return (
     <div className="ai-mentor-chat p-6">
       <h2 className="text-2xl font-bold mb-4">AI Mentor Chat</h2>

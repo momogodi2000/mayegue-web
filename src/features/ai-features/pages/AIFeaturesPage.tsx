@@ -7,8 +7,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useInView } from 'react-intersection-observer';
-import { 
+import {
   SparklesIcon,
   AcademicCapIcon,
   HeartIcon,
@@ -16,32 +15,20 @@ import {
   ChatBubbleLeftRightIcon,
   BookOpenIcon,
   LightBulbIcon,
-  CogIcon,
-  UserIcon,
-  TrophyIcon,
-  PuzzlePieceIcon,
-  GlobeAltIcon,
-  MicrophoneIcon,
+  RocketLaunchIcon,
+  CpuChipIcon,
   EyeIcon,
-  BrainIcon,
-  RocketLaunchIcon
+  GlobeAltIcon
 } from '@heroicons/react/24/outline';
 import { aiFeaturesService } from '../services/aiFeaturesService';
-import { 
-  AIMentor, 
-  VirtualGrandmother, 
+import {
+  AIMentor,
+  VirtualGrandmother,
   AdaptiveLearning,
-  ConversationMessage,
-  LearningProgress,
-  LearningGoal,
-  LearningChallenge,
-  LearningInsight,
-  LearningRecommendation
+  ConversationMessage
 } from '../types/ai.types';
 import { AnimatedSection } from '@/shared/components/ui/AnimatedComponents';
 import { CountUp } from '@/shared/components/ui/AnimatedComponents';
-import { LoadingSpinner } from '@/shared/components/ui/LoadingSpinner';
-import { ErrorMessage } from '@/shared/components/ui/ErrorMessage';
 
 const AIFeaturesPage: React.FC = () => {
   // State management
@@ -57,16 +44,7 @@ const AIFeaturesPage: React.FC = () => {
   // Mock user ID - in real app, get from auth context
   const userId = 'mock-user-id';
 
-  // Intersection observer for animations
-  const [statsRef, statsInView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
-
-  const [contentRef, contentInView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
+  // Intersection observer for animations - not needed, AnimatedSection has its own
 
   // Load initial data
   useEffect(() => {
@@ -207,7 +185,7 @@ const AIFeaturesPage: React.FC = () => {
       </div>
 
       {/* AI Stats */}
-      <AnimatedSection ref={statsRef} className="container-custom py-8">
+      <AnimatedSection className="container-custom py-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
             Statistiques IA
@@ -262,7 +240,7 @@ const AIFeaturesPage: React.FC = () => {
               {/* AI Status */}
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <BrainIcon className="w-5 h-5 mr-2" />
+                  <CpuChipIcon className="w-5 h-5 mr-2" />
                   État de l'IA
                 </h3>
                 <div className="space-y-3">
@@ -357,7 +335,7 @@ const AIFeaturesPage: React.FC = () => {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  <AnimatedSection ref={contentRef}>
+                  <AnimatedSection>
                     {activeTab === 'overview' && (
                       <div className="space-y-6">
                         <div className="text-center">

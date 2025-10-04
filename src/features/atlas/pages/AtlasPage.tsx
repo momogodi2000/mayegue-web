@@ -106,7 +106,7 @@ const AtlasPage: React.FC = () => {
     try {
       const [filteredLanguages, filteredStats] = await Promise.all([
         atlasService.getLanguages(filters),
-        atlasService.getAtlasStats(filters)
+        atlasService.getAtlasStats()
       ]);
 
       setLanguages(filteredLanguages);
@@ -198,7 +198,7 @@ const AtlasPage: React.FC = () => {
 
       {/* Statistics */}
       {stats && (
-        <AnimatedSection ref={statsRef} className="container-custom py-8">
+        <AnimatedSection className="container-custom py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary-600 mb-1">
@@ -295,7 +295,7 @@ const AtlasPage: React.FC = () => {
               </div>
 
               {/* Map Component */}
-              <AnimatedSection ref={mapRef}>
+              <AnimatedSection>
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                   <LanguageMap
                     languages={languages}

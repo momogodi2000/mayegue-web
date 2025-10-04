@@ -11,12 +11,7 @@ import {
   XMarkIcon,
   AdjustmentsHorizontalIcon,
   DocumentTextIcon,
-  PhotoIcon,
-  VideoCameraIcon,
-  SpeakerWaveIcon,
-  MapPinIcon,
-  CalendarIcon,
-  TagIcon
+  CalendarIcon
 } from '@heroicons/react/24/outline';
 import { EncyclopediaFilters, SearchResult } from '../types/encyclopedia.types';
 import { encyclopediaService } from '../services/encyclopediaService';
@@ -93,11 +88,11 @@ const EncyclopediaSearchComponent: React.FC<EncyclopediaSearchProps> = ({
     }
 
     try {
-      const ethnicGroups = await encyclopediaService.getAllEthnicGroups();
+      const ethnicGroups = await encyclopediaService.getEthnicGroups();
       const suggestions: SearchSuggestion[] = [];
 
       // Add ethnic group suggestions
-      ethnicGroups.forEach(group => {
+      ethnicGroups.forEach((group: any) => {
         if (group.name.toLowerCase().includes(searchQuery.toLowerCase())) {
           suggestions.push({
             id: group.id,
@@ -109,8 +104,8 @@ const EncyclopediaSearchComponent: React.FC<EncyclopediaSearchProps> = ({
       });
 
       // Add tradition suggestions
-      ethnicGroups.forEach(group => {
-        group.traditions.forEach(tradition => {
+      ethnicGroups.forEach((group: any) => {
+        group.traditions.forEach((tradition: any) => {
           if (tradition.toLowerCase().includes(searchQuery.toLowerCase())) {
             suggestions.push({
               id: `${group.id}-tradition-${tradition}`,
@@ -123,8 +118,8 @@ const EncyclopediaSearchComponent: React.FC<EncyclopediaSearchProps> = ({
       });
 
       // Add cuisine suggestions
-      ethnicGroups.forEach(group => {
-        group.cuisine.forEach(cuisine => {
+      ethnicGroups.forEach((group: any) => {
+        group.cuisine.forEach((cuisine: any) => {
           if (cuisine.toLowerCase().includes(searchQuery.toLowerCase())) {
             suggestions.push({
               id: `${group.id}-cuisine-${cuisine}`,
@@ -153,16 +148,16 @@ const EncyclopediaSearchComponent: React.FC<EncyclopediaSearchProps> = ({
       onLoadingChange(true);
       onErrorChange(null);
 
-      const ethnicGroups = await encyclopediaService.getAllEthnicGroups();
+      const ethnicGroups = await encyclopediaService.getEthnicGroups();
       const results: SearchResult[] = [];
 
       // Search in ethnic groups
-      ethnicGroups.forEach(group => {
+      ethnicGroups.forEach((group: any) => {
         const matchesQuery = group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            group.history.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           group.traditions.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                           group.cuisine.some(c => c.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                           group.crafts.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()));
+                           group.traditions.some((t: any) => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                           group.cuisine.some((c: any) => c.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                           group.crafts.some((c: any) => c.toLowerCase().includes(searchQuery.toLowerCase()));
 
         if (matchesQuery) {
           // Check filters

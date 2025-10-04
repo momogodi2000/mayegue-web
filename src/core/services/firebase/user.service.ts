@@ -7,6 +7,7 @@ interface UserProfileDoc {
   displayName?: string;
   email?: string;
   subscriptionStatus?: 'free' | 'premium' | 'trial';
+  subscription?: string; // V1.1: Subscription ID
   emailVerified?: boolean;
   twoFactorEnabled?: boolean;
   createdAt?: number;
@@ -56,6 +57,14 @@ export class UserService {
           badgesEarned: 0,
           level: 1,
           xp: 0,
+          atlasExplorations: 0,
+          encyclopediaEntries: 0,
+          historicalSitesVisited: 0,
+          arVrExperiences: 0,
+          marketplacePurchases: 0,
+          familyContributions: 0,
+          ngondoCoinsEarned: 0,
+          achievementsUnlocked: 0,
         },
         ...payload
       });

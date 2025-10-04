@@ -6,43 +6,33 @@
  */
 
 import { db } from '@/core/config/firebase.config';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  startAfter,
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
   addDoc,
   updateDoc,
-  deleteDoc,
   Timestamp,
-  increment,
   arrayUnion,
-  arrayRemove,
   writeBatch
 } from 'firebase/firestore';
-import { 
-  AIMentor, 
-  VirtualGrandmother, 
+import {
+  AIMentor,
+  VirtualGrandmother,
   AdaptiveLearning,
   ConversationMessage,
-  LearningProgress,
-  LearningGoal,
-  LearningChallenge,
-  LearningInsight,
-  LearningRecommendation,
+  AdaptiveInsight,
+  AdaptiveRecommendation,
   GrandmotherStory,
   GrandmotherRecipe,
   GrandmotherWisdom,
   GrandmotherMemory,
   PersonalizedContent,
   LearningPath,
-  PerformanceData,
-  AdaptationRule
+  PerformanceData
 } from '../types/ai.types';
 import { geminiService } from '@/core/services/ai/geminiService';
 
@@ -122,9 +112,10 @@ export const aiFeaturesService = {
       
       const aiResponse = await geminiService.generateResponse(
         `${systemPrompt}\n\nContext: ${context}\n\nUser: ${message.content}`,
+        undefined,
         {
           temperature: 0.7,
-          maxTokens: 500,
+          maxOutputTokens: 500,
           topP: 0.9
         }
       );
@@ -314,7 +305,7 @@ export const aiFeaturesService = {
   },
 
   // Performance Analysis
-  async analyzePerformance(userId: string, performanceData: PerformanceData): Promise<LearningInsight[]> {
+  async analyzePerformance(userId: string, performanceData: PerformanceData): Promise<AdaptiveInsight[]> {
     try {
       // Use Gemini AI to analyze performance data
       const analysisPrompt = `
@@ -341,9 +332,9 @@ export const aiFeaturesService = {
         Format the response as structured insights with actionable recommendations.
       `;
 
-      const analysis = await geminiService.generateResponse(analysisPrompt, {
+      const analysis = await geminiService.generateResponse(analysisPrompt, undefined, {
         temperature: 0.3,
-        maxTokens: 1000,
+        maxOutputTokens: 1000,
         topP: 0.8
       });
 
@@ -392,9 +383,9 @@ export const aiFeaturesService = {
         Format the response as a structured learning path with clear progression.
       `;
 
-      const pathData = await geminiService.generateResponse(pathPrompt, {
+      const pathData = await geminiService.generateResponse(pathPrompt, undefined, {
         temperature: 0.4,
-        maxTokens: 1500,
+        maxOutputTokens: 1500,
         topP: 0.8
       });
 
@@ -442,9 +433,9 @@ export const aiFeaturesService = {
         Format the response as structured personalized content.
       `;
 
-      const personalizedData = await geminiService.generateResponse(personalizationPrompt, {
+      const personalizedData = await geminiService.generateResponse(personalizationPrompt, undefined, {
         temperature: 0.5,
-        maxTokens: 1200,
+        maxOutputTokens: 1200,
         topP: 0.8
       });
 
@@ -472,7 +463,7 @@ export const aiFeaturesService = {
   },
 
   // Learning Recommendations
-  async generateRecommendations(userId: string): Promise<LearningRecommendation[]> {
+  async generateRecommendations(userId: string): Promise<AdaptiveRecommendation[]> {
     try {
       const adaptiveLearning = await this.getAdaptiveLearning(userId);
       if (!adaptiveLearning) throw new Error('Adaptive learning profile not found');
@@ -496,9 +487,9 @@ export const aiFeaturesService = {
         Format the response as structured recommendations with priorities and expected outcomes.
       `;
 
-      const recommendationData = await geminiService.generateResponse(recommendationPrompt, {
+      const recommendationData = await geminiService.generateResponse(recommendationPrompt, undefined, {
         temperature: 0.4,
-        maxTokens: 1000,
+        maxOutputTokens: 1000,
         topP: 0.8
       });
 
@@ -569,22 +560,23 @@ export const aiFeaturesService = {
     return 'neutral';
   },
 
-  parsePerformanceInsights(analysis: string, performanceData: PerformanceData): LearningInsight[] {
+  parsePerformanceInsights(_analysis: string, performanceData: PerformanceData): AdaptiveInsight[] {
     // Parse AI analysis into structured insights
     // This is a simplified implementation
-    const insights: LearningInsight[] = [];
-    
+    const insights: AdaptiveInsight[] = [];
+
     // Add insights based on performance data
     if (performanceData.accuracy < 70) {
       insights.push({
         id: `insight-${Date.now()}`,
-        type: 'weakness',
+        type: 'performance',
         title: 'Accuracy Improvement Needed',
         description: 'Focus on improving accuracy through practice and review',
         data: { accuracy: performanceData.accuracy },
         confidence: 0.8,
         actionable: true,
         priority: 'high',
+        recommendations: ['Practice more exercises', 'Review previous lessons'],
         createdAt: new Date()
       });
     }
@@ -592,13 +584,14 @@ export const aiFeaturesService = {
     if (performanceData.engagement > 80) {
       insights.push({
         id: `insight-${Date.now() + 1}`,
-        type: 'strength',
+        type: 'behavior',
         title: 'High Engagement',
         description: 'Excellent engagement levels indicate strong motivation',
         data: { engagement: performanceData.engagement },
         confidence: 0.9,
         actionable: true,
         priority: 'medium',
+        recommendations: ['Keep up the good work', 'Try more challenging content'],
         createdAt: new Date()
       });
     }
@@ -606,7 +599,7 @@ export const aiFeaturesService = {
     return insights;
   },
 
-  parseLearningPath(pathData: string, adaptiveLearning: AdaptiveLearning): Omit<LearningPath, 'id'> {
+  parseLearningPath(_pathData: string, adaptiveLearning: AdaptiveLearning): Omit<LearningPath, 'id'> {
     // Parse AI-generated learning path
     // This is a simplified implementation
     return {
@@ -638,13 +631,13 @@ export const aiFeaturesService = {
     };
   },
 
-  parsePersonalizedContent(contentData: string, adaptiveLearning: AdaptiveLearning): PersonalizedContent[] {
+  parsePersonalizedContent(_contentData: string, _adaptiveLearning: AdaptiveLearning): PersonalizedContent[] {
     // Parse AI-generated personalized content
     // This is a simplified implementation
     return [];
   },
 
-  parseRecommendations(recommendationData: string, adaptiveLearning: AdaptiveLearning): LearningRecommendation[] {
+  parseRecommendations(_recommendationData: string, _adaptiveLearning: AdaptiveLearning): AdaptiveRecommendation[] {
     // Parse AI-generated recommendations
     // This is a simplified implementation
     return [];

@@ -196,7 +196,7 @@ const HistoricalSitesPage: React.FC = () => {
 
       {/* Statistics */}
       {stats && (
-        <AnimatedSection ref={statsRef} className="container-custom py-8">
+        <AnimatedSection className="container-custom py-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
               Statistiques du Patrimoine
@@ -409,7 +409,7 @@ const HistoricalSitesPage: React.FC = () => {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  <AnimatedSection ref={contentRef}>
+                  <AnimatedSection>
                     {activeTab === 'overview' && (
                       <div className="space-y-6">
                         <div className="text-center">

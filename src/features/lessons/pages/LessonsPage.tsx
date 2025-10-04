@@ -111,14 +111,14 @@ export default function LessonsPage() {
   const loadAIRecommendations = async () => {
     try {
       if (user?.id && hasFullAccess) {
-        const recommendations = await geminiService.generateLearningPath({
-          userId: user.id,
-          targetLanguages: ['ewo', 'dua'], // Default languages
-          currentLevel: userProgress.currentLevel,
-          learningStyle: 'visual', // Default style
-          timeAvailable: 30 // 30 minutes
-        });
-        
+        const level = userProgress.currentLevel === 1 ? 'beginner' : userProgress.currentLevel === 2 ? 'intermediate' : 'advanced';
+        const recommendations = await geminiService.generateLearningPath(
+          'visual',
+          level,
+          'ewo',
+          ['basic-conversation', 'vocabulary']
+        );
+
         setAiRecommendations(recommendations.lessons || []);
       }
     } catch (error) {
@@ -130,14 +130,14 @@ export default function LessonsPage() {
   const loadLearningPath = async () => {
     try {
       if (user?.id && hasFullAccess) {
-        const path = await geminiService.generateLearningPath({
-          userId: user.id,
-          targetLanguages: ['ewo', 'dua'],
-          currentLevel: userProgress.currentLevel,
-          learningStyle: 'adaptive',
-          timeAvailable: 60
-        });
-        
+        const level = userProgress.currentLevel === 1 ? 'beginner' : userProgress.currentLevel === 2 ? 'intermediate' : 'advanced';
+        const path = await geminiService.generateLearningPath(
+          'visual',
+          level,
+          'ewo',
+          ['comprehensive-learning', 'cultural-understanding']
+        );
+
         setLearningPath(path);
       }
     } catch (error) {

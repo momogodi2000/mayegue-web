@@ -1,11 +1,11 @@
 /**
  * Marketplace Service - Firebase service for Marketplace data
- * 
+ *
  * @version 1.1.0
  * @author Ma'a yegue Team
  */
 
-import { db } from '@/core/services/firebase/firebase';
+import { db } from '@/core/config/firebase.config';
 import { 
   collection, 
   getDocs, 
@@ -15,14 +15,12 @@ import {
   where, 
   orderBy, 
   limit, 
-  startAfter,
   addDoc,
   updateDoc,
-  deleteDoc,
   Timestamp,
-  increment,
-  arrayUnion,
-  arrayRemove
+  Query,
+  CollectionReference,
+  DocumentData
 } from 'firebase/firestore';
 import { 
   Product, 
@@ -35,14 +33,7 @@ import {
   MarketplaceFilter, 
   MarketplaceSearchResult, 
   MarketplaceStats,
-  Commission,
-  Payment,
-  Refund,
   PRODUCT_CATEGORIES,
-  ARTISANAT_SUBCATEGORIES,
-  EXPERIENCE_TYPES,
-  LESSON_LEVELS,
-  LESSON_FORMATS,
   CAMEROON_REGIONS
 } from '../types/marketplace.types';
 
@@ -53,9 +44,6 @@ const EXPERIENCES_COLLECTION = 'marketplace_experiences';
 const ORDERS_COLLECTION = 'marketplace_orders';
 const CARTS_COLLECTION = 'marketplace_carts';
 const WISHLISTS_COLLECTION = 'marketplace_wishlists';
-const COMMISSIONS_COLLECTION = 'marketplace_commissions';
-const PAYMENTS_COLLECTION = 'marketplace_payments';
-const REFUNDS_COLLECTION = 'marketplace_refunds';
 
 export const marketplaceService = {
   // Products CRUD operations
@@ -163,9 +151,9 @@ export const marketplaceService = {
     }
   },
 
-  async searchProducts(query: string, filters?: MarketplaceFilter): Promise<MarketplaceSearchResult[]> {
+  async searchProducts(searchQuery: string, filters?: MarketplaceFilter): Promise<MarketplaceSearchResult[]> {
     try {
-      let q = query(collection(db, PRODUCTS_COLLECTION), where('isActive', '==', true));
+      let q: Query<DocumentData, DocumentData> | CollectionReference<DocumentData, DocumentData> = query(collection(db, PRODUCTS_COLLECTION), where('isActive', '==', true));
 
       // Apply filters
       if (filters?.category && filters.category.length > 0) {
@@ -186,7 +174,7 @@ export const marketplaceService = {
 
       const querySnapshot = await getDocs(q);
       let results = querySnapshot.docs.map(doc => {
-        const data = doc.data();
+        const data = doc.data() as any;
         return {
           id: doc.id,
           title: data.title,
@@ -204,8 +192,8 @@ export const marketplaceService = {
       });
 
       // Filter by search query
-      if (query) {
-        const lowerQuery = query.toLowerCase();
+      if (searchQuery) {
+        const lowerQuery = searchQuery.toLowerCase();
         results = results.filter(product => 
           product.title.toLowerCase().includes(lowerQuery) ||
           product.sellerName.toLowerCase().includes(lowerQuery) ||
@@ -225,8 +213,8 @@ export const marketplaceService = {
       // Calculate relevance scores
       results.forEach(product => {
         let score = 0;
-        if (query) {
-          const lowerQuery = query.toLowerCase();
+        if (searchQuery) {
+          const lowerQuery = searchQuery.toLowerCase();
           if (product.title.toLowerCase().includes(lowerQuery)) score += 10;
           if (product.sellerName.toLowerCase().includes(lowerQuery)) score += 5;
           if (product.region.toLowerCase().includes(lowerQuery)) score += 3;

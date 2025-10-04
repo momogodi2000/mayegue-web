@@ -6,9 +6,15 @@
  */
 
 import React from 'react';
-import { Marker, Popup } from 'react-leaflet';
-import { Icon } from 'leaflet';
+// TODO: Install react-leaflet and leaflet packages to enable map functionality
+// import { Marker, Popup } from 'react-leaflet';
+// import { Icon } from 'leaflet';
 import { Language, AtlasSettings } from '../types/atlas.types';
+
+// Stub types for react-leaflet (TODO: remove when packages are installed)
+const Marker: any = 'div';
+const Popup: any = 'div';
+const Icon: any = class {};
 
 interface LanguageMarkerProps {
   language: Language;

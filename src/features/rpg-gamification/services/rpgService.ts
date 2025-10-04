@@ -30,7 +30,12 @@ import {
   Reward,
   InventoryItem,
   EquipmentItem,
-  PlayerSkill
+  PlayerSkill,
+  Competition,
+  League,
+  NgondoShop,
+  NgondoAuction,
+  NgondoEconomy
 } from '../types/rpg.types';
 
 const PLAYERS_COLLECTION = 'rpg_players';
@@ -93,7 +98,7 @@ export const rpgService = {
   },
 
   // Player progression
-  async addExperience(playerId: string, amount: number, source: string): Promise<void> {
+  async addExperience(playerId: string, amount: number, _source: string): Promise<void> {
     try {
       const docRef = doc(db, PLAYERS_COLLECTION, playerId);
       const playerDoc = await getDoc(docRef);
@@ -130,7 +135,7 @@ export const rpgService = {
     }
   },
 
-  async addNgondoCoins(playerId: string, amount: number, source: string): Promise<void> {
+  async addNgondoCoins(playerId: string, amount: number, _source: string): Promise<void> {
     try {
       const docRef = doc(db, PLAYERS_COLLECTION, playerId);
       await updateDoc(docRef, {
@@ -146,7 +151,7 @@ export const rpgService = {
     }
   },
 
-  async spendNgondoCoins(playerId: string, amount: number, purpose: string): Promise<boolean> {
+  async spendNgondoCoins(playerId: string, amount: number, _purpose: string): Promise<boolean> {
     try {
       const docRef = doc(db, PLAYERS_COLLECTION, playerId);
       const playerDoc = await getDoc(docRef);
@@ -514,7 +519,6 @@ export const rpgService = {
       const competitionDoc = await getDoc(docRef);
       
       if (competitionDoc.exists()) {
-        const competition = competitionDoc.data();
         const participant = {
           id: playerId,
           username: '', // Will be filled from player data
@@ -561,7 +565,6 @@ export const rpgService = {
       const leagueDoc = await getDoc(docRef);
       
       if (leagueDoc.exists()) {
-        const league = leagueDoc.data();
         const participant = {
           id: playerId,
           username: '', // Will be filled from player data

@@ -5,7 +5,7 @@
  * @author Ma'a yegue Team
  */
 
-import { db } from '@/core/services/firebase/firebase';
+import { db } from '@/core/config/firebase.config';
 import { 
   collection, 
   getDocs, 
@@ -15,12 +15,11 @@ import {
   where, 
   orderBy, 
   limit, 
-  startAfter,
-  DocumentSnapshot,
   addDoc,
-  updateDoc,
-  deleteDoc,
-  Timestamp
+  Timestamp,
+  Query,
+  CollectionReference,
+  DocumentData
 } from 'firebase/firestore';
 import { 
   HistoricalSite, 
@@ -31,9 +30,7 @@ import {
   SiteStats,
   CulturalRoute,
   SiteVisit,
-  SiteEventBooking,
-  SITE_TYPES,
-  CAMEROON_REGIONS
+  SiteEventBooking
 } from '../types/historical-sites.types';
 
 const SITES_COLLECTION = 'historicalSites';
@@ -136,9 +133,9 @@ export const historicalSitesService = {
     }
   },
 
-  async searchSites(query: string, filters?: SiteFilter): Promise<SiteSearchResult[]> {
+  async searchSites(searchQuery: string, filters?: SiteFilter): Promise<SiteSearchResult[]> {
     try {
-      let q = query(collection(db, SITES_COLLECTION));
+      let q: Query<DocumentData, DocumentData> | CollectionReference<DocumentData, DocumentData> = collection(db, SITES_COLLECTION);
 
       // Apply filters
       if (filters?.type && filters.type.length > 0) {
@@ -159,7 +156,7 @@ export const historicalSitesService = {
 
       const querySnapshot = await getDocs(q);
       let results = querySnapshot.docs.map(doc => {
-        const data = doc.data();
+        const data = doc.data() as HistoricalSite;
         return {
           id: doc.id,
           name: data.name,
@@ -174,8 +171,8 @@ export const historicalSitesService = {
       });
 
       // Filter by search query
-      if (query) {
-        const lowerQuery = query.toLowerCase();
+      if (searchQuery) {
+        const lowerQuery = searchQuery.toLowerCase();
         results = results.filter(site => 
           site.name.toLowerCase().includes(lowerQuery) ||
           site.description.toLowerCase().includes(lowerQuery) ||
@@ -187,8 +184,8 @@ export const historicalSitesService = {
       // Calculate relevance scores
       results.forEach(site => {
         let score = 0;
-        if (query) {
-          const lowerQuery = query.toLowerCase();
+        if (searchQuery) {
+          const lowerQuery = searchQuery.toLowerCase();
           if (site.name.toLowerCase().includes(lowerQuery)) score += 10;
           if (site.description.toLowerCase().includes(lowerQuery)) score += 5;
           if (site.region.toLowerCase().includes(lowerQuery)) score += 3;
