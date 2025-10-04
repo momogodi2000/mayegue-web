@@ -39,6 +39,15 @@ const TermsPage = lazy(() => import('@/features/legal/pages/TermsPage'));
 const CheckoutPage = lazy(() => import('@/features/payments/pages/CheckoutPage'));
 const NewsletterVerifyPage = lazy(() => import('@/features/newsletter/pages/NewsletterVerifyPage'));
 
+// V1.1 Feature Pages
+const AtlasPage = lazy(() => import('@/features/atlas/pages/AtlasPage'));
+const EncyclopediaPage = lazy(() => import('@/features/encyclopedia/pages/EncyclopediaPage'));
+const HistoricalSitesPage = lazy(() => import('@/features/historical-sites/pages/HistoricalSitesPage'));
+const MarketplacePage = lazy(() => import('@/features/marketplace/pages/MarketplacePage'));
+const ARVRPage = lazy(() => import('@/features/ar-vr/pages/ARVRPage'));
+const RPGGamificationPage = lazy(() => import('@/features/rpg-gamification/pages/RPGGamificationPage'));
+const AIFeaturesPage = lazy(() => import('@/features/ai-features/pages/AIFeaturesPage'));
+
 export function AppRouter() {
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -59,6 +68,15 @@ export function AppRouter() {
           <Route path="partners" element={<PartnersPage />} />
           <Route path="careers" element={<CareersPage />} />
           <Route path="newsletter/verify" element={<NewsletterVerifyPage />} />
+          
+          {/* V1.1 Features - Public showcase pages */}
+          <Route path="atlas" element={<AtlasPage />} />
+          <Route path="encyclopedia" element={<EncyclopediaPage />} />
+          <Route path="historical-sites" element={<HistoricalSitesPage />} />
+          <Route path="marketplace" element={<MarketplacePage />} />
+          <Route path="ar-vr" element={<ARVRPage />} />
+          <Route path="rpg" element={<RPGGamificationPage />} />
+          <Route path="ai-features" element={<AIFeaturesPage />} />
           
           {/* Dictionary - Public with limited features */}
           <Route path="dictionary" element={<DictionaryPage />} />

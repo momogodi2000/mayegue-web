@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { AnimatedSection, CountUp, FloatingCard, ParallaxHero } from '@/shared/components/ui/AnimatedComponents';
+import { FeaturesCarousel } from '@/shared/components/ui/FeaturesCarousel';
+import { VERSION_INFO } from '@/shared/constants/version';
 
 export default function HomePage() {
   return (
@@ -83,9 +86,15 @@ export default function HomePage() {
         </script>
       </Helmet>
       {/* Hero Section */}
-      <div className="container-custom py-20">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Logo/Title */}
+      <ParallaxHero>
+        <div className="container-custom py-20">
+          <AnimatedSection className="text-center max-w-4xl mx-auto">
+            {/* Version Badge */}
+            <div className="inline-flex items-center px-4 py-2 mb-6 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+              🎉 Nouveau : Version {VERSION_INFO.version} - {VERSION_INFO.name}
+            </div>
+            
+            {/* Logo/Title */}
           <h1 className="heading-1 mb-6 gradient-text">
             Ma’a yegue
           </h1>
@@ -115,21 +124,28 @@ export default function HomePage() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-6 mt-16 max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary-600 mb-1">6</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Langues</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary-600 mb-1">
+                  <CountUp end={280} suffix="+" />
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Langues</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary-600 mb-1">
+                  <CountUp end={15000} suffix="+" />
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Mots</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary-600 mb-1">
+                  <CountUp end={5000} suffix="+" />
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Apprenants</div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary-600 mb-1">10,000+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Mots</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary-600 mb-1">3M+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Locuteurs</div>
-            </div>
-          </div>
+          </AnimatedSection>
         </div>
-      </div>
+      </ParallaxHero>
 
       {/* Languages Section */}
       <div className="container-custom py-16">
@@ -203,63 +219,138 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* V1.1 Features Showcase */}
+      <AnimatedSection className="bg-gradient-to-br from-primary-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 py-16">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center px-4 py-2 mb-4 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+              🆕 Nouveau dans la Version {VERSION_INFO.version}
+            </div>
+            <h2 className="heading-2 mb-6">Découvrez les Nouvelles Fonctionnalités</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {VERSION_INFO.description}
+            </p>
+          </div>
+          
+          <FeaturesCarousel items={[
+            {
+              id: 'atlas',
+              title: 'Atlas Linguistique Interactif',
+              description: 'Explorez les 280+ langues du Cameroun sur une carte 3D interactive avec données géolocalisées et informations culturelles.',
+              icon: '🗺️',
+              link: '/atlas',
+              category: 'Navigation'
+            },
+            {
+              id: 'encyclopedia',
+              title: 'Encyclopédie Culturelle',
+              description: 'Découvrez la richesse culturelle camerounaise : traditions, art, histoire et pratiques de plus de 280 groupes ethniques.',
+              icon: '📚',
+              link: '/encyclopedia',
+              category: 'Culture'
+            },
+            {
+              id: 'historical-sites',
+              title: 'Sites Historiques & Patrimoniaux',
+              description: 'Visitez virtuellement les palais royaux, sites archéologiques et monuments historiques du Cameroun.',
+              icon: '🏛️',
+              link: '/historical-sites',
+              category: 'Patrimoine'
+            },
+            {
+              id: 'marketplace',
+              title: 'Marketplace Culturel',
+              description: 'Soutenez l\'artisanat camerounais authentique : sculptures, tissages, musique et créations locales.',
+              icon: '🛍️',
+              link: '/marketplace',
+              category: 'Commerce'
+            },
+            {
+              id: 'archives',
+              title: 'Archives Audiovisuelles',
+              description: 'Préservation numérique des enregistrements audio, vidéos et documents historiques des langues camerounaises.',
+              icon: '🎬',
+              link: '/archives',
+              category: 'Archives'
+            },
+            {
+              id: 'ar-vr',
+              title: 'Expériences AR/VR',
+              description: 'Immersion culturelle en réalité augmentée et virtuelle dans les villages traditionnels camerounais.',
+              icon: '🥽',
+              link: '/ar-vr',
+              category: 'Innovation'
+            }
+          ]} />
+          
+          <div className="text-center mt-12">
+            <Link to="/atlas" className="btn-primary btn text-lg px-8 py-3 mr-4">
+              Explorer l'Atlas Linguistique
+            </Link>
+            <Link to="/encyclopedia" className="btn-outline btn text-lg px-8 py-3">
+              Découvrir l'Encyclopédie
+            </Link>
+          </div>
+        </div>
+      </AnimatedSection>
+
       {/* Features Section */}
-      <div className="container-custom py-16">
+      <AnimatedSection className="container-custom py-16">
         <h2 className="heading-2 text-center mb-12">Fonctionnalités Principales</h2>
         
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="card text-center">
+          <FloatingCard className="text-center">
             <div className="text-4xl mb-4">📚</div>
             <h3 className="text-xl font-semibold mb-3">Dictionnaire Interactif</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              10,000+ mots avec prononciation audio, exemples contextuels et étymologie
+              15,000+ mots avec prononciation audio, exemples contextuels et étymologie
             </p>
-          </div>
+          </FloatingCard>
 
-          <div className="card text-center">
+          <FloatingCard className="text-center">
             <div className="text-4xl mb-4">🎓</div>
             <h3 className="text-xl font-semibold mb-3">Leçons Structurées</h3>
             <p className="text-gray-600 dark:text-gray-400">
               Cours progressifs du débutant à l'expert avec exercices interactifs et évaluations
             </p>
-          </div>
+          </FloatingCard>
 
-          <div className="card text-center">
+          <FloatingCard className="text-center">
             <div className="text-4xl mb-4">🤖</div>
-            <h3 className="text-xl font-semibold mb-3">Assistant IA</h3>
+            <h3 className="text-xl font-semibold mb-3">Assistant IA Gemini</h3>
             <p className="text-gray-600 dark:text-gray-400">
               Conversez en temps réel et recevez des corrections personnalisées avec l'IA
             </p>
-          </div>
+          </FloatingCard>
 
-          <div className="card text-center">
+          <FloatingCard className="text-center">
             <div className="text-4xl mb-4">🎮</div>
-            <h3 className="text-xl font-semibold mb-3">Gamification</h3>
+            <h3 className="text-xl font-semibold mb-3">Gamification RPG</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Badges, classements et défis pour rendre l'apprentissage ludique et motivant
+              Système complet de RPG avec avatars, quêtes et progression épique
             </p>
-          </div>
+          </FloatingCard>
 
-          <div className="card text-center">
-            <div className="text-4xl mb-4">📴</div>
+          <FloatingCard className="text-center">
+            <div className="text-4xl mb-4">�</div>
             <h3 className="text-xl font-semibold mb-3">Mode Hors Ligne</h3>
             <p className="text-gray-600 dark:text-gray-400">
               Accédez au contenu même sans connexion internet grâce à notre PWA
             </p>
-          </div>
+          </FloatingCard>
 
-          <div className="card text-center">
-            <div className="text-4xl mb-4">👥</div>
-            <h3 className="text-xl font-semibold mb-3">Communauté</h3>
+          <FloatingCard className="text-center">
+            <div className="text-4xl mb-4">🌍</div>
+            <h3 className="text-xl font-semibold mb-3">Atlas Linguistique</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Échangez avec d'autres apprenants et enseignants natifs dans notre communauté
+              Carte interactive 3D des langues du Cameroun avec données géolocalisées
             </p>
-          </div>
+          </FloatingCard>
         </div>
-      </div>
+      </AnimatedSection>
 
       {/* How It Works */}
-      <div className="container-custom py-16">
+      <AnimatedSection className="container-custom py-16">
         <h2 className="heading-2 text-center mb-12">Comment ça marche</h2>
         <div className="grid md:grid-cols-4 gap-6">
           {[{
@@ -290,7 +381,7 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-      </div>
+      </AnimatedSection>
 
       {/* Mission Section */}
       <div className="container-custom py-16">

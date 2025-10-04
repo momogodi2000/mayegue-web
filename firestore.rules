@@ -30,7 +30,7 @@ service cloud.firestore {
     // Users collection - users can read/write their own data
     match /users/{userId} {
       allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      allow create: if isAuthenticated() && isOwner(userId) && hasValidEmail();
+      allow create: if isAuthenticated() && isOwner(userId);
       
       // User profiles can be read by authenticated users (for community features)
       allow read: if isAuthenticated() && isValidUser();
@@ -192,7 +192,21 @@ service cloud.firestore {
       allow read: if isAuthenticated() && isValidUser();
       allow write: if isAdmin();
     }
-    
+
+    // Newsletter subscriptions - publicly writable for new subscriptions
+    match /newsletter_subscriptions/{subscriptionId} {
+      allow read: if isAdmin();
+      allow create: if true; // Anyone can subscribe
+      allow update: if true; // Allow verification updates
+      allow delete: if isAdmin();
+    }
+
+    // Dictionary entries (top-level collection)
+    match /dictionary/{entryId} {
+      allow read: if true; // Public read for guest users
+      allow write: if isAuthenticated() && isTeacher();
+    }
+
     // Deny all other requests
     match /{document=**} {
       allow read, write: if false;

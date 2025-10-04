@@ -119,19 +119,19 @@ function getArrayEnvVar(key: string, fallback: string[] = []): string[] {
 export const config: AppConfig = {
   // App Info
   appName: getEnvVar('VITE_APP_NAME', 'Ma’a yegue'),
-  appVersion: getEnvVar('VITE_APP_VERSION', '1.0.0'),
+  appVersion: getEnvVar('VITE_APP_VERSION', '1.1.0'),
   appDescription: getEnvVar('VITE_APP_DESCRIPTION', 'Application d\'apprentissage des langues camerounaises'),
   environment: getEnvVar('VITE_APP_ENV', 'development') as 'development' | 'staging' | 'production',
   
   // Firebase
   firebase: {
-    apiKey: getEnvVar('VITE_FIREBASE_API_KEY'),
-    authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN'),
-    projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID'),
-    storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET'),
-    messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-    appId: getEnvVar('VITE_FIREBASE_APP_ID'),
-    measurementId: getEnvVar('VITE_FIREBASE_MEASUREMENT_ID'),
+    apiKey: getEnvVar('VITE_FIREBASE_API_KEY', 'AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0'),
+    authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN', 'studio-6750997720-7c22e.firebaseapp.com'),
+    projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID', 'studio-6750997720-7c22e'),
+    storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET', 'studio-6750997720-7c22e.firebasestorage.app'),
+    messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID', '853678151393'),
+    appId: getEnvVar('VITE_FIREBASE_APP_ID', '1:853678151393:web:40332d5cd4cedb029cc9a0'),
+    measurementId: getEnvVar('VITE_FIREBASE_MEASUREMENT_ID', 'G-F60NV25RDJ'),
   },
   
   // API Endpoints
