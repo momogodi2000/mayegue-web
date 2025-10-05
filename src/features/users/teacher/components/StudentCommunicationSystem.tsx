@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+import { motion } from 'framer-motion';
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   Button,
   Input,
@@ -11,33 +11,23 @@ import {
   Badge,
   useToastActions
 } from '@/shared/components/ui';
-import { 
+import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,
   UserGroupIcon,
-  BellIcon,
-  CheckCircleIcon,
   ClockIcon,
+  CheckCircleIcon,
   ExclamationTriangleIcon,
-  MagnifyingGlassIcon,
-  FunnelIcon
+  PlusIcon,
+  EyeIcon,
+  StarIcon
 } from '@heroicons/react/24/outline';
-
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  level: string;
-  lastActive: Date;
-  isOnline: boolean;
-}
 
 interface Message {
   id: string;
   senderId: string;
   senderName: string;
-  senderType: 'teacher' | 'student';
+  senderRole: 'teacher' | 'student';
   content: string;
   timestamp: Date;
   isRead: boolean;
@@ -48,593 +38,435 @@ interface Message {
 interface Attachment {
   id: string;
   name: string;
-  url: string;
-  type: 'image' | 'document' | 'audio' | 'video';
+  type: string;
   size: number;
+  url: string;
 }
 
-interface Announcement {
+interface Student {
   id: string;
-  title: string;
-  content: string;
-  targetAudience: 'all' | 'specific';
-  targetStudents?: string[];
-  priority: 'low' | 'medium' | 'high';
-  createdAt: Date;
-  isPublished: boolean;
+  name: string;
+  email: string;
+  avatar?: string;
+  level: string;
+  lastActive: Date;
+  unreadCount: number;
+}
+
+interface Conversation {
+  id: string;
+  student: Student;
+  messages: Message[];
+  lastMessage: Message;
+  isActive: boolean;
 }
 
 interface StudentCommunicationSystemProps {
   teacherId: string;
 }
 
-export default function StudentCommunicationSystem({ teacherId }: StudentCommunicationSystemProps) {
+const StudentCommunicationSystem: React.FC<StudentCommunicationSystemProps> = ({
+  teacherId
+}) => {
   const { success: showSuccess, error: showError } = useToastActions();
-  
-  const [activeTab, setActiveTab] = useState<'chat' | 'announcements' | 'assignments'>('chat');
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
+  const [messageType, setMessageType] = useState<'text' | 'announcement' | 'assignment' | 'feedback'>('text');
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterLevel, setFilterLevel] = useState('');
-  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
-  const [newAnnouncement, setNewAnnouncement] = useState({
-    title: '',
-    content: '',
-    priority: 'medium' as 'low' | 'medium' | 'high',
-    targetAudience: 'all' as 'all' | 'specific'
-  });
 
+  // Mock data
   useEffect(() => {
-    loadStudents();
-    if (selectedStudent) {
-      loadMessages(selectedStudent.id);
-    }
-  }, [selectedStudent]);
+    loadConversations();
+  }, []);
 
-  const loadStudents = async () => {
+  const loadConversations = async () => {
+    setLoading(true);
     try {
-      // Mock data
-      const mockStudents: Student[] = [
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const mockConversations: Conversation[] = [
         {
           id: '1',
-          name: 'Marie Nguema',
-          email: 'marie.nguema@email.com',
-          level: 'beginner',
-          lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          isOnline: true
+          student: {
+            id: 's1',
+            name: 'Marie Kouam',
+            email: 'marie.kouam@email.com',
+            level: 'Intermédiaire',
+            lastActive: new Date(Date.now() - 1000 * 60 * 30),
+            unreadCount: 2
+          },
+          messages: [
+            {
+              id: 'm1',
+              senderId: 's1',
+              senderName: 'Marie Kouam',
+              senderRole: 'student',
+              content: 'Bonjour professeur, j\'ai une question sur la leçon d\'hier.',
+              timestamp: new Date(Date.now() - 1000 * 60 * 30),
+              isRead: false,
+              type: 'text'
+            },
+            {
+              id: 'm2',
+              senderId: teacherId,
+              senderName: 'Professeur',
+              senderRole: 'teacher',
+              content: 'Bonjour Marie ! Quelle est votre question ?',
+              timestamp: new Date(Date.now() - 1000 * 60 * 25),
+              isRead: true,
+              type: 'text'
+            }
+          ],
+          lastMessage: {
+            id: 'm2',
+            senderId: teacherId,
+            senderName: 'Professeur',
+            senderRole: 'teacher',
+            content: 'Bonjour Marie ! Quelle est votre question ?',
+            timestamp: new Date(Date.now() - 1000 * 60 * 25),
+            isRead: true,
+            type: 'text'
+          },
+          isActive: true
         },
         {
           id: '2',
-          name: 'Jean Mballa',
-          email: 'jean.mballa@email.com',
-          level: 'intermediate',
-          lastActive: new Date(Date.now() - 30 * 60 * 1000),
-          isOnline: true
-        },
-        {
-          id: '3',
-          name: 'Fatou Diallo',
-          email: 'fatou.diallo@email.com',
-          level: 'advanced',
-          lastActive: new Date(Date.now() - 24 * 60 * 60 * 1000),
-          isOnline: false
-        },
-        {
-          id: '4',
-          name: 'Pierre Essomba',
-          email: 'pierre.essomba@email.com',
-          level: 'beginner',
-          lastActive: new Date(Date.now() - 5 * 60 * 60 * 1000),
-          isOnline: false
+          student: {
+            id: 's2',
+            name: 'Jean-Paul Dibango',
+            email: 'jean.dibango@email.com',
+            level: 'Débutant',
+            lastActive: new Date(Date.now() - 1000 * 60 * 60 * 2),
+            unreadCount: 0
+          },
+          messages: [
+            {
+              id: 'm3',
+              senderId: teacherId,
+              senderName: 'Professeur',
+              senderRole: 'teacher',
+              content: 'Excellent travail sur l\'exercice de prononciation !',
+              timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+              isRead: true,
+              type: 'feedback'
+            }
+          ],
+          lastMessage: {
+            id: 'm3',
+            senderId: teacherId,
+            senderName: 'Professeur',
+            senderRole: 'teacher',
+            content: 'Excellent travail sur l\'exercice de prononciation !',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+            isRead: true,
+            type: 'feedback'
+          },
+          isActive: false
         }
       ];
-      setStudents(mockStudents);
+      
+      setConversations(mockConversations);
     } catch (error) {
-      showError('Erreur lors du chargement des étudiants');
-    }
-  };
-
-  const loadMessages = async (studentId: string) => {
-    try {
-      // Mock messages
-      const mockMessages: Message[] = [
-        {
-          id: '1',
-          senderId: studentId,
-          senderName: students.find(s => s.id === studentId)?.name || 'Étudiant',
-          senderType: 'student',
-          content: 'Bonjour professeur, j\'ai une question sur la leçon d\'hier.',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          isRead: true,
-          type: 'text'
-        },
-        {
-          id: '2',
-          senderId: teacherId,
-          senderName: 'Vous',
-          senderType: 'teacher',
-          content: 'Bonjour ! Quelle est votre question ?',
-          timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
-          isRead: true,
-          type: 'text'
-        },
-        {
-          id: '3',
-          senderId: studentId,
-          senderName: students.find(s => s.id === studentId)?.name || 'Étudiant',
-          senderType: 'student',
-          content: 'Je ne comprends pas bien la différence entre les tons en ewondo.',
-          timestamp: new Date(Date.now() - 30 * 60 * 1000),
-          isRead: false,
-          type: 'text'
-        }
-      ];
-      setMessages(mockMessages);
-    } catch (error) {
-      showError('Erreur lors du chargement des messages');
+      showError('Erreur lors du chargement des conversations');
+    } finally {
+      setLoading(false);
     }
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedStudent) return;
+    if (!newMessage.trim() || !selectedConversation) return;
 
+    setLoading(true);
     try {
       const message: Message = {
         id: Date.now().toString(),
         senderId: teacherId,
-        senderName: 'Vous',
-        senderType: 'teacher',
+        senderName: 'Professeur',
+        senderRole: 'teacher',
         content: newMessage.trim(),
         timestamp: new Date(),
         isRead: false,
-        type: 'text'
+        type: messageType
       };
 
-      setMessages(prev => [...prev, message]);
+      setConversations(prev => prev.map(conv => 
+        conv.id === selectedConversation
+          ? {
+              ...conv,
+              messages: [...conv.messages, message],
+              lastMessage: message,
+              isActive: true
+            }
+          : conv
+      ));
+
       setNewMessage('');
-      showSuccess('Message envoyé');
+      showSuccess('Message envoyé avec succès');
     } catch (error) {
       showError('Erreur lors de l\'envoi du message');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const sendAnnouncement = async () => {
-    if (!newAnnouncement.title.trim() || !newAnnouncement.content.trim()) {
-      showError('Le titre et le contenu sont requis');
-      return;
-    }
+  const markAsRead = (conversationId: string) => {
+    setConversations(prev => prev.map(conv => 
+      conv.id === conversationId
+        ? {
+            ...conv,
+            messages: conv.messages.map(msg => ({ ...msg, isRead: true })),
+            student: { ...conv.student, unreadCount: 0 }
+          }
+        : conv
+    ));
+  };
 
-    try {
-      // Simulate sending announcement
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      showSuccess('Annonce publiée avec succès');
-      setShowAnnouncementModal(false);
-      setNewAnnouncement({
-        title: '',
-        content: '',
-        priority: 'medium',
-        targetAudience: 'all'
-      });
-    } catch (error) {
-      showError('Erreur lors de la publication de l\'annonce');
+  const getMessageTypeIcon = (type: string) => {
+    switch (type) {
+      case 'announcement': return '📢';
+      case 'assignment': return '📝';
+      case 'feedback': return '⭐';
+      default: return '💬';
     }
   };
 
-  const filteredStudents = students.filter(student => {
-    const matchesSearch = !searchQuery || 
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLevel = !filterLevel || student.level === filterLevel;
-    
-    return matchesSearch && matchesLevel;
-  });
-
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
+  const getMessageTypeColor = (type: string) => {
+    switch (type) {
+      case 'announcement': return 'bg-blue-100 text-blue-800';
+      case 'assignment': return 'bg-green-100 text-green-800';
+      case 'feedback': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'À l\'instant';
-    if (diffInMinutes < 60) return `${diffInMinutes} min`;
-    
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h`;
-    
-    return date.toLocaleDateString('fr-FR');
-  };
+  const filteredConversations = conversations.filter(conv =>
+    conv.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.student.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const tabs = [
-    { id: 'chat', label: 'Messages', icon: ChatBubbleLeftRightIcon },
-    { id: 'announcements', label: 'Annonces', icon: BellIcon },
-    { id: 'assignments', label: 'Devoirs', icon: CheckCircleIcon }
-  ];
+  const currentConversation = conversations.find(conv => conv.id === selectedConversation);
+
+  if (loading && conversations.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p>Chargement des conversations...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Communication avec les Étudiants
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Gérez la communication et les annonces
-          </p>
-        </div>
-        
-        <Button 
-          onClick={() => setShowAnnouncementModal(true)}
-          className="flex items-center gap-2"
-        >
-          <BellIcon className="w-4 h-4" />
-          Nouvelle Annonce
-        </Button>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-12rem)]">
+      {/* Conversations List */}
+      <div className="lg:col-span-1">
+        <Card className="h-full flex flex-col">
+          <CardHeader className="border-b">
+            <CardTitle className="flex items-center gap-2">
+              <ChatBubbleLeftRightIcon className="w-5 h-5" />
+              Conversations
+            </CardTitle>
+            <div className="mt-4">
+              <Input
+                placeholder="Rechercher un étudiant..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </CardHeader>
 
-      {/* Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="-mb-px flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <AnimatePresence mode="wait">
-        {activeTab === 'chat' && (
-          <motion.div
-            key="chat"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-          >
-            {/* Students List */}
-            <Card className="lg:col-span-1">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <UserGroupIcon className="w-5 h-5" />
-                  Étudiants ({filteredStudents.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                {/* Search and Filter */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                  <div className="relative mb-3">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                      placeholder="Rechercher un étudiant..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  
-                  <select
-                    value={filterLevel}
-                    onChange={(e) => setFilterLevel(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-                  >
-                    <option value="">Tous les niveaux</option>
-                    <option value="beginner">Débutant</option>
-                    <option value="intermediate">Intermédiaire</option>
-                    <option value="advanced">Avancé</option>
-                  </select>
-                </div>
-
-                {/* Students List */}
-                <div className="max-h-96 overflow-y-auto">
-                  {filteredStudents.map((student) => (
-                    <div
-                      key={student.id}
-                      onClick={() => setSelectedStudent(student)}
-                      className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-                        selectedStudent?.id === student.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="relative">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                            {student.name.split(' ').map(n => n[0]).join('')}
-                          </div>
-                          {student.isOnline && (
-                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium text-gray-900 dark:text-white truncate">
-                              {student.name}
-                            </p>
-                            <Badge className={getLevelColor(student.level)}>
-                              {student.level}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                            {student.email}
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {student.isOnline ? 'En ligne' : `Dernière activité: ${formatTime(student.lastActive)}`}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Chat Area */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>
-                  {selectedStudent ? (
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        {selectedStudent.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <p className="font-medium">{selectedStudent.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {selectedStudent.email}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    'Sélectionnez un étudiant pour commencer la conversation'
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col h-96">
-                {selectedStudent ? (
-                  <>
-                    {/* Messages */}
-                    <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-                      {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${message.senderType === 'teacher' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                              message.senderType === 'teacher'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                            }`}
-                          >
-                            <p className="text-sm">{message.content}</p>
-                            <p className="text-xs mt-1 opacity-70">
-                              {formatTime(message.timestamp)}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Message Input */}
-                    <div className="flex gap-2">
-                      <Input
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Tapez votre message..."
-                        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                      />
-                      <Button onClick={sendMessage} disabled={!newMessage.trim()}>
-                        <PaperAirplaneIcon className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex-1 flex items-center justify-center text-gray-500">
-                    <div className="text-center">
-                      <ChatBubbleLeftRightIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p>Sélectionnez un étudiant pour commencer la conversation</p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {activeTab === 'announcements' && (
-          <motion.div
-            key="announcements"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BellIcon className="w-5 h-5" />
-                  Annonces Récentes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Mock announcements */}
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        Nouvelle leçon disponible
-                      </h4>
-                      <Badge variant="secondary">Moyenne</Badge>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400 mb-2">
-                      La nouvelle leçon sur la grammaire ewondo est maintenant disponible dans votre tableau de bord.
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      <span>Publiée il y a 2h</span>
-                      <span>•</span>
-                      <span>Destinée à tous les étudiants</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        Rappel: Devoir à rendre
-                      </h4>
-                      <Badge variant="secondary">Haute</Badge>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400 mb-2">
-                      N'oubliez pas de rendre votre devoir sur la prononciation avant vendredi.
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      <span>Publiée il y a 1 jour</span>
-                      <span>•</span>
-                      <span>Destinée aux étudiants débutants</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {activeTab === 'assignments' && (
-          <motion.div
-            key="assignments"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircleIcon className="w-5 h-5" />
-                  Devoirs et Évaluations
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-gray-500">
-                  <CheckCircleIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>Fonctionnalité de devoirs en cours de développement</p>
-                  <p className="text-sm">Bientôt disponible</p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Announcement Modal */}
-      <AnimatePresence>
-        {showAnnouncementModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4"
-            >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Créer une nouvelle annonce
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Titre *
-                  </label>
-                  <Input
-                    value={newAnnouncement.title}
-                    onChange={(e) => setNewAnnouncement(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Titre de l'annonce"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Contenu *
-                  </label>
-                  <Textarea
-                    value={newAnnouncement.content}
-                    onChange={(e) => setNewAnnouncement(prev => ({ ...prev, content: e.target.value }))}
-                    placeholder="Contenu de l'annonce"
-                    rows={4}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Priorité
-                    </label>
-                    <select
-                      value={newAnnouncement.priority}
-                      onChange={(e) => setNewAnnouncement(prev => ({ ...prev, priority: e.target.value as any }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    >
-                      <option value="low">Basse</option>
-                      <option value="medium">Moyenne</option>
-                      <option value="high">Haute</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Audience
-                    </label>
-                    <select
-                      value={newAnnouncement.targetAudience}
-                      onChange={(e) => setNewAnnouncement(prev => ({ ...prev, targetAudience: e.target.value as any }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    >
-                      <option value="all">Tous les étudiants</option>
-                      <option value="specific">Étudiants spécifiques</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAnnouncementModal(false)}
+          <CardContent className="flex-1 overflow-y-auto p-0">
+            <div className="space-y-1">
+              {filteredConversations.map((conversation) => (
+                <motion.div
+                  key={conversation.id}
+                  whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                  onClick={() => {
+                    setSelectedConversation(conversation.id);
+                    markAsRead(conversation.id);
+                  }}
+                  className={`p-4 border-b cursor-pointer transition-colors ${
+                    selectedConversation === conversation.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                  }`}
                 >
-                  Annuler
-                </Button>
-                <Button onClick={sendAnnouncement}>
-                  Publier
-                </Button>
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-primary-500 text-white rounded-full flex items-center justify-center font-semibold">
+                      {conversation.student.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm truncate">{conversation.student.name}</p>
+                        {conversation.student.unreadCount > 0 && (
+                          <Badge variant="danger" className="ml-2">
+                            {conversation.student.unreadCount}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate mb-1">
+                        {conversation.lastMessage.content}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <ClockIcon className="w-3 h-3" />
+                          {conversation.lastMessage.timestamp.toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs ${getMessageTypeColor(conversation.lastMessage.type)}`}
+                        >
+                          {getMessageTypeIcon(conversation.lastMessage.type)}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Chat Area */}
+      <div className="lg:col-span-2">
+        {currentConversation ? (
+          <Card className="h-full flex flex-col">
+            <CardHeader className="border-b">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary-500 text-white rounded-full flex items-center justify-center font-semibold">
+                    {currentConversation.student.name.charAt(0)}
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">{currentConversation.student.name}</CardTitle>
+                    <p className="text-sm text-gray-600">
+                      {currentConversation.student.level} • {currentConversation.student.email}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">
+                    {currentConversation.student.unreadCount} non lus
+                  </Badge>
+                  {currentConversation.isActive && (
+                    <Badge variant="success">En ligne</Badge>
+                  )}
+                </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </CardHeader>
+
+            <CardContent className="flex-1 overflow-y-auto p-0">
+              <div className="p-4 space-y-4">
+                {currentConversation.messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${message.senderRole === 'teacher' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.senderRole === 'teacher'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 text-gray-900'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium">
+                          {message.senderName}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs ${
+                            message.senderRole === 'teacher' 
+                              ? 'bg-blue-600 text-white' 
+                              : getMessageTypeColor(message.type)
+                          }`}
+                        >
+                          {getMessageTypeIcon(message.type)}
+                        </Badge>
+                      </div>
+                      <p className="text-sm">{message.content}</p>
+                      <p className="text-xs opacity-75 mt-1">
+                        {message.timestamp.toLocaleTimeString('fr-FR', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+
+            {/* Message Input */}
+            <div className="border-t p-4">
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <select
+                    value={messageType}
+                    onChange={(e) => setMessageType(e.target.value as any)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  >
+                    <option value="text">Message</option>
+                    <option value="announcement">Annonce</option>
+                    <option value="assignment">Devoir</option>
+                    <option value="feedback">Feedback</option>
+                  </select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                  >
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                    Pièce jointe
+                  </Button>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Textarea
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Tapez votre message..."
+                    rows={3}
+                    className="flex-1"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={sendMessage}
+                    disabled={loading || !newMessage.trim()}
+                    className="self-end"
+                  >
+                    <PaperAirplaneIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          <Card className="h-full">
+            <CardContent className="flex items-center justify-center h-full">
+              <div className="text-center text-gray-500">
+                <ChatBubbleLeftRightIcon className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium">Sélectionnez une conversation</p>
+                <p className="text-sm mt-2">
+                  Choisissez un étudiant pour commencer à communiquer
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
-}
+};
+
+export default StudentCommunicationSystem;

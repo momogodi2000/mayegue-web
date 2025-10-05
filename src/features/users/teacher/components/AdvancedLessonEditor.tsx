@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Card,
   CardContent,
@@ -14,54 +14,52 @@ import {
   SelectContent,
   SelectItem,
   Badge,
-  Progress,
   useToastActions
 } from '@/shared/components/ui';
-import { 
-  BookOpenIcon,
+import {
+  AcademicCapIcon,
   PlusIcon,
   TrashIcon,
-  PencilIcon,
   EyeIcon,
-  DocumentDuplicateIcon,
-  ClockIcon,
-  AcademicCapIcon,
-  ChartBarIcon,
-  UsersIcon
+  PencilIcon,
+  DocumentTextIcon,
+  PhotoIcon,
+  SpeakerWaveIcon,
+  PlayIcon,
+  DocumentArrowDownIcon,
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
+
+interface LessonContent {
+  id: string;
+  type: 'text' | 'image' | 'audio' | 'video' | 'exercise';
+  content: string;
+  metadata?: Record<string, any>;
+}
+
+interface Exercise {
+  id: string;
+  type: 'multiple_choice' | 'fill_blank' | 'translation' | 'pronunciation';
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  explanation?: string;
+  points: number;
+}
 
 interface Lesson {
   id: string;
   title: string;
   description: string;
-  content: string;
-  level: string;
   language: string;
-  category: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
   duration: number;
-  tags: string[];
-  culturalNotes: string;
-  objectives: string[];
+  content: LessonContent[];
   exercises: Exercise[];
+  tags: string[];
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
-  studentCount: number;
-  averageRating: number;
-  completionRate: number;
-}
-
-interface Exercise {
-  id: string;
-  type: 'multiple_choice' | 'translation' | 'pronunciation' | 'cultural' | 'fill_blank' | 'audio_recording';
-  question: string;
-  options?: string[];
-  correctAnswer: string;
-  explanation: string;
-  points: number;
-  audioUrl?: string;
-  imageUrl?: string;
-  hints: string[];
 }
 
 interface AdvancedLessonEditorProps {
@@ -70,51 +68,37 @@ interface AdvancedLessonEditorProps {
   onCancel: () => void;
 }
 
-export default function AdvancedLessonEditor({ 
-  lessonId, 
-  onSave, 
-  onCancel 
-}: AdvancedLessonEditorProps) {
+const AdvancedLessonEditor: React.FC<AdvancedLessonEditorProps> = ({
+  lessonId,
+  onSave,
+  onCancel
+}) => {
   const { success: showSuccess, error: showError } = useToastActions();
-  
   const [lesson, setLesson] = useState<Lesson>({
-    id: lessonId || Date.now().toString(),
+    id: lessonId || '',
     title: '',
     description: '',
-    content: '',
+    language: 'ewo',
     level: 'beginner',
-    language: 'dualaba',
-    category: 'vocabulaire',
     duration: 30,
-    tags: [],
-    culturalNotes: '',
-    objectives: [],
+    content: [],
     exercises: [],
+    tags: [],
     isPublished: false,
     createdAt: new Date(),
-    updatedAt: new Date(),
-    studentCount: 0,
-    averageRating: 0,
-    completionRate: 0
+    updatedAt: new Date()
   });
-
-  const [currentTab, setCurrentTab] = useState<'basic' | 'content' | 'exercises' | 'analytics'>('basic');
+  const [activeTab, setActiveTab] = useState<'content' | 'exercises' | 'settings' | 'preview'>('content');
   const [loading, setLoading] = useState(false);
   const [newTag, setNewTag] = useState('');
-  const [newObjective, setNewObjective] = useState('');
-  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
-
-  const levels = ['beginner', 'intermediate', 'advanced'];
-  const languages = ['dualaba', 'ewondo', 'bassa', 'bamoun', 'fulfulde', 'yemba', 'anglais', 'français'];
-  const categories = ['vocabulaire', 'grammaire', 'conversation', 'culture', 'prononciation', 'compréhension', 'expression'];
 
   useEffect(() => {
     if (lessonId) {
-      loadLesson();
+      loadLesson(lessonId);
     }
   }, [lessonId]);
 
-  const loadLesson = async () => {
+  const loadLesson = async (id: string) => {
     setLoading(true);
     try {
       // Simulate API call
@@ -122,35 +106,40 @@ export default function AdvancedLessonEditor({
       
       // Mock lesson data
       const mockLesson: Lesson = {
-        id: lessonId!,
-        title: 'Salutations en Dualaba',
-        description: 'Apprenez les salutations de base en langue dualaba',
-        content: 'Les salutations sont essentielles dans la culture camerounaise...',
+        id,
+        title: 'Salutations en Ewondo',
+        description: 'Apprenez les salutations de base en Ewondo',
+        language: 'ewo',
         level: 'beginner',
-        language: 'dualaba',
-        category: 'conversation',
         duration: 45,
-        tags: ['salutations', 'dualaba', 'culture'],
-        culturalNotes: 'Les salutations montrent le respect dans la culture camerounaise...',
-        objectives: ['Comprendre les salutations de base', 'Utiliser les salutations appropriées'],
+        content: [
+          {
+            id: '1',
+            type: 'text',
+            content: 'Les salutations sont importantes dans la culture camerounaise...'
+          },
+          {
+            id: '2',
+            type: 'audio',
+            content: '/audio/greetings-ewondo.mp3',
+            metadata: { duration: 120 }
+          }
+        ],
         exercises: [
           {
             id: '1',
             type: 'multiple_choice',
-            question: 'Comment dit-on "Bonjour" en dualaba?',
-            options: ['Mbote', 'Sango', 'Mbolo', 'Awo'],
-            correctAnswer: 'Mbote',
-            explanation: 'Mbote est la salutation standard en dualaba',
-            points: 10,
-            hints: ['Pense aux salutations courantes', 'C\'est une salutation universelle']
+            question: 'Comment dit-on "Bonjour" en Ewondo ?',
+            options: ['Mbolo', 'Akiba', 'Malamu', 'Boni'],
+            correctAnswer: 'Mbolo',
+            explanation: 'Mbolo est la salutation standard en Ewondo',
+            points: 10
           }
         ],
-        isPublished: true,
+        tags: ['salutations', 'débutant', 'ewondo'],
+        isPublished: false,
         createdAt: new Date(),
-        updatedAt: new Date(),
-        studentCount: 156,
-        averageRating: 4.7,
-        completionRate: 85
+        updatedAt: new Date()
       };
       
       setLesson(mockLesson);
@@ -161,11 +150,86 @@ export default function AdvancedLessonEditor({
     }
   };
 
-  const handleInputChange = (field: keyof Lesson, value: any) => {
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const updatedLesson = {
+        ...lesson,
+        updatedAt: new Date()
+      };
+      
+      setLesson(updatedLesson);
+      onSave(updatedLesson);
+      showSuccess('Leçon sauvegardée avec succès');
+    } catch (error) {
+      showError('Erreur lors de la sauvegarde');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addContent = (type: LessonContent['type']) => {
+    const newContent: LessonContent = {
+      id: Date.now().toString(),
+      type,
+      content: '',
+      metadata: {}
+    };
+    
     setLesson(prev => ({
       ...prev,
-      [field]: value,
-      updatedAt: new Date()
+      content: [...prev.content, newContent]
+    }));
+  };
+
+  const updateContent = (id: string, updates: Partial<LessonContent>) => {
+    setLesson(prev => ({
+      ...prev,
+      content: prev.content.map(item =>
+        item.id === id ? { ...item, ...updates } : item
+      )
+    }));
+  };
+
+  const removeContent = (id: string) => {
+    setLesson(prev => ({
+      ...prev,
+      content: prev.content.filter(item => item.id !== id)
+    }));
+  };
+
+  const addExercise = () => {
+    const newExercise: Exercise = {
+      id: Date.now().toString(),
+      type: 'multiple_choice',
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: '',
+      points: 10
+    };
+    
+    setLesson(prev => ({
+      ...prev,
+      exercises: [...prev.exercises, newExercise]
+    }));
+  };
+
+  const updateExercise = (id: string, updates: Partial<Exercise>) => {
+    setLesson(prev => ({
+      ...prev,
+      exercises: prev.exercises.map(exercise =>
+        exercise.id === id ? { ...exercise, ...updates } : exercise
+      )
+    }));
+  };
+
+  const removeExercise = (id: string) => {
+    setLesson(prev => ({
+      ...prev,
+      exercises: prev.exercises.filter(exercise => exercise.id !== id)
     }));
   };
 
@@ -179,640 +243,516 @@ export default function AdvancedLessonEditor({
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
+  const removeTag = (tag: string) => {
     setLesson(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter(t => t !== tag)
     }));
   };
 
-  const addObjective = () => {
-    if (newObjective.trim() && !lesson.objectives.includes(newObjective.trim())) {
-      setLesson(prev => ({
-        ...prev,
-        objectives: [...prev.objectives, newObjective.trim()]
-      }));
-      setNewObjective('');
+  const getContentIcon = (type: string) => {
+    switch (type) {
+      case 'text': return <DocumentTextIcon className="w-5 h-5" />;
+      case 'image': return <PhotoIcon className="w-5 h-5" />;
+      case 'audio': return <SpeakerWaveIcon className="w-5 h-5" />;
+      case 'video': return <PlayIcon className="w-5 h-5" />;
+      case 'exercise': return <AcademicCapIcon className="w-5 h-5" />;
+      default: return <DocumentTextIcon className="w-5 h-5" />;
     }
   };
-
-  const removeObjective = (objectiveToRemove: string) => {
-    setLesson(prev => ({
-      ...prev,
-      objectives: prev.objectives.filter(obj => obj !== objectiveToRemove)
-    }));
-  };
-
-  const addExercise = () => {
-    const newExercise: Exercise = {
-      id: Date.now().toString(),
-      type: 'multiple_choice',
-      question: '',
-      options: ['', '', '', ''],
-      correctAnswer: '',
-      explanation: '',
-      points: 10,
-      hints: []
-    };
-    setLesson(prev => ({
-      ...prev,
-      exercises: [...prev.exercises, newExercise]
-    }));
-  };
-
-  const updateExercise = (exerciseId: string, field: keyof Exercise, value: any) => {
-    setLesson(prev => ({
-      ...prev,
-      exercises: prev.exercises.map(ex => 
-        ex.id === exerciseId ? { ...ex, [field]: value } : ex
-      )
-    }));
-  };
-
-  const removeExercise = (exerciseId: string) => {
-    setLesson(prev => ({
-      ...prev,
-      exercises: prev.exercises.filter(ex => ex.id !== exerciseId)
-    }));
-  };
-
-  const duplicateExercise = (exerciseId: string) => {
-    const exercise = lesson.exercises.find(ex => ex.id === exerciseId);
-    if (exercise) {
-      const duplicatedExercise: Exercise = {
-        ...exercise,
-        id: Date.now().toString(),
-        question: `${exercise.question} (Copie)`
-      };
-      setLesson(prev => ({
-        ...prev,
-        exercises: [...prev.exercises, duplicatedExercise]
-      }));
-    }
-  };
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      // Validate lesson
-      if (!lesson.title.trim() || !lesson.content.trim()) {
-        showError('Le titre et le contenu sont requis');
-        return;
-      }
-
-      if (lesson.exercises.length === 0) {
-        showError('Veuillez ajouter au moins un exercice');
-        return;
-      }
-
-      await onSave(lesson);
-      showSuccess('Leçon sauvegardée avec succès');
-    } catch (error) {
-      showError('Erreur lors de la sauvegarde');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const tabs = [
-    { id: 'basic', label: 'Informations de base', icon: BookOpenIcon },
-    { id: 'content', label: 'Contenu', icon: DocumentDuplicateIcon },
-    { id: 'exercises', label: 'Exercices', icon: AcademicCapIcon },
-    { id: 'analytics', label: 'Analytiques', icon: ChartBarIcon }
-  ];
 
   if (loading && lessonId) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement de la leçon...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p>Chargement de la leçon...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {lessonId ? 'Modifier la leçon' : 'Créer une nouvelle leçon'}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Éditeur avancé pour les leçons
-          </p>
-        </div>
-        
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onCancel}>
-            Annuler
-          </Button>
-          <Button onClick={handleSave} disabled={loading}>
-            {loading ? 'Sauvegarde...' : 'Sauvegarder'}
-          </Button>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="-mb-px flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setCurrentTab(tab.id as any)}
-                className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm ${
-                  currentTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="outline" onClick={onCancel}>
+                <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                Retour
+              </Button>
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <AcademicCapIcon className="w-5 h-5" />
+                  {lessonId ? 'Modifier la leçon' : 'Nouvelle leçon'}
+                </CardTitle>
+                <p className="text-sm text-gray-600 mt-1">
+                  Créez et éditez vos leçons avec des outils avancés
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setActiveTab('preview')}
               >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+                <EyeIcon className="w-4 h-4 mr-2" />
+                Aperçu
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={loading}
+              >
+                <DocumentArrowDownIcon className="w-4 h-4 mr-2" />
+                {loading ? 'Sauvegarde...' : 'Sauvegarder'}
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Navigation Tabs */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="flex border-b">
+            {[
+              { id: 'content', label: 'Contenu', icon: DocumentTextIcon },
+              { id: 'exercises', label: 'Exercices', icon: AcademicCapIcon },
+              { id: 'settings', label: 'Paramètres', icon: PencilIcon },
+              { id: 'preview', label: 'Aperçu', icon: EyeIcon }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tab Content */}
-      <AnimatePresence mode="wait">
-        {currentTab === 'basic' && (
-          <motion.div
-            key="basic"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Informations de base</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Titre de la leçon *
-                    </label>
-                    <Input
-                      value={lesson.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
-                      placeholder="Ex: Salutations en dualaba"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Durée (minutes)
-                    </label>
-                    <Input
-                      type="number"
-                      value={lesson.duration}
-                      onChange={(e) => handleInputChange('duration', parseInt(e.target.value))}
-                      min="5"
-                      max="180"
-                    />
-                  </div>
-                </div>
-
+      {activeTab === 'content' && (
+        <div className="space-y-6">
+          {/* Lesson Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Informations de base</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description
-                  </label>
-                  <Textarea
-                    value={lesson.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Décrivez brièvement le contenu de cette leçon..."
-                    rows={3}
+                  <label className="block text-sm font-medium mb-2">Titre</label>
+                  <Input
+                    value={lesson.title}
+                    onChange={(e) => setLesson(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Titre de la leçon"
                   />
                 </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Niveau
-                    </label>
-                    <SelectRoot value={lesson.level} onValueChange={(value: string) => handleInputChange('level', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {levels.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level.charAt(0).toUpperCase() + level.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectRoot>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Langue
-                    </label>
-                    <SelectRoot value={lesson.language} onValueChange={(value: string) => handleInputChange('language', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {languages.map((language) => (
-                          <SelectItem key={language} value={language}>
-                            {language.charAt(0).toUpperCase() + language.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectRoot>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Catégorie
-                    </label>
-                    <SelectRoot value={lesson.category} onValueChange={(value: string) => handleInputChange('category', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category.charAt(0).toUpperCase() + category.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectRoot>
-                  </div>
-                </div>
-
-                {/* Objectives */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Objectifs d'apprentissage
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <Input
-                      value={newObjective}
-                      onChange={(e) => setNewObjective(e.target.value)}
-                      placeholder="Ajouter un objectif..."
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addObjective())}
-                    />
-                    <Button type="button" onClick={addObjective} size="sm">
-                      <PlusIcon className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  
-                  {lesson.objectives.length > 0 && (
-                    <div className="space-y-2">
-                      {lesson.objectives.map((objective) => (
-                        <Badge key={objective} variant="secondary" className="flex items-center gap-1">
-                          {objective}
-                          <button
-                            type="button"
-                            onClick={() => removeObjective(objective)}
-                            className="ml-1 hover:text-red-500"
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
+                  <label className="block text-sm font-medium mb-2">Langue</label>
+                  <SelectRoot
+                    value={lesson.language}
+                    onValueChange={(value) => setLesson(prev => ({ ...prev, language: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ewo">Ewondo</SelectItem>
+                      <SelectItem value="dua">Duala</SelectItem>
+                      <SelectItem value="fef">Fe'efe'e</SelectItem>
+                      <SelectItem value="ful">Fulfulde</SelectItem>
+                      <SelectItem value="bas">Bassa</SelectItem>
+                      <SelectItem value="bam">Bamum</SelectItem>
+                      <SelectItem value="yem">Yemba</SelectItem>
+                    </SelectContent>
+                  </SelectRoot>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Description</label>
+                <Textarea
+                  value={lesson.description}
+                  onChange={(e) => setLesson(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Description de la leçon"
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-                {/* Tags */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Tags
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <Input
-                      value={newTag}
-                      onChange={(e) => setNewTag(e.target.value)}
-                      placeholder="Ajouter un tag..."
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                    />
-                    <Button type="button" onClick={addTag} size="sm">
-                      <PlusIcon className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  
-                  {lesson.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {lesson.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-1 hover:text-red-500"
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {currentTab === 'content' && (
-          <motion.div
-            key="content"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
-          >
-            <Card>
-              <CardHeader>
+          {/* Content Blocks */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
                 <CardTitle>Contenu de la leçon</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Contenu principal *
-                  </label>
-                  <Textarea
-                    value={lesson.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    placeholder="Rédigez le contenu principal de votre leçon..."
-                    rows={12}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Notes culturelles
-                  </label>
-                  <Textarea
-                    value={lesson.culturalNotes}
-                    onChange={(e) => handleInputChange('culturalNotes', e.target.value)}
-                    placeholder="Ajoutez des informations culturelles importantes..."
-                    rows={4}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {currentTab === 'exercises' && (
-          <motion.div
-            key="exercises"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Exercices ({lesson.exercises.length})</span>
-                  <Button onClick={addExercise} size="sm">
-                    <PlusIcon className="w-4 h-4 mr-1" />
-                    Ajouter un exercice
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addContent('text')}
+                  >
+                    <DocumentTextIcon className="w-4 h-4 mr-2" />
+                    Texte
                   </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {lesson.exercises.map((exercise, index) => (
-                    <div key={exercise.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h5 className="font-medium">Exercice {index + 1}</h5>
-                        <div className="flex gap-2">
-                          <Button 
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => duplicateExercise(exercise.id)}
-                          >
-                            <DocumentDuplicateIcon className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setEditingExercise(exercise)}
-                          >
-                            <PencilIcon className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            size="sm"
-                            variant="ghost"
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() => removeExercise(exercise.id)}
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </Button>
-                        </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addContent('image')}
+                  >
+                    <PhotoIcon className="w-4 h-4 mr-2" />
+                    Image
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addContent('audio')}
+                  >
+                    <SpeakerWaveIcon className="w-4 h-4 mr-2" />
+                    Audio
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addContent('video')}
+                  >
+                    <PlayIcon className="w-4 h-4 mr-2" />
+                    Vidéo
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {lesson.content.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="border border-gray-200 rounded-lg p-4"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {getContentIcon(item.type)}
+                        <span className="font-medium capitalize">{item.type}</span>
+                        <Badge variant="secondary">#{index + 1}</Badge>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeContent(item.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    
+                    {item.type === 'text' && (
+                      <Textarea
+                        value={item.content}
+                        onChange={(e) => updateContent(item.id, { content: e.target.value })}
+                        placeholder="Contenu textuel..."
+                        rows={4}
+                      />
+                    )}
+                    
+                    {(item.type === 'image' || item.type === 'audio' || item.type === 'video') && (
+                      <div className="space-y-2">
+                        <Input
+                          value={item.content}
+                          onChange={(e) => updateContent(item.id, { content: e.target.value })}
+                          placeholder={`URL du ${item.type}...`}
+                        />
+                        {item.metadata?.duration && (
+                          <p className="text-sm text-gray-600">
+                            Durée: {item.metadata.duration} secondes
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+                
+                {lesson.content.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <DocumentTextIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Aucun contenu ajouté. Cliquez sur les boutons ci-dessus pour commencer.</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-                      <div className="grid grid-cols-2 gap-4 mb-3">
+      {activeTab === 'exercises' && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Exercices</CardTitle>
+                <Button onClick={addExercise}>
+                  <PlusIcon className="w-4 h-4 mr-2" />
+                  Ajouter un exercice
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {lesson.exercises.map((exercise, index) => (
+                  <motion.div
+                    key={exercise.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="border border-gray-200 rounded-lg p-4"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <AcademicCapIcon className="w-5 h-5" />
+                        <span className="font-medium">Exercice #{index + 1}</span>
+                        <Badge variant="secondary">{exercise.points} pts</Badge>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeExercise(exercise.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Question</label>
+                        <Input
+                          value={exercise.question}
+                          onChange={(e) => updateExercise(exercise.id, { question: e.target.value })}
+                          placeholder="Question de l'exercice..."
+                        />
+                      </div>
+                      
+                      {exercise.type === 'multiple_choice' && exercise.options && (
                         <div>
-                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            Type
-                          </label>
-                          <SelectRoot
-                            value={exercise.type}
-                            onValueChange={(value: string) => updateExercise(exercise.id, 'type', value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="multiple_choice">Choix multiple</SelectItem>
-                              <SelectItem value="translation">Traduction</SelectItem>
-                              <SelectItem value="pronunciation">Prononciation</SelectItem>
-                              <SelectItem value="cultural">Culturel</SelectItem>
-                              <SelectItem value="fill_blank">Texte à trous</SelectItem>
-                              <SelectItem value="audio_recording">Enregistrement audio</SelectItem>
-                            </SelectContent>
-                          </SelectRoot>
+                          <label className="block text-sm font-medium mb-1">Options</label>
+                          {exercise.options.map((option, optionIndex) => (
+                            <Input
+                              key={optionIndex}
+                              value={option}
+                              onChange={(e) => {
+                                const newOptions = [...exercise.options!];
+                                newOptions[optionIndex] = e.target.value;
+                                updateExercise(exercise.id, { options: newOptions });
+                              }}
+                              placeholder={`Option ${optionIndex + 1}...`}
+                              className="mb-2"
+                            />
+                          ))}
                         </div>
-
+                      )}
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            Points
-                          </label>
+                          <label className="block text-sm font-medium mb-1">Bonne réponse</label>
+                          <Input
+                            value={exercise.correctAnswer}
+                            onChange={(e) => updateExercise(exercise.id, { correctAnswer: e.target.value })}
+                            placeholder="Bonne réponse..."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">Points</label>
                           <Input
                             type="number"
                             value={exercise.points}
-                            onChange={(e) => updateExercise(exercise.id, 'points', parseInt(e.target.value))}
+                            onChange={(e) => updateExercise(exercise.id, { points: parseInt(e.target.value) || 0 })}
                             min="1"
                             max="100"
                           />
                         </div>
                       </div>
-
-                      <div className="mb-3">
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          Question
-                        </label>
-                        <Input
-                          value={exercise.question}
-                          onChange={(e) => updateExercise(exercise.id, 'question', e.target.value)}
-                          placeholder="Tapez votre question..."
-                        />
-                      </div>
-
-                      {exercise.type === 'multiple_choice' && (
-                        <div className="mb-3">
-                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            Options
-                          </label>
-                          <div className="space-y-2">
-                            {exercise.options?.map((option, optIndex) => (
-                              <Input
-                                key={optIndex}
-                                value={option}
-                                onChange={(e) => {
-                                  const newOptions = [...(exercise.options || [])];
-                                  newOptions[optIndex] = e.target.value;
-                                  updateExercise(exercise.id, 'options', newOptions);
-                                }}
-                                placeholder={`Option ${optIndex + 1}`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="mb-3">
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          Réponse correcte
-                        </label>
-                        <Input
-                          value={exercise.correctAnswer}
-                          onChange={(e) => updateExercise(exercise.id, 'correctAnswer', e.target.value)}
-                          placeholder="Réponse correcte..."
-                        />
-                      </div>
-
+                      
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          Explication
-                        </label>
+                        <label className="block text-sm font-medium mb-1">Explication (optionnel)</label>
                         <Textarea
-                          value={exercise.explanation}
-                          onChange={(e) => updateExercise(exercise.id, 'explanation', e.target.value)}
+                          value={exercise.explanation || ''}
+                          onChange={(e) => updateExercise(exercise.id, { explanation: e.target.value })}
                           placeholder="Explication de la réponse..."
                           rows={2}
                         />
                       </div>
                     </div>
-                  ))}
-                </div>
-
+                  </motion.div>
+                ))}
+                
                 {lesson.exercises.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    <AcademicCapIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>Aucun exercice ajouté</p>
-                    <p className="text-sm">Cliquez sur "Ajouter un exercice" pour commencer</p>
+                    <AcademicCapIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Aucun exercice ajouté. Cliquez sur "Ajouter un exercice" pour commencer.</p>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-        {currentTab === 'analytics' && (
-          <motion.div
-            key="analytics"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                      <UsersIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Étudiants
-                      </p>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {lesson.studentCount}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Paramètres de la leçon</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Niveau</label>
+                  <SelectRoot
+                    value={lesson.level}
+                    onValueChange={(value: any) => setLesson(prev => ({ ...prev, level: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Débutant</SelectItem>
+                      <SelectItem value="intermediate">Intermédiaire</SelectItem>
+                      <SelectItem value="advanced">Avancé</SelectItem>
+                    </SelectContent>
+                  </SelectRoot>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Durée (minutes)</label>
+                  <Input
+                    type="number"
+                    value={lesson.duration}
+                    onChange={(e) => setLesson(prev => ({ ...prev, duration: parseInt(e.target.value) || 0 }))}
+                    min="1"
+                    max="300"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Tags</label>
+                <div className="flex gap-2 mb-3">
+                  <Input
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    placeholder="Ajouter un tag..."
+                    onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                  />
+                  <Button onClick={addTag}>
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                    Ajouter
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {lesson.tags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="cursor-pointer hover:bg-red-100"
+                      onClick={() => removeTag(tag)}
+                    >
+                      {tag} ×
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="published"
+                  checked={lesson.isPublished}
+                  onChange={(e) => setLesson(prev => ({ ...prev, isPublished: e.target.checked }))}
+                />
+                <label htmlFor="published" className="text-sm font-medium">
+                  Publier la leçon
+                </label>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
-                      <ChartBarIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Note moyenne
-                      </p>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {lesson.averageRating}/5
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                      <ClockIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Taux de réussite
-                      </p>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {lesson.completionRate}%
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Progression des étudiants</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Taux de complétion
-                      </span>
-                      <span className="text-sm font-bold text-gray-900 dark:text-white">
-                        {lesson.completionRate}%
-                      </span>
-                    </div>
-                    <Progress value={lesson.completionRate} className="h-3" />
-                  </div>
-                  
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <p>Dernière mise à jour: {lesson.updatedAt.toLocaleDateString('fr-FR')}</p>
-                    <p>Créée le: {lesson.createdAt.toLocaleDateString('fr-FR')}</p>
+      {activeTab === 'preview' && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Aperçu de la leçon</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">{lesson.title}</h2>
+                  <p className="text-gray-600 mb-4">{lesson.description}</p>
+                  <div className="flex gap-2 mb-4">
+                    <Badge variant="secondary">{lesson.language}</Badge>
+                    <Badge variant="secondary">{lesson.level}</Badge>
+                    <Badge variant="secondary">{lesson.duration} min</Badge>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Contenu</h3>
+                  {lesson.content.map((item, index) => (
+                    <div key={item.id} className="border-l-4 border-blue-500 pl-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        {getContentIcon(item.type)}
+                        <span className="font-medium capitalize">{item.type} #{index + 1}</span>
+                      </div>
+                      {item.type === 'text' && (
+                        <p className="text-gray-700">{item.content}</p>
+                      )}
+                      {item.type !== 'text' && (
+                        <p className="text-sm text-gray-600">Fichier: {item.content}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Exercices ({lesson.exercises.length})</h3>
+                  {lesson.exercises.map((exercise, index) => (
+                    <div key={exercise.id} className="border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-medium mb-2">Exercice #{index + 1} ({exercise.points} pts)</h4>
+                      <p className="text-gray-700 mb-2">{exercise.question}</p>
+                      {exercise.options && (
+                        <ul className="list-disc list-inside text-sm text-gray-600 mb-2">
+                          {exercise.options.map((option, optionIndex) => (
+                            <li key={optionIndex}>{option}</li>
+                          ))}
+                        </ul>
+                      )}
+                      <p className="text-sm text-green-600">Réponse: {exercise.correctAnswer}</p>
+                      {exercise.explanation && (
+                        <p className="text-sm text-gray-600 mt-2">Explication: {exercise.explanation}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default AdvancedLessonEditor;

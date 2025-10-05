@@ -210,6 +210,35 @@ service cloud.firestore {
       allow write: if isAuthenticated() && isTeacher();
     }
 
+    // Encyclopedia collections
+    match /encyclopedia/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher();
+    }
+
+    // Marketplace collections
+    match /marketplace_products/{productId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidUser();
+    }
+
+    match /marketplace_sellers/{sellerId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidUser();
+    }
+
+    // Historical sites collections
+    match /historical_sites/{siteId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher();
+    }
+
+    // Culture and history collections
+    match /culture_history/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher();
+    }
+
     // Deny all other requests
     match /{document=**} {
       allow read, write: if false;
