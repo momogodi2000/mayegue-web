@@ -83,12 +83,12 @@ export default function LevelTestComponent() {
     setLoading(true);
     try {
       // Generate adaptive questions using Gemini AI
-      const questions = await geminiService.generateLevelTestQuestions({
-        userId: user?.id || 'anonymous',
-        language: 'dualaba', // Default language
-        testType: 'comprehensive'
-      });
-      
+      const questions = await geminiService.generateLevelTestQuestions(
+        'dualaba', // language
+        'beginner', // level
+        20 // count
+      );
+
       setQuestions(questions);
     } catch (error) {
       console.error('Error loading test questions:', error);
@@ -186,13 +186,18 @@ export default function LevelTestComponent() {
     setLoading(true);
 
     try {
+      // Convert answers object to array format expected by the service
+      const answersArray = questions.map((q: any) => ({
+        questionId: q.id,
+        answer: answers[q.id] || ''
+      }));
+
       // Calculate score and generate result using AI
-      const result = await geminiService.evaluateLevelTest({
-        userId: user?.id || 'anonymous',
+      const result = await geminiService.evaluateLevelTest(
         questions,
-        answers,
-        timeSpent: 1800 - timeLeft
-      });
+        answersArray,
+        'dualaba' // language
+      );
 
       setResult(result);
 

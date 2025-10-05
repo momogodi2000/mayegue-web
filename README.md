@@ -15,6 +15,7 @@
 - **Email**:## 📊 Statistiques du Projet
 
 - **Version**: 1.1.0 "Cultural Renaissance"
+- **Langues Enseignées**: 7 langues principales (Ewondo, Duala, Fe'efe'e, Fulfulde, Bassa, Bamum, Yemba)
 - **Langues Documentées**: 280+ langues camerounaises
 - **Groupes Ethniques**: 250+ groupes culturels
 - **Fonctionnalités**: 18 modules complets
@@ -107,7 +108,14 @@ Ma'a yegue V1.1 apporte une révolution dans l'apprentissage des langues camerou
 - Histoires et contes traditionnels
 - Médias riches (photos, vidéos, audio)
 
-#### 🏛️ Sites Historiques Géolocalisés
+#### 🏛️ Culture & Histoire (NOUVEAU)
+- Exploration complète des 7 langues principales avec contexte culturel
+- Aperçu historique, géographique et culturel de chaque langue
+- Sites du patrimoine et événements historiques
+- Ressources multimédias (images, vidéos, audio traditionnels)
+- Notes éducatives avec expressions et proverbes authentiques
+
+#### 🗺️ Sites Historiques Géolocalisés
 - Visites virtuelles 360° des sites culturels
 - Guides audio multilingues
 - Géolocalisation intégrée
@@ -189,6 +197,14 @@ Ma'a yegue V1.1 apporte une révolution dans l'apprentissage des langues camerou
 - 👤 Avatars personnalisables avec éléments ethniques
 - 🏆 Quêtes thématiques et compétitions
 - 💰 Économie Ngondo Coins
+
+### 🏛️ Culture & Histoire (NOUVEAU V1.1)
+- 📖 Exploration complète des 7 langues principales
+- 🗺️ Contexte géographique et historique détaillé
+- 🎭 Traditions, festivals et folklore authentiques
+- 🏛️ Sites du patrimoine et événements historiques
+- 🎵 Ressources multimédias (images, vidéos, audio)
+- 💡 Notes éducatives avec expressions et proverbes
 
 ### 👥 Communauté Étendue
 - 💬 Forums de discussion par langue et région
@@ -297,7 +313,7 @@ Ma'a yegue V1.1 apporte une révolution dans l'apprentissage des langues camerou
 
 **Total Documenté**: 280+ langues • **Population Couvert**: 15+ millions • **Expansion Continue**
 
-**Total**: 6 langues • 3 millions+ de locuteurs
+**Total**: 7 langues • 3 millions+ de locuteurs
 
 ---
 
@@ -599,7 +615,7 @@ Voir [WEB_ARCHITECTURE.md](./WEB_ARCHITECTURE.md) pour plus de détails.
 #### SQLite WASM (sql.js)
 - Embedded database (public/assets/languages.db)
 - 10,000+ translations offline
-- 6 langues complètes
+- 7 langues complètes
 - Zero latency queries
 
 ### Synchronisation

@@ -384,6 +384,114 @@ class GeminiService {
   }
 
   /**
+   * Generate level test questions
+   */
+  async generateLevelTestQuestions(
+    language: string,
+    level: 'beginner' | 'intermediate' | 'advanced',
+    count: number = 10
+  ): Promise<any[]> {
+    try {
+      const model = this.getModel();
+      const prompt = `
+        Generate ${count} level test questions for ${language} language learning at ${level} level.
+        
+        Each question should include:
+        - question: The question text
+        - type: 'multiple_choice', 'translation', 'pronunciation', 'cultural', or 'fill_blank'
+        - options: Array of options (for multiple choice)
+        - correctAnswer: The correct answer
+        - explanation: Brief explanation of the answer
+        - points: Points value (1-10)
+        - culturalContext: Cultural information if relevant
+        
+        Format as JSON array with diverse question types covering vocabulary, grammar, culture, and comprehension.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return JSON.parse(response.text());
+    } catch (error) {
+      console.error('Error generating level test questions:', error);
+      throw new Error('Failed to generate level test questions');
+    }
+  }
+
+  /**
+   * Evaluate level test responses
+   */
+  async evaluateLevelTest(
+    questions: any[],
+    answers: any[],
+    language: string
+  ): Promise<any> {
+    try {
+      const model = this.getModel();
+      const prompt = `
+        Evaluate the level test responses for ${language} language learning.
+        
+        Questions: ${JSON.stringify(questions)}
+        Answers: ${JSON.stringify(answers)}
+        
+        Provide evaluation including:
+        - totalScore: Total points earned
+        - percentage: Percentage score
+        - level: Recommended level ('beginner', 'intermediate', 'advanced')
+        - strengths: Areas of strength
+        - weaknesses: Areas needing improvement
+        - recommendations: Specific learning recommendations
+        
+        Format as JSON with detailed feedback.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return JSON.parse(response.text());
+    } catch (error) {
+      console.error('Error evaluating level test:', error);
+      throw new Error('Failed to evaluate level test');
+    }
+  }
+
+  /**
+   * Generate lesson content with AI
+   */
+  async generateLessonContent(params: {
+    title: string;
+    language: string;
+    level: string;
+    category: string;
+    objectives: string[];
+  }): Promise<any> {
+    try {
+      const model = this.getModel();
+      const prompt = `
+        Generate comprehensive lesson content for: ${params.title}
+        
+        Language: ${params.language}
+        Level: ${params.level}
+        Category: ${params.category}
+        Objectives: ${params.objectives.join(', ')}
+        
+        Provide:
+        - content: Main lesson content (detailed and educational)
+        - description: Brief description of the lesson
+        - culturalNotes: Cultural context and information
+        - exercises: Array of exercises with questions, answers, and explanations
+        
+        Format as JSON with rich, engaging content suitable for language learning.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return JSON.parse(response.text());
+    } catch (error) {
+      console.error('Error generating lesson content:', error);
+      throw new Error('Failed to generate lesson content');
+    }
+  }
+
+  /**
    * Get service status
    */
   getStatus(): {

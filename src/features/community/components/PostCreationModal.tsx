@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
   DialogTitle,
   Button,
   Input,
   Textarea,
-  Select,
+  SelectRoot,
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -45,7 +45,7 @@ export default function PostCreationModal({
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    type: 'discussion',
+    type: 'discussion' as 'discussion' | 'question' | 'tip' | 'resource',
     language: 'dualaba',
     tags: [] as string[],
     isQuestion: false
@@ -67,6 +67,7 @@ export default function PostCreationModal({
     'bassa',
     'bamoun',
     'fulfulde',
+    'yemba',
     'anglais',
     'français'
   ];
@@ -116,7 +117,7 @@ export default function PostCreationModal({
         authorId: user.id,
         authorName: user.displayName || user.email,
         createdAt: new Date(),
-        groupId: groupId || null,
+        groupId: groupId || undefined,
         likes: 0,
         comments: 0,
         isResolved: false
@@ -166,7 +167,7 @@ export default function PostCreationModal({
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Type de post
                 </label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                <SelectRoot value={formData.type} onValueChange={(value: string) => handleInputChange('type', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -180,7 +181,7 @@ export default function PostCreationModal({
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </SelectRoot>
               </div>
 
               {/* Title */}
@@ -223,7 +224,7 @@ export default function PostCreationModal({
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Langue
                 </label>
-                <Select value={formData.language} onValueChange={(value) => handleInputChange('language', value)}>
+                <SelectRoot value={formData.language} onValueChange={(value: string) => handleInputChange('language', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -234,7 +235,7 @@ export default function PostCreationModal({
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </SelectRoot>
               </div>
 
               {/* Tags */}

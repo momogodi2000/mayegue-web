@@ -8,6 +8,23 @@ export type { InputProps, InputSize, InputVariant } from './Input';
 export { Select } from './Select';
 export type { SelectProps, SelectSize, SelectVariant, SelectOption } from './Select';
 
+// Compound Select Components (shadcn/ui style)
+export {
+  SelectRoot,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  CompoundSelect
+} from './SelectCompound';
+export type {
+  SelectRootProps,
+  SelectTriggerProps,
+  SelectValueProps,
+  SelectContentProps,
+  SelectItemProps
+} from './SelectCompound';
+
 export { Modal, ConfirmModal } from './Modal';
 export type { ModalProps, ModalSize } from './Modal';
 
@@ -27,3 +44,12 @@ export { Form, FormGroup, FormActions, FormError, FormSuccess } from './Form';
 export type { FormProps, FormGroupProps, FormActionsProps, FormErrorProps, FormSuccessProps } from './Form';
 
 export { AnimatedSection, FloatingCard, CountUp, ParallaxHero } from './AnimatedComponents';
+
+export { Progress } from './Progress';
+export type { ProgressProps } from './Progress';
+
+export { Textarea } from './Textarea';
+export type { TextareaProps } from './Textarea';
+
+export { Dialog, DialogContent, DialogHeader, DialogTitle } from './Dialog';
+export type { DialogProps, DialogContentProps, DialogHeaderProps, DialogTitleProps } from './Dialog';

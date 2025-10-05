@@ -101,6 +101,15 @@ const mockLanguages: Language[] = [
     speakers: 215000,
     description: 'Langue avec système d\'écriture traditionnel',
     isoCode: 'bam'
+  },
+  {
+    id: 'yem',
+    name: 'Yemba',
+    family: 'Bantu',
+    region: 'Ouest (Dschang)',
+    speakers: 180000,
+    description: 'Langue traditionnelle du peuple Dschang, centre éducatif important',
+    isoCode: 'yem'
   }
 ];
 

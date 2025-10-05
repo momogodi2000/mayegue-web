@@ -48,6 +48,7 @@ const ARVRPage = lazy(() => import('@/features/ar-vr/pages/ARVRPage'));
 const RPGGamificationPage = lazy(() => import('@/features/rpg-gamification/pages/RPGGamificationPage'));
 const AIFeaturesPage = lazy(() => import('@/features/ai-features/pages/AIFeaturesPage'));
 const LevelTestPage = lazy(() => import('@/features/assessment/pages/LevelTestPage'));
+const CultureHistoryPage = lazy(() => import('@/features/culture-history/pages/CultureHistoryPage'));
 
 export function AppRouter() {
   return (
@@ -78,6 +79,7 @@ export function AppRouter() {
           <Route path="ar-vr" element={<ARVRPage />} />
           <Route path="rpg" element={<RPGGamificationPage />} />
           <Route path="ai-features" element={<AIFeaturesPage />} />
+          <Route path="culture-history" element={<CultureHistoryPage />} />
           
           {/* Dictionary - Public with limited features */}
           <Route path="dictionary" element={<DictionaryPage />} />

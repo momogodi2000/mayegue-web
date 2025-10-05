@@ -76,6 +76,14 @@ export class UserService {
     await setDoc(ref, { role, updatedAt: Date.now() }, { merge: true });
   }
 
+  async updateUserLevel(userId: string, level: 'beginner' | 'intermediate' | 'advanced'): Promise<void> {
+    const ref = doc(db, 'users', userId);
+    await setDoc(ref, { 
+      level,
+      updatedAt: Date.now()
+    }, { merge: true });
+  }
+
   async getUserProfile(userId: string): Promise<UserProfileDoc | null> {
     const ref = doc(db, 'users', userId);
     const snap = await getDoc(ref);

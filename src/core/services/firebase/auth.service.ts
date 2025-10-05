@@ -18,6 +18,14 @@ import {
 import { auth } from '@/core/config/firebase.config';
 import type { User, UserRole } from '@/shared/types/user.types';
 import { userService } from './user.service';
+import {
+  isValidEmail,
+  isValidPassword,
+  sanitizeInput,
+  isValidDisplayName,
+  isValidPhoneNumber,
+  RateLimiter
+} from '@/shared/utils/validation';
 
 async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
   // Fetch role and profile from Firestore with error handling
@@ -73,8 +81,21 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
 }
 
 export class AuthService {
+  private loginRateLimiter = new RateLimiter(5, 60000); // 5 attempts per minute
+  private signupRateLimiter = new RateLimiter(3, 300000); // 3 attempts per 5 minutes
+
   async signInWithEmail(email: string, password: string): Promise<User> {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
+    // Validate email
+    if (!isValidEmail(email)) {
+      throw new Error('Adresse e-mail invalide');
+    }
+
+    // Rate limiting
+    if (!this.loginRateLimiter.canProceed(email)) {
+      throw new Error('Trop de tentatives de connexion. Veuillez réessayer plus tard.');
+    }
+
+    const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
 
     // Ensure user profile exists (creates it if it doesn't)
     try {
@@ -87,12 +108,39 @@ export class AuthService {
       console.error('Error ensuring user profile on login:', error);
     }
 
+    // Reset rate limiter on successful login
+    this.loginRateLimiter.reset(email);
+
     return await mapFirebaseUser(cred.user);
   }
 
   async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User> {
+    // Validate email
+    if (!isValidEmail(email)) {
+      throw new Error('Adresse e-mail invalide');
+    }
+
+    // Validate password
+    const passwordValidation = isValidPassword(password);
+    if (!passwordValidation.valid) {
+      throw new Error(passwordValidation.errors.join('. '));
+    }
+
+    // Validate and sanitize display name
+    if (displayName) {
+      if (!isValidDisplayName(displayName)) {
+        throw new Error('Le nom d\'affichage doit contenir entre 2 et 50 caractères');
+      }
+      displayName = sanitizeInput(displayName);
+    }
+
+    // Rate limiting
+    if (!this.signupRateLimiter.canProceed(email)) {
+      throw new Error('Trop de tentatives d\'inscription. Veuillez réessayer plus tard.');
+    }
+
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
 
       // Update profile first
       if (displayName) {
@@ -118,6 +166,9 @@ export class AuthService {
         console.error('Error sending verification email:', emailError);
         // Continue even if email fails - user can request it later
       }
+
+      // Reset rate limiter on successful signup
+      this.signupRateLimiter.reset(email);
 
       // Return mapped user with proper role
       return await mapFirebaseUser(cred.user);
@@ -192,14 +243,25 @@ export class AuthService {
 
   // Password reset
   async requestPasswordReset(email: string): Promise<void> {
+    // Validate email
+    if (!isValidEmail(email)) {
+      throw new Error('Adresse e-mail invalide');
+    }
+
     const { sendPasswordResetEmail } = await import('firebase/auth');
-    await sendPasswordResetEmail(auth, email, {
+    await sendPasswordResetEmail(auth, email.trim(), {
       url: window.location.origin + '/login',
       handleCodeInApp: false,
     });
   }
 
   async confirmPasswordReset(oobCode: string, newPassword: string): Promise<void> {
+    // Validate new password
+    const passwordValidation = isValidPassword(newPassword);
+    if (!passwordValidation.valid) {
+      throw new Error(passwordValidation.errors.join('. '));
+    }
+
     const { confirmPasswordReset } = await import('firebase/auth');
     await confirmPasswordReset(auth, oobCode, newPassword);
   }
@@ -228,9 +290,14 @@ export class AuthService {
     const user = auth.currentUser;
     if (!user) throw new Error('No user logged in');
 
+    // Validate phone number
+    if (!isValidPhoneNumber(phoneNumber)) {
+      throw new Error('Numéro de téléphone invalide');
+    }
+
     const multiFactorSession = await multiFactor(user).getSession();
     const phoneInfoOptions = {
-      phoneNumber,
+      phoneNumber: phoneNumber.trim(),
       session: multiFactorSession
     };
 

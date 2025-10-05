@@ -2,7 +2,7 @@
  * Dictionary-related TypeScript types
  */
 
-export type LanguageId = 'ewo' | 'dua' | 'fef' | 'ful' | 'bas' | 'bam';
+export type LanguageId = 'ewo' | 'dua' | 'fef' | 'ful' | 'bas' | 'bam' | 'yem';
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
 

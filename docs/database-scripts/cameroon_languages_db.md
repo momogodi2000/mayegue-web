@@ -55,6 +55,15 @@
         "speakers": 215000,
         "description": "Language with its own indigenous script",
         "iso_code": "bax"
+      },
+      {
+        "id": "yem",
+        "name": "Yemba",
+        "family": "Grassfields (Bamileke)",
+        "region": "West Region (Dschang)",
+        "speakers": 180000,
+        "description": "Traditional language of the Dschang people, important educational center",
+        "iso_code": "yem"
       }
     ],
     "translations": {
@@ -1226,7 +1235,8 @@ INSERT INTO languages VALUES
 ('FEF', 'Fe''efe''e', 'Grassfields (Bamileke)', 'West Region', 200000, 'Language of the Bafang area', 'fef'),
 ('FUL', 'Fulfulde', 'Niger-Congo (Atlantic)', 'North Region', 1500000, 'Language of the Fulani people', 'ful'),
 ('BAS', 'Bassa', 'A40 Bantu', 'Central-Littoral', 230000, 'Language of the Bassa people', 'bas'),
-('BAM', 'Bamum', 'Grassfields', 'West Region', 215000, 'Language with its own indigenous script', 'bax');
+('BAM', 'Bamum', 'Grassfields', 'West Region', 215000, 'Language with its own indigenous script', 'bax'),
+('YEM', 'Yemba', 'Grassfields (Bamileke)', 'West Region (Dschang)', 180000, 'Traditional language of the Dschang people, important educational center', 'yem');
 ```
 
 ### 2. Categories Table
@@ -2087,6 +2097,15 @@ INSERT INTO translations (french_text, language_id, translation, category_id, pr
         "speakers": 215000,
         "description": "Language with its own indigenous script",
         "iso_code": "bax"
+      },
+      {
+        "id": "yem",
+        "name": "Yemba",
+        "family": "Grassfields (Bamileke)",
+        "region": "West Region (Dschang)",
+        "speakers": 180000,
+        "description": "Traditional language of the Dschang people, important educational center",
+        "iso_code": "yem"
       }
     ],
     "translations": {

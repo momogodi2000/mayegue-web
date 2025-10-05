@@ -147,9 +147,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Helmet>
-        <title>Ma'a yegue - Apprenez les Langues Camerounaises | Ewondo, Duala, Fulfulde</title>
-        <meta name="description" content="Plateforme d'apprentissage des langues traditionnelles camerounaises. Apprenez Ewondo, Duala, Fulfulde, Bassa, Bamum et Fe'efe'e avec des leçons interactives, dictionnaire audio et assistant IA. Mode hors ligne disponible." />
-        <meta name="keywords" content="langues camerounaises, ewondo, duala, fulfulde, bassa, bamum, fe'efe'e, apprentissage langues, dictionnaire camerounais, cours langues traditionnelles, IA linguistique" />
+        <title>Ma'a yegue - Apprenez les Langues Camerounaises | Ewondo, Duala, Fulfulde, Yemba</title>
+        <meta name="description" content="Plateforme d'apprentissage des langues traditionnelles camerounaises. Apprenez Ewondo, Duala, Fulfulde, Bassa, Bamum, Fe'efe'e et Yemba avec des leçons interactives, dictionnaire audio et assistant IA. Mode hors ligne disponible." />
+        <meta name="keywords" content="langues camerounaises, ewondo, duala, fulfulde, bassa, bamum, fe'efe'e, yemba, apprentissage langues, dictionnaire camerounais, cours langues traditionnelles, IA linguistique" />
         <meta name="author" content="Ma'a yegue" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={typeof window !== 'undefined' ? window.location.origin : ''} />
@@ -244,7 +244,7 @@ export default function HomePage() {
 
           {/* Language Badges */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {['Ewondo', 'Duala', 'Fulfulde', 'Bassa', 'Bamum', "Fe'efe'e"].map((lang) => (
+            {['Ewondo', 'Duala', 'Fulfulde', 'Bassa', 'Bamum', "Fe'efe'e", 'Yemba'].map((lang) => (
               <span key={lang} className="badge-primary text-base px-4 py-2">
                 {lang}
               </span>
@@ -355,6 +355,13 @@ export default function HomePage() {
               region: 'Ouest',
               description: 'Langue bantoue des Grassfields, connue pour sa complexité phonologique.',
               cultural: 'Langue de la tradition orale et des cérémonies traditionnelles'
+            },
+            {
+              name: 'Yemba',
+              speakers: '180K',
+              region: 'Ouest (Dschang)',
+              description: 'Langue traditionnelle du peuple Dschang, centre éducatif important du Cameroun.',
+              cultural: 'Langue de l\'éducation et de la culture traditionnelle Dschang'
             }
           ].map((lang) => (
             <div key={lang.name} className="card h-full">

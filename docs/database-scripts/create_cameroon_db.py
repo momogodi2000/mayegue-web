@@ -22,8 +22,8 @@ def create_database():
     # Commit changes and close connection
     conn.commit()
     conn.close()
-    print("✅ Cameroon Languages Database created successfully!")
-    print("📊 Database file: cameroon_languages.db")
+    print("Cameroon Languages Database created successfully!")
+    print("Database file: cameroon_languages.db")
 
 def create_tables(cursor):
     # Languages table
@@ -102,7 +102,9 @@ def insert_languages(cursor):
         ('BAS', 'Bassa', 'A40 Bantu', 'Central-Littoral', 230000, 
          'Language of the Bassa people', 'bas'),
         ('BAM', 'Bamum', 'Grassfields', 'West Region', 215000, 
-         'Language with its own indigenous script', 'bax')
+         'Language with its own indigenous script', 'bax'),
+        ('YEM', 'Yemba', 'Grassfields (Bamileke)', 'West Region (Dschang)', 180000, 
+         'Traditional language of the Dschang people, important educational center', 'yem')
     ]
     
     cursor.executemany('''
@@ -1588,6 +1590,97 @@ def insert_translations(cursor):
         ('Plus lentement, s''il vous plaît', 'FUL', 'Yaawɗo tiiɗno', 'PHR', 'yah-w-doh tee-d-noh', None, 'intermediate'),
         ('Je ne comprends pas', 'FUL', 'Mi faamaani', 'PHR', 'mee fah-mah-nee', None, 'intermediate'),
         ('Pouvez-vous m''aider?', 'FUL', 'Aɗa wallude mi?', 'PHR', 'ah-dah wahl-loo-deh mee', None, 'intermediate'),
+        
+        # Greetings - Yemba (Dschang)
+        ('Bonjour', 'YEM', 'Mbolo', 'GRT', 'mm-BOH-loh', None, 'beginner'),
+        ('Bonsoir', 'YEM', 'Mbolo', 'GRT', 'mm-BOH-loh', None, 'beginner'),
+        ('Comment allez-vous?', 'YEM', 'Mbolo woe?', 'GRT', 'mm-BOH-loh woh-eh', None, 'beginner'),
+        ('Merci', 'YEM', 'Akiba', 'GRT', 'ah-KEE-bah', None, 'beginner'),
+        ('Au revoir', 'YEM', 'Ka yen asu', 'GRT', 'kah yehn ah-SOO', None, 'beginner'),
+        ('Excuse-moi', 'YEM', 'Ma yem ve', 'GRT', 'mah yehm veh', None, 'beginner'),
+        
+        # Numbers - Yemba
+        ('un', 'YEM', 'fok', 'NUM', 'fohk', None, 'beginner'),
+        ('deux', 'YEM', 'iba', 'NUM', 'ee-BAH', None, 'beginner'),
+        ('trois', 'YEM', 'ilal', 'NUM', 'ee-LAHL', None, 'beginner'),
+        ('quatre', 'YEM', 'inaa', 'NUM', 'ee-NAH', None, 'beginner'),
+        ('cinq', 'YEM', 'itano', 'NUM', 'ee-TAH-noh', None, 'beginner'),
+        ('six', 'YEM', 'itoba', 'NUM', 'ee-TOH-bah', None, 'beginner'),
+        ('sept', 'YEM', 'isambo', 'NUM', 'ee-SAHM-boh', None, 'beginner'),
+        ('huit', 'YEM', 'imwambe', 'NUM', 'ee-mwahm-BEH', None, 'beginner'),
+        ('neuf', 'YEM', 'ibwam', 'NUM', 'ee-BWAHM', None, 'beginner'),
+        ('dix', 'YEM', 'iwom', 'NUM', 'ee-WOHM', None, 'beginner'),
+        
+        # Family - Yemba
+        ('père', 'YEM', 'ta', 'FAM', 'tah', None, 'beginner'),
+        ('mère', 'YEM', 'nyanga', 'FAM', 'NYAHN-gah', None, 'beginner'),
+        ('fils', 'YEM', 'mwan', 'FAM', 'mwahn', None, 'beginner'),
+        ('fille', 'YEM', 'mwana', 'FAM', 'mwah-NAH', None, 'beginner'),
+        ('frère', 'YEM', 'mwana', 'FAM', 'mwah-NAH', None, 'beginner'),
+        ('sœur', 'YEM', 'mwana', 'FAM', 'mwah-NAH', None, 'beginner'),
+        ('grand-père', 'YEM', 'nkuku', 'FAM', 'n-KOO-koo', None, 'intermediate'),
+        ('grand-mère', 'YEM', 'mama', 'FAM', 'mah-MAH', None, 'intermediate'),
+        
+        # Food - Yemba
+        ('eau', 'YEM', 'mendzui', 'FOD', 'mehn-dzoo-ee', None, 'beginner'),
+        ('pain', 'YEM', 'mbolo', 'FOD', 'mm-BOH-loh', None, 'beginner'),
+        ('riz', 'YEM', 'mbanga', 'FOD', 'mm-BAHN-gah', None, 'beginner'),
+        ('viande', 'YEM', 'nam', 'FOD', 'nahm', None, 'beginner'),
+        ('poisson', 'YEM', 'nyam', 'FOD', 'nyahm', None, 'beginner'),
+        ('légumes', 'YEM', 'mbanga', 'FOD', 'mm-BAHN-gah', None, 'beginner'),
+        ('fruit', 'YEM', 'mbanga', 'FOD', 'mm-BAHN-gah', None, 'beginner'),
+        
+        # Body - Yemba
+        ('tête', 'YEM', 'ntu', 'BOD', 'n-TOO', None, 'beginner'),
+        ('œil', 'YEM', 'meso', 'BOD', 'meh-SOH', None, 'beginner'),
+        ('nez', 'YEM', 'zono', 'BOD', 'zoh-NOH', None, 'beginner'),
+        ('bouche', 'YEM', 'mono', 'BOD', 'moh-NOH', None, 'beginner'),
+        ('main', 'YEM', 'boko', 'BOD', 'boh-KOH', None, 'beginner'),
+        ('pied', 'YEM', 'boko', 'BOD', 'boh-KOH', None, 'beginner'),
+        
+        # Animals - Yemba
+        ('chien', 'YEM', 'mbwa', 'ANI', 'mm-BWAH', None, 'beginner'),
+        ('chat', 'YEM', 'pusi', 'ANI', 'POO-see', None, 'beginner'),
+        ('vache', 'YEM', 'ngombe', 'ANI', 'n-GOHM-beh', None, 'beginner'),
+        ('coq', 'YEM', 'nkoko', 'ANI', 'n-KOH-koh', None, 'beginner'),
+        ('poisson', 'YEM', 'nyam', 'ANI', 'nyahm', None, 'beginner'),
+        ('oiseau', 'YEM', 'ndeke', 'ANI', 'n-DEH-keh', None, 'beginner'),
+        
+        # Colors - Yemba
+        ('rouge', 'YEM', 'motane', 'COL', 'moh-TAH-neh', None, 'beginner'),
+        ('bleu', 'YEM', 'bule', 'COL', 'boo-LEH', None, 'beginner'),
+        ('vert', 'YEM', 'vert', 'COL', 'vehrt', None, 'beginner'),
+        ('blanc', 'YEM', 'mpembe', 'COL', 'mm-PEHM-beh', None, 'beginner'),
+        ('noir', 'YEM', 'mputu', 'COL', 'mm-POO-too', None, 'beginner'),
+        ('jaune', 'YEM', 'jaune', 'COL', 'zhoh-neh', None, 'beginner'),
+        
+        # Time - Yemba
+        ('aujourd''hui', 'YEM', 'lelo', 'TIM', 'leh-LOH', None, 'beginner'),
+        ('hier', 'YEM', 'lobi', 'TIM', 'loh-BEE', None, 'beginner'),
+        ('demain', 'YEM', 'poso', 'TIM', 'poh-SOH', None, 'beginner'),
+        ('matin', 'YEM', 'mbongo', 'TIM', 'mm-BOHN-goh', None, 'beginner'),
+        ('soir', 'YEM', 'mpok', 'TIM', 'mm-POHK', None, 'beginner'),
+        ('nuit', 'YEM', 'butu', 'TIM', 'boo-TOO', None, 'beginner'),
+        
+        # Nature - Yemba
+        ('soleil', 'YEM', 'lango', 'NAT', 'lahn-GOH', None, 'beginner'),
+        ('lune', 'YEM', 'ngondo', 'NAT', 'n-GOHN-doh', None, 'beginner'),
+        ('étoile', 'YEM', 'ndzondo', 'NAT', 'n-dzohn-DOH', None, 'beginner'),
+        ('terre', 'YEM', 'ntoto', 'NAT', 'n-TOH-toh', None, 'beginner'),
+        ('ciel', 'YEM', 'lango', 'NAT', 'lahn-GOH', None, 'beginner'),
+        ('eau', 'YEM', 'mendzui', 'NAT', 'mehn-dzoo-ee', None, 'beginner'),
+        
+        # Common Phrases - Yemba
+        ('Comment ça va?', 'YEM', 'Mbolo woe?', 'PHR', 'mm-BOH-loh woh-eh', None, 'beginner'),
+        ('Ça va bien', 'YEM', 'Mbolo mingi', 'PHR', 'mm-BOH-loh meen-GEE', None, 'beginner'),
+        ('Je ne comprends pas', 'YEM', 'Mi teyi ve', 'PHR', 'mee teh-YEE veh', None, 'intermediate'),
+        ('Parlez-vous français?', 'YEM', 'Oyo français?', 'PHR', 'oh-YOH frahn-SEH', None, 'intermediate'),
+        ('Oui', 'YEM', 'Ee', 'PHR', 'eh-EH', None, 'beginner'),
+        ('Non', 'YEM', 'Te', 'PHR', 'teh', None, 'beginner'),
+        ('S''il vous plaît', 'YEM', 'S''il vous plaît', 'PHR', 'seel voo pleh', None, 'beginner'),
+        ('Excusez-moi', 'YEM', 'Ma yem ve', 'PHR', 'mah yehm veh', None, 'beginner'),
+        ('Je suis désolé', 'YEM', 'Mi mawa', 'PHR', 'mee mah-WAH', None, 'intermediate'),
+        ('De rien', 'YEM', 'Te mawa', 'PHR', 'teh mah-WAH', None, 'intermediate'),
     ]
     
     cursor.executemany('''
@@ -1842,6 +1935,47 @@ def insert_lessons(cursor):
         ('BAM', 'L\'histoire et la royauté', 
          'Découvrez l\'histoire du royaume Bamum et ses souverains.',
          'advanced', 10, 'audio/bamum/history.mp3', 'video/bamum/history.mp4'),
+        
+        # Yemba Lessons - Traditional language of Dschang
+        ('YEM', 'Salutations de base en Yemba', 
+         'Apprenez les salutations essentielles en Yemba, langue traditionnelle du peuple Dschang dans l\'Ouest du Cameroun.',
+         'beginner', 1, 'audio/yemba/greetings.mp3', 'video/yemba/greetings.mp4'),
+        
+        ('YEM', 'Les nombres 1-10 en Yemba', 
+         'Maîtrisez les nombres de base en Yemba. Comptez de 1 à 10 avec la prononciation correcte des Dschang.',
+         'beginner', 2, 'audio/yemba/numbers.mp3', 'video/yemba/numbers.mp4'),
+        
+        ('YEM', 'La famille en Yemba',
+         'Découvrez les termes de famille en Yemba. Apprenez à parler de vos proches dans la langue traditionnelle de Dschang.',
+         'beginner', 3, 'audio/yemba/family.mp3', 'video/yemba/family.mp4'),
+        
+        ('YEM', 'La nourriture et les repas',
+         'Explorez le vocabulaire culinaire en Yemba. Découvrez les plats traditionnels et les termes alimentaires de Dschang.',
+         'beginner', 4, 'audio/yemba/food.mp3', 'video/yemba/food.mp4'),
+        
+        ('YEM', 'Le corps humain',
+         'Apprenez les parties du corps en Yemba. Maîtrisez le vocabulaire médical de base dans la langue traditionnelle.',
+         'beginner', 5, 'audio/yemba/body.mp3', 'video/yemba/body.mp4'),
+        
+        ('YEM', 'Les animaux domestiques et sauvages',
+         'Découvrez les animaux en Yemba. Apprenez les noms des animaux domestiques et sauvages de la région de Dschang.',
+         'intermediate', 6, 'audio/yemba/animals.mp3', 'video/yemba/animals.mp4'),
+        
+        ('YEM', 'Les couleurs et les formes',
+         'Explorez les couleurs et formes en Yemba. Enrichissez votre vocabulaire descriptif dans la langue traditionnelle.',
+         'intermediate', 7, 'audio/yemba/colors.mp3', 'video/yemba/colors.mp4'),
+        
+        ('YEM', 'Le temps et les saisons',
+         'Maîtrisez les expressions temporelles en Yemba. Apprenez à parler du temps, des saisons et des périodes de l\'année.',
+         'intermediate', 8, 'audio/yemba/time.mp3', 'video/yemba/time.mp4'),
+        
+        ('YEM', 'La nature et l\'environnement',
+         'Découvrez le vocabulaire naturel en Yemba. Explorez les termes liés à la nature, la géographie et l\'environnement de Dschang.',
+         'advanced', 9, 'audio/yemba/nature.mp3', 'video/yemba/nature.mp4'),
+        
+        ('YEM', 'La culture et l\'éducation',
+         'Explorez la culture éducative en Yemba. Découvrez les termes liés à l\'éducation et à la culture traditionnelle de Dschang.',
+         'advanced', 10, 'audio/yemba/culture.mp3', 'video/yemba/culture.mp4'),
     ]
     
     cursor.executemany('''

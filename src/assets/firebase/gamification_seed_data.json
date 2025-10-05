@@ -56,12 +56,12 @@
     "cameroon_linguist": {
       "id": "cameroon_linguist",
       "title": "Linguiste Camerounais",
-      "description": "Learn vocabulary in all 6 languages",
+      "description": "Learn vocabulary in all 7 languages",
       "iconName": "translate",
       "type": "special",
       "pointsReward": 250,
       "criteria": {
-        "languagesStudied": 6,
+        "languagesStudied": 7,
         "minLessonsPerLanguage": 3
       },
       "isUnlocked": false

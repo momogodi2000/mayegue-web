@@ -47,6 +47,9 @@ export const Layout = () => {
               <Link to="/community" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 Communauté
               </Link>
+              <Link to="/culture-history" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                Culture & Histoire
+              </Link>
               <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 À propos
               </Link>
@@ -167,6 +170,13 @@ export const Layout = () => {
                 👥 Communauté
               </Link>
               <Link 
+                to="/culture-history" 
+                className="block text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                🏛️ Culture & Histoire
+              </Link>
+              <Link 
                 to="/about" 
                 className="block text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2"
                 onClick={() => setShowMobileMenu(false)}
@@ -258,6 +268,7 @@ export const Layout = () => {
                 <li><a href="#" className="hover:text-white transition-colors">Bassa</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Bamum</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Fe'efe'e</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Yemba</a></li>
               </ul>
             </div>
 

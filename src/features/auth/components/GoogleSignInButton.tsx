@@ -25,11 +25,11 @@ export default function GoogleSignInButton({
     setLoading(true);
     
     try {
-      const result = await authService.signInWithGoogle();
-      
-      if (result.user) {
+      const user = await authService.signInWithGoogle();
+
+      if (user) {
         showSuccess('Connexion réussie avec Google !');
-        onSuccess?.(result.user);
+        onSuccess?.(user);
       }
     } catch (error: any) {
       console.error('Google sign-in error:', error);

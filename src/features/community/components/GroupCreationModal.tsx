@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
   DialogTitle,
   Button,
   Input,
   Textarea,
-  Select,
+  SelectRoot,
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -45,7 +45,7 @@ export default function GroupCreationModal({
     description: '',
     category: '',
     language: 'dualaba',
-    privacy: 'public',
+    privacy: 'public' as 'public' | 'private',
     tags: [] as string[],
     maxMembers: 50
   });
@@ -72,6 +72,7 @@ export default function GroupCreationModal({
     'bassa',
     'bamoun',
     'fulfulde',
+    'yemba',
     'anglais',
     'français'
   ];
@@ -195,7 +196,7 @@ export default function GroupCreationModal({
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Catégorie
                   </label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <SelectRoot value={formData.category} onValueChange={(value: string) => handleInputChange('category', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
@@ -206,14 +207,14 @@ export default function GroupCreationModal({
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </SelectRoot>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Langue
                   </label>
-                  <Select value={formData.language} onValueChange={(value) => handleInputChange('language', value)}>
+                  <SelectRoot value={formData.language} onValueChange={(value: string) => handleInputChange('language', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -224,7 +225,7 @@ export default function GroupCreationModal({
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </SelectRoot>
                 </div>
               </div>
 
@@ -234,7 +235,7 @@ export default function GroupCreationModal({
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Confidentialité
                   </label>
-                  <Select value={formData.privacy} onValueChange={(value) => handleInputChange('privacy', value)}>
+                  <SelectRoot value={formData.privacy} onValueChange={(value: string) => handleInputChange('privacy', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -252,7 +253,7 @@ export default function GroupCreationModal({
                         </div>
                       </SelectItem>
                     </SelectContent>
-                  </Select>
+                  </SelectRoot>
                 </div>
 
                 <div>

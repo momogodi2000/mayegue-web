@@ -179,7 +179,7 @@ export default function GuestDashboardPage() {
             <div className="text-sm text-gray-600 dark:text-gray-400">Leçons Démo</div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-            <div className="text-3xl font-bold text-primary-600 mb-1">5</div>
+            <div className="text-3xl font-bold text-primary-600 mb-1">7</div>
             <div className="text-sm text-gray-600 dark:text-gray-400">Langues</div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">

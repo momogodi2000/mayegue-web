@@ -1,3 +1,61 @@
+# 🎯 Fonctionnalités - Ma'a yegue V1.1 "Cultural Renaissance"
+
+## 🏛️ Culture & Histoire (NOUVEAU)
+
+### Vue d'ensemble
+La nouvelle section **Culture & Histoire** offre une exploration complète des 7 langues principales enseignées dans l'application, avec un contexte culturel, historique et géographique riche.
+
+### Langues Couvertes
+1. **Ewondo** (🏛️) - Région du Centre - 577,000 locuteurs
+2. **Duala** (🌊) - Région du Littoral - 300,000 locuteurs  
+3. **Fe'efe'e** (🌾) - Région de l'Ouest - 200,000 locuteurs
+4. **Fulfulde** (🐄) - Région du Nord - 1,500,000 locuteurs
+5. **Bassa** (🏪) - Centre-Littoral - 230,000 locuteurs
+6. **Bamum** (👑) - Région de l'Ouest - 215,000 locuteurs
+7. **Yemba** (🎓) - Dschang, Ouest - 180,000 locuteurs
+
+### Contenu par Langue
+
+#### Aperçu Historique
+- Origines et développement de la langue
+- Jalons historiques majeurs
+- Signification culturelle et influence
+
+#### Contexte Culturel
+- Traditions et coutumes
+- Festivals et célébrations
+- Art, musique et folklore
+- Contes et légendes
+
+#### Contexte Géographique
+- Localisation et environnement
+- Climat et paysage
+- Connexion langue-territoire
+
+#### Événements Historiques
+- Chronologie des événements marquants
+- Influences coloniales et migrations
+- Évolution moderne
+
+#### Sites du Patrimoine
+- Lieux touristiques et culturels
+- Monuments et sites historiques
+- Villages et centres culturels
+
+#### Ressources Multimédias
+- Images traditionnelles
+- Vidéos culturelles
+- Audio traditionnel
+- Notes éducatives avec expressions authentiques
+
+### Technologie
+- Interface interactive avec onglets
+- Données structurées par langue
+- Design responsive et accessible
+- Intégration avec le système de navigation
+
+---
+
 # Fonctionnalités - Ma'a yegue V1.1.0
 
 ## 📖 1. Dictionnaire Interactif
