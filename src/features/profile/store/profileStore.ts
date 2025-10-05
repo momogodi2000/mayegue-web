@@ -116,6 +116,56 @@ export const useProfileStore = create<ProfileState>()(
           };
           
           // Mock RPG data
+          const mockProfile: User = {
+            id: 'mock_user_1',
+            email: 'jean.nguema@example.com',
+            displayName: 'Jean Nguema',
+            photoURL: '',
+            role: 'apprenant',
+            emailVerified: true,
+            twoFactorEnabled: false,
+            createdAt: new Date('2024-01-01'),
+            lastLoginAt: new Date(),
+            preferences: {
+              language: 'fr',
+              targetLanguages: ['ewondo', 'duala'],
+              notificationsEnabled: true,
+              theme: 'light',
+              dailyGoalMinutes: 30
+            },
+            stats: {
+              lessonsCompleted: 25,
+              wordsLearned: 450,
+              totalTimeMinutes: 1200,
+              currentStreak: 12,
+              longestStreak: 25,
+              badgesEarned: 8,
+              level: 15,
+              xp: 8500,
+              atlasExplorations: 12,
+              encyclopediaEntries: 8,
+              historicalSitesVisited: 5,
+              arVrExperiences: 3,
+              marketplacePurchases: 2,
+              familyContributions: 15,
+              ngondoCoinsEarned: 1250,
+              achievementsUnlocked: 8
+            },
+            subscription: {
+              id: 'sub_1',
+              userId: 'mock_user_1',
+              planId: 'premium_monthly',
+              status: 'active',
+              startDate: new Date('2024-01-01'),
+              endDate: new Date('2024-12-31'),
+              autoRenew: true,
+              trialUsed: false,
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date()
+            },
+            ngondoCoins: 1250
+          };
+
           const mockRPGStats: RPGStats = {
             level: 15,
             xp: 8500,

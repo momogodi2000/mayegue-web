@@ -10,6 +10,8 @@ import { GuestDashboard } from '@/features/users/guest';
 import { LearnerDashboard } from '@/features/users/learner';
 import { TeacherDashboard } from '@/features/users/teacher';
 import { AdminPage } from '@/features/users/admin';
+import { AdminLayout } from '@/features/users/admin/layouts/AdminLayout';
+import { TeacherLayout } from '@/features/users/teacher/layouts/TeacherLayout';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('@/features/home/pages/HomePage'));
@@ -52,6 +54,12 @@ const LevelTestPage = lazy(() => import('@/features/assessment/pages/LevelTestPa
 const CultureHistoryPage = lazy(() => import('@/features/culture-history/pages/CultureHistoryPage'));
 const TwoFactorPage = lazy(() => import('@/features/auth/pages/TwoFactorPage'));
 
+// Admin Dashboard Pages
+const AdminDashboardPage = lazy(() => import('@/features/users/admin/pages/AdminDashboardPage'));
+
+// Teacher Dashboard Pages  
+const TeacherDashboardPage = lazy(() => import('@/features/users/teacher/pages/TeacherDashboardPage'));
+
 export function AppRouter() {
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -93,12 +101,36 @@ export function AppRouter() {
             <Route path="dashboard" element={<RoleBasedRouter />} />
             <Route path="dashboard/apprenant" element={<LearnerDashboard />} />
             <Route path="dashboard/learner" element={<Navigate to="/dashboard/apprenant" replace />} /> {/* Legacy redirect */}
-            <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
-              <Route path="dashboard/teacher" element={<TeacherDashboard />} />
-              <Route path="teacher/lessons" element={<TeacherLessonManagementPage />} />
-              <Route path="dashboard/admin" element={<AdminPage />} />
-              <Route path="admin/analytics" element={<AdminAnalyticsPage />} />
+            
+            {/* Admin Routes */}
+            <Route element={<RoleRoute allow={["admin"]} />}>
+              <Route path="admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboardPage />} />
+                <Route path="users" element={<AdminAnalyticsPage />} />
+                <Route path="analytics" element={<AdminAnalyticsPage />} />
+                <Route path="content" element={<AdminAnalyticsPage />} />
+                <Route path="reports" element={<AdminAnalyticsPage />} />
+                <Route path="system" element={<AdminAnalyticsPage />} />
+              </Route>
             </Route>
+            
+            {/* Teacher Routes */}
+            <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
+              <Route path="teacher" element={<TeacherLayout />}>
+                <Route path="dashboard" element={<TeacherDashboardPage />} />
+                <Route path="classes" element={<TeacherLessonManagementPage />} />
+                <Route path="lessons" element={<TeacherLessonManagementPage />} />
+                <Route path="assignments" element={<TeacherLessonManagementPage />} />
+                <Route path="grading" element={<TeacherLessonManagementPage />} />
+                <Route path="progress" element={<TeacherLessonManagementPage />} />
+                <Route path="messages" element={<TeacherLessonManagementPage />} />
+                <Route path="resources" element={<TeacherLessonManagementPage />} />
+              </Route>
+            </Route>
+            
+            {/* Legacy Routes - Keep for backward compatibility */}
+            <Route path="dashboard/teacher" element={<Navigate to="/teacher/dashboard" replace />} />
+            <Route path="dashboard/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="level-test" element={<LevelTestPage />} />
             <Route path="lessons" element={<LessonsPage />} />
             <Route path="lessons/:lessonId" element={<LessonDetailPage />} />

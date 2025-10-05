@@ -75,27 +75,6 @@ export default function LoginPage() {
     }
   };
 
-  const onGoogle = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const user = await authService.signInWithGoogle();
-      console.log('🔐 User logged in with Google:', user.email, 'Role:', user.role, 'UID:', user.id);
-      setUser(user);
-      
-      toast.success('Connecté avec Google avec succès!');
-      
-      // Navigate to dashboard route - let RoleBasedRouter handle the role-based redirection
-      navigate('/dashboard', { replace: true });
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion Google';
-      setError(errorMessage);
-      toast.error('Connexion Google échouée. Veuillez réessayer.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">

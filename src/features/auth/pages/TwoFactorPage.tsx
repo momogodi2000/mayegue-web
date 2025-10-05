@@ -266,7 +266,7 @@ export default function TwoFactorPage() {
 
       {/* Setup Modal */}
       <Modal
-        isOpen={showSetup}
+        open={showSetup}
         onClose={() => setShowSetup(false)}
         title="Configuration 2FA"
         size="lg"
@@ -279,7 +279,7 @@ export default function TwoFactorPage() {
 
       {/* Disable Confirmation Modal */}
       <Modal
-        isOpen={showDisableConfirm}
+        open={showDisableConfirm}
         onClose={() => setShowDisableConfirm(false)}
         title="Désactiver l'authentification 2FA"
       >

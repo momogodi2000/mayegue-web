@@ -31,8 +31,8 @@ export const RoleBasedRouter = () => {
             visitor: '/dashboard/guest',
             apprenant: '/dashboard/apprenant',
             learner: '/dashboard/apprenant', // Legacy support
-            teacher: '/dashboard/teacher',
-            admin: '/dashboard/admin',
+            teacher: '/teacher/dashboard',
+            admin: '/admin/dashboard',
             family_member: '/dashboard/apprenant', // Family members use learner dashboard
           };
 
