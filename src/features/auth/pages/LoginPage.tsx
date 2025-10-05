@@ -9,11 +9,12 @@ import {
   CardContent, 
   Form, 
   FormGroup, 
-  FormError,
+  FormError, 
   Badge
 } from '@/shared/components/ui';
 import toast from 'react-hot-toast';
 import logoUrl from '@/assets/logo/logo.jpg';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -150,6 +151,40 @@ export default function LoginPage() {
                 className="mb-6"
               />
             )}
+
+            {/* Google Sign In */}
+            <div className="mb-6">
+              <GoogleSignInButton 
+                onSuccess={(user) => {
+                  setUser(user);
+                  toast.success('Connecté avec Google avec succès!');
+                  const roleToPath: Record<string, string> = {
+                    visitor: '/dashboard/guest',
+                    apprenant: '/dashboard/apprenant',
+                    teacher: '/dashboard/teacher',
+                    admin: '/dashboard/admin',
+                  };
+                  const targetPath = roleToPath[user.role] || '/dashboard/apprenant';
+                  setTimeout(() => {
+                    navigate(targetPath, { replace: true });
+                  }, 100);
+                }}
+                onError={(error) => {
+                  setError(error.message);
+                }}
+                fullWidth
+              />
+            </div>
+
+            {/* Divider */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Ou continuez avec</span>
+              </div>
+            </div>
 
             <Form onSubmit={onSubmit}>
               <FormGroup>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@/shared/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Input, Spinner, useToastActions } from '@/shared/components/ui';
 import { DiscussionList } from '../components/DiscussionList';
 import { DiscussionDetail } from '../components/DiscussionDetail';
 import { LanguageExchangeList } from '../components/LanguageExchangeList';
@@ -12,10 +12,18 @@ import {
   TrophyIcon,
   ShoppingBagIcon,
   SparklesIcon,
-  HeartIcon
+  HeartIcon,
+  PlusIcon,
+  MagnifyingGlassIcon,
+  ChatBubbleLeftRightIcon,
+  QuestionMarkCircleIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { paymentService } from '@/core/services/payment/payment.service';
+import { communityService, Group, Post } from '@/core/services/firebase/community.service';
+import GroupCreationModal from '../components/GroupCreationModal';
+import PostCreationModal from '../components/PostCreationModal';
 
 type CommunityView = 'overview' | 'discussions' | 'discussion-detail' | 'exchanges' | 'challenges' | 'groups' | 'marketplace';
 
@@ -70,6 +78,15 @@ const CommunityPage: React.FC = () => {
   // V1.1 New State
   const { user } = useAuthStore();
   const [hasFullAccess, setHasFullAccess] = useState(false);
+  
+  // Enhanced community functionality
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { success: showSuccess, error: showError } = useToastActions();
 
   const handleDiscussionSelect = (discussionId: string) => {
     setSelectedDiscussionId(discussionId);
@@ -79,6 +96,29 @@ const CommunityPage: React.FC = () => {
   const handleBackToDiscussions = () => {
     setSelectedDiscussionId(null);
     setCurrentView('discussions');
+  };
+
+  // Load community data
+  useEffect(() => {
+    loadCommunityData();
+  }, []);
+
+  const loadCommunityData = async () => {
+    setLoading(true);
+    try {
+      const [groupsData, postsData] = await Promise.all([
+        communityService.getGroups({ limit: 10 }),
+        communityService.getPosts({ limit: 20 })
+      ]);
+      
+      setGroups(groupsData);
+      setPosts(postsData);
+    } catch (error) {
+      console.error('Error loading community data:', error);
+      showError('Erreur lors du chargement des données communautaires');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Check user access level
@@ -97,6 +137,32 @@ const CommunityPage: React.FC = () => {
 
     checkAccess();
   }, [user]);
+
+  const handleGroupCreated = (newGroup: Group) => {
+    setGroups(prev => [newGroup, ...prev]);
+    showSuccess('Groupe créé avec succès !');
+  };
+
+  const handlePostCreated = (newPost: Post) => {
+    setPosts(prev => [newPost, ...prev]);
+    showSuccess('Post créé avec succès !');
+  };
+
+  const handleJoinGroup = async (groupId: string) => {
+    if (!user?.id) return;
+    
+    try {
+      await communityService.joinGroup(groupId, user.id);
+      setGroups(prev => prev.map(group => 
+        group.id === groupId 
+          ? { ...group, memberCount: group.memberCount + 1, members: [...group.members, user.id] }
+          : group
+      ));
+      showSuccess('Vous avez rejoint le groupe !');
+    } catch (error) {
+      showError('Erreur lors de l\'adhésion au groupe');
+    }
+  };
 
   const renderContent = () => {
     try {

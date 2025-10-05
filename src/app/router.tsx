@@ -47,6 +47,7 @@ const MarketplacePage = lazy(() => import('@/features/marketplace/pages/Marketpl
 const ARVRPage = lazy(() => import('@/features/ar-vr/pages/ARVRPage'));
 const RPGGamificationPage = lazy(() => import('@/features/rpg-gamification/pages/RPGGamificationPage'));
 const AIFeaturesPage = lazy(() => import('@/features/ai-features/pages/AIFeaturesPage'));
+const LevelTestPage = lazy(() => import('@/features/assessment/pages/LevelTestPage'));
 
 export function AppRouter() {
   return (
@@ -94,6 +95,7 @@ export function AppRouter() {
               <Route path="dashboard/admin" element={<AdminPage />} />
               <Route path="admin/analytics" element={<AdminAnalyticsPage />} />
             </Route>
+            <Route path="level-test" element={<LevelTestPage />} />
             <Route path="lessons" element={<LessonsPage />} />
             <Route path="lessons/:lessonId" element={<LessonDetailPage />} />
             <Route path="ai-assistant" element={<AIAssistantPage />} />

@@ -1,0 +1,202 @@
+{
+  "lessons": [
+    {
+      "title": "Salutations de Base",
+      "description": "Apprenez les salutations essentielles en dualaba",
+      "content": "# Salutations de Base en Dualaba\n\n## Objectifs d'apprentissage\n- Maîtriser les salutations de base\n- Comprendre le contexte culturel\n- Pratiquer la prononciation\n\n## Contenu de la leçon\n\n### Salutations courantes\n- **Mbolo** - Bonjour (utilisé toute la journée)\n- **Mbolo mingi** - Bonjour avec respect\n- **Tosepeli** - Merci\n- **Tosepeli mingi** - Merci beaucoup\n- **Malamu** - Au revoir\n- **Malamu mingi** - Au revoir avec respect\n\n### Contexte culturel\nEn dualaba, les salutations sont très importantes et reflètent le respect et la politesse. Il est essentiel de saluer les personnes que vous rencontrez, même les inconnus.\n\n### Prononciation\n- Le \"mb\" se prononce comme \"m\" + \"b\" rapidement\n- Le \"ng\" se prononce comme dans \"sing\" en anglais\n- L'accent tonique est généralement sur la première syllabe",
+      "level": "beginner",
+      "language": "dualaba",
+      "category": "vocabulaire",
+      "duration": 15,
+      "exercises": [
+        {
+          "type": "multiple_choice",
+          "question": "Comment dit-on \"bonjour\" en dualaba ?",
+          "options": ["Malamu", "Mbolo", "Tosepeli", "Mingi"],
+          "correctAnswer": "Mbolo",
+          "explanation": "Mbolo est la salutation standard en dualaba, utilisée toute la journée."
+        },
+        {
+          "type": "translation",
+          "question": "Traduisez: \"Merci beaucoup\"",
+          "correctAnswer": "Tosepeli mingi",
+          "explanation": "Tosepeli signifie \"merci\" et mingi signifie \"beaucoup\"."
+        }
+      ],
+      "culturalNotes": "Les salutations en dualaba sont un signe de respect et de politesse. Ne pas saluer peut être considéré comme impoli.",
+      "tags": ["salutations", "vocabulaire", "débutant", "politesse"],
+      "isActive": true,
+      "createdBy": "system"
+    },
+    {
+      "title": "Nombres de 1 à 10",
+      "description": "Apprenez à compter de 1 à 10 en dualaba",
+      "content": "# Nombres de 1 à 10 en Dualaba\n\n## Objectifs d'apprentissage\n- Maîtriser les nombres de 1 à 10\n- Comprendre leur utilisation dans la vie quotidienne\n- Pratiquer la prononciation\n\n## Les nombres\n\n1. **Moko** - Un\n2. **Mibale** - Deux\n3. **Misato** - Trois\n4. **Minei** - Quatre\n5. **Mitano** - Cinq\n6. **Motoba** - Six\n7. **Nsambo** - Sept\n8. **Mname** - Huit\n9. **Libwa** - Neuf\n10. **Zomi** - Dix\n\n### Utilisation pratique\n- Compter les objets\n- Donner son âge\n- Parler de quantités\n- Faire des achats\n\n### Prononciation\n- Moko : MO-ko\n- Mibale : mi-BA-le\n- Misato : mi-SA-to",
+      "level": "beginner",
+      "language": "dualaba",
+      "category": "vocabulaire",
+      "duration": 20,
+      "exercises": [
+        {
+          "type": "multiple_choice",
+          "question": "Comment dit-on \"cinq\" en dualaba ?",
+          "options": ["Moko", "Mibale", "Mitano", "Zomi"],
+          "correctAnswer": "Mitano",
+          "explanation": "Mitano est le mot pour \"cinq\" en dualaba."
+        },
+        {
+          "type": "translation",
+          "question": "Traduisez: \"trois\"",
+          "correctAnswer": "Misato",
+          "explanation": "Misato signifie \"trois\" en dualaba."
+        }
+      ],
+      "culturalNotes": "Les nombres sont utilisés dans de nombreux contextes culturels, notamment dans les cérémonies traditionnelles.",
+      "tags": ["nombres", "vocabulaire", "débutant", "mathématiques"],
+      "isActive": true,
+      "createdBy": "system"
+    },
+    {
+      "title": "Famille et Relations",
+      "description": "Vocabulaire de la famille en dualaba",
+      "content": "# Famille et Relations en Dualaba\n\n## Objectifs d'apprentissage\n- Maîtriser le vocabulaire de la famille\n- Comprendre les relations familiales\n- Apprendre les termes de respect\n\n## Vocabulaire de la famille\n\n### Membres de la famille\n- **Tata** - Père\n- **Mama** - Mère\n- **Mwan'a** - Enfant\n- **Mwana mobali** - Fils\n- **Mwana mwasi** - Fille\n- **Noko** - Grand-mère\n- **Tata noko** - Grand-père\n- **Mpangi** - Frère/Sœur\n- **Mwana mpangi** - Cousin/Cousine\n\n### Relations étendues\n- **Tonton** - Oncle\n- **Tantine** - Tante\n- **Mwana tonton** - Cousin/Cousine (fils d'oncle)\n- **Mwana tantine** - Cousin/Cousine (fille de tante)\n\n### Termes de respect\n- **Tata mingi** - Père respecté\n- **Mama mingi** - Mère respectée\n- **Noko mingi** - Grand-mère respectée\n\n### Contexte culturel\nLa famille est très importante dans la culture dualaba. Les relations familiales sont respectées et les aînés sont honorés.",
+      "level": "beginner",
+      "language": "dualaba",
+      "category": "vocabulaire",
+      "duration": 25,
+      "exercises": [
+        {
+          "type": "multiple_choice",
+          "question": "Comment dit-on \"mère\" en dualaba ?",
+          "options": ["Tata", "Mama", "Noko", "Tonton"],
+          "correctAnswer": "Mama",
+          "explanation": "Mama est le terme pour \"mère\" en dualaba."
+        },
+        {
+          "type": "cultural",
+          "question": "Quelle est l'importance de la famille dans la culture dualaba ?",
+          "options": ["Peu importante", "Très importante", "Modérément importante", "Variable"],
+          "correctAnswer": "Très importante",
+          "explanation": "La famille est au cœur de la culture dualaba et les relations familiales sont très respectées."
+        }
+      ],
+      "culturalNotes": "Dans la culture dualaba, la famille étendue est très importante et les aînés sont toujours respectés.",
+      "tags": ["famille", "relations", "vocabulaire", "culture"],
+      "isActive": true,
+      "createdBy": "system"
+    },
+    {
+      "title": "Conversation Quotidienne",
+      "description": "Dialogues de la vie quotidienne en dualaba",
+      "content": "# Conversation Quotidienne en Dualaba\n\n## Objectifs d'apprentissage\n- Maîtriser les dialogues de base\n- Comprendre les expressions courantes\n- Pratiquer la conversation\n\n## Dialogues de base\n\n### Dialogue 1: Se présenter\n**A:** Mbolo! Ngom na Marie.\n**B:** Mbolo mingi! Ngom na Jean.\n**A:** Tosepeli mingi.\n\n### Dialogue 2: Demander des nouvelles\n**A:** Mbolo! Malamu?\n**B:** Malamu mingi. Yo malamu?\n**A:** Malamu mingi, tosepli.\n\n### Dialogue 3: Au marché\n**A:** Mbolo! Boni na yango?\n**B:** Yango ezali na liboso ya zomi.\n**A:** Tosepeli mingi.\n\n### Expressions utiles\n- **Ngom na...** - Je m'appelle...\n- **Yo malamu?** - Comment allez-vous?\n- **Malamu mingi** - Très bien\n- **Boni na yango?** - Combien ça coûte?\n- **Ezali na liboso ya...** - Ça coûte...\n\n### Grammaire de base\n- Structure sujet-verbe-objet\n- Utilisation des particules\n- Formes de politesse",
+      "level": "intermediate",
+      "language": "dualaba",
+      "category": "conversation",
+      "duration": 30,
+      "exercises": [
+        {
+          "type": "translation",
+          "question": "Traduisez: \"Je m'appelle Marie\"",
+          "correctAnswer": "Ngom na Marie",
+          "explanation": "Ngom na signifie \"je m'appelle\" en dualaba."
+        },
+        {
+          "type": "multiple_choice",
+          "question": "Comment demandez-vous \"Comment allez-vous?\" en dualaba?",
+          "options": ["Mbolo mingi", "Yo malamu?", "Tosepeli mingi", "Malamu mingi"],
+          "correctAnswer": "Yo malamu?",
+          "explanation": "Yo malamu? est la façon de demander \"Comment allez-vous?\" en dualaba."
+        }
+      ],
+      "culturalNotes": "Les conversations en dualaba incluent souvent des marques de respect et de politesse.",
+      "tags": ["conversation", "dialogues", "quotidien", "grammaire"],
+      "isActive": true,
+      "createdBy": "system"
+    },
+    {
+      "title": "Temps et Saisons",
+      "description": "Vocabulaire du temps et des saisons en dualaba",
+      "content": "# Temps et Saisons en Dualaba\n\n## Objectifs d'apprentissage\n- Maîtriser le vocabulaire du temps\n- Comprendre les saisons\n- Apprendre à parler de la météo\n\n## Vocabulaire du temps\n\n### Unités de temps\n- **Mposo** - Semaine\n- **Sanza** - Mois\n- **Mobu** - Année\n- **Mikolo** - Jours\n- **Ngonga** - Heure\n- **Minuti** - Minute\n\n### Jours de la semaine\n- **Eyenga** - Dimanche\n- **Mokolo ya liboso** - Lundi\n- **Mokolo ya mibale** - Mardi\n- **Mokolo ya misato** - Mercredi\n- **Mokolo ya minei** - Jeudi\n- **Mokolo ya mitano** - Vendredi\n- **Mposo** - Samedi\n\n### Saisons\n- **Mpela** - Saison sèche\n- **Mpela ya mai** - Saison des pluies\n- **Mpela ya elanga** - Saison chaude\n- **Mpela ya malili** - Saison fraîche\n\n### Météo\n- **Mai** - Eau/Pluie\n- **Moto** - Chaleur\n- **Malili** - Froid\n- **Mpepe** - Vent\n- **Elanga** - Soleil\n- **Mputu** - Nuage\n\n### Expressions temporelles\n- **Lelo** - Aujourd'hui\n- **Lobi** - Hier\n- **Lelo na lobi** - Demain\n- **Na ntango nini?** - À quelle heure?",
+      "level": "intermediate",
+      "language": "dualaba",
+      "category": "vocabulaire",
+      "duration": 35,
+      "exercises": [
+        {
+          "type": "multiple_choice",
+          "question": "Comment dit-on \"aujourd'hui\" en dualaba?",
+          "options": ["Lelo", "Lobi", "Lelo na lobi", "Na ntango nini"],
+          "correctAnswer": "Lelo",
+          "explanation": "Lelo signifie \"aujourd'hui\" en dualaba."
+        },
+        {
+          "type": "translation",
+          "question": "Traduisez: \"saison des pluies\"",
+          "correctAnswer": "Mpela ya mai",
+          "explanation": "Mpela ya mai signifie \"saison des pluies\" en dualaba."
+        }
+      ],
+      "culturalNotes": "Les saisons sont importantes dans la culture dualaba car elles rythment les activités agricoles et les cérémonies.",
+      "tags": ["temps", "saisons", "météo", "vocabulaire"],
+      "isActive": true,
+      "createdBy": "system"
+    },
+    {
+      "title": "Culture et Traditions",
+      "description": "Exploration approfondie de la culture dualaba",
+      "content": "# Culture et Traditions Dualaba\n\n## Objectifs d'apprentissage\n- Comprendre la culture dualaba\n- Maîtriser le vocabulaire culturel\n- Apprendre les traditions\n\n## Éléments culturels\n\n### Cérémonies traditionnelles\n- **Ngondo** - Cérémonie traditionnelle importante\n- **Mvet** - Instrument traditionnel et art de la parole\n- **Bikutsi** - Danse traditionnelle\n- **Sangha** - Association traditionnelle\n\n### Symboles culturels\n- **Masque Ngondo** - Symbole de protection spirituelle\n- **Tambour** - Instrument de communication\n- **Feu sacré** - Symbole de continuité\n- **Arbre sacré** - Symbole de sagesse\n\n### Valeurs traditionnelles\n- **Respect des aînés** - Valeur fondamentale\n- **Solidarité communautaire** - Entraide mutuelle\n- **Sagesse ancestrale** - Transmission du savoir\n- **Harmonie avec la nature** - Respect de l'environnement\n\n### Vocabulaire culturel\n- **Nkumu** - Chef traditionnel\n- **Nganga** - Guérisseur traditionnel\n- **Muntu** - Personne (dans un contexte spirituel)\n- **Nzambe** - Dieu/Créateur\n- **Bilima** - Esprits ancestraux\n\n### Traditions orales\n- **Lisapo** - Histoire/Conte\n- **Mvett** - Épopée traditionnelle\n- **Nkumu** - Proverbe\n- **Bisengo** - Chant traditionnel\n\n### Rites de passage\n- **Initiation** - Passage à l'âge adulte\n- **Mariage traditionnel** - Union des familles\n- **Funérailles** - Hommage aux ancêtres\n- **Naissance** - Accueil du nouveau-né",
+      "level": "advanced",
+      "language": "dualaba",
+      "category": "culture",
+      "duration": 45,
+      "exercises": [
+        {
+          "type": "cultural",
+          "question": "Qu'est-ce que le Ngondo dans la culture dualaba?",
+          "options": ["Un instrument", "Une cérémonie", "Un vêtement", "Une nourriture"],
+          "correctAnswer": "Une cérémonie",
+          "explanation": "Le Ngondo est une cérémonie traditionnelle importante dans la culture dualaba."
+        },
+        {
+          "type": "multiple_choice",
+          "question": "Que signifie \"Nkumu\" en dualaba?",
+          "options": ["Guérisseur", "Chef traditionnel", "Danseur", "Musicien"],
+          "correctAnswer": "Chef traditionnel",
+          "explanation": "Nkumu signifie \"chef traditionnel\" en dualaba."
+        }
+      ],
+      "culturalNotes": "La culture dualaba est riche en traditions orales et en cérémonies qui renforcent les liens communautaires.",
+      "tags": ["culture", "traditions", "cérémonies", "valeurs", "spiritualité"],
+      "isActive": true,
+      "createdBy": "system"
+    },
+    {
+      "title": "Grammaire Avancée",
+      "description": "Structures grammaticales complexes en dualaba",
+      "content": "# Grammaire Avancée en Dualaba\n\n## Objectifs d'apprentissage\n- Maîtriser les structures complexes\n- Comprendre la syntaxe avancée\n- Apprendre les nuances grammaticales\n\n## Structures grammaticales\n\n### Phrases complexes\n- **Coordination** - Liens entre propositions\n- **Subordination** - Propositions dépendantes\n- **Conditionnelles** - Phrases avec \"si\"\n- **Temporelles** - Relations temporelles\n\n### Temps verbaux avancés\n- **Passé composé** - Actions accomplies\n- **Plus-que-parfait** - Antériorité\n- **Futur antérieur** - Antériorité future\n- **Conditionnel** - Hypothèses\n\n### Modes et aspects\n- **Impératif** - Ordres et conseils\n- **Subjonctif** - Souhaits et hypothèses\n- **Optatif** - Souhaits et prières\n- **Négatif** - Formes de négation\n\n### Syntaxe complexe\n- **Ordre des mots** - Flexibilité syntaxique\n- **Emphase** - Mise en relief\n- **Questions complexes** - Interrogations indirectes\n- **Discours rapporté** - Style indirect\n\n### Particules avancées\n- **Particles de temps** - Nuances temporelles\n- **Particles de lieu** - Localisation précise\n- **Particles de manière** - Adverbes complexes\n- **Particles de cause** - Relations causales\n\n### Exemples pratiques\n\n#### Phrases conditionnelles\n- **Soki** - Si (condition)\n- **Kasi** - Mais (opposition)\n- **Mpe** - Et (addition)\n- **To** - Ou (alternative)\n\n#### Temps composés\n- **Na moni** - J'ai vu (passé composé)\n- **Na koyeba** - Je savais (imparfait)\n- **Na koya** - Je vais (futur)\n\n#### Négation complexe\n- **Te** - Ne... pas (négation simple)\n- **Mpe te** - Ni... ni (négation multiple)\n- **Kasi te** - Mais pas (opposition négative)",
+      "level": "advanced",
+      "language": "dualaba",
+      "category": "grammaire",
+      "duration": 50,
+      "exercises": [
+        {
+          "type": "multiple_choice",
+          "question": "Comment exprime-t-on une condition avec \"si\" en dualaba?",
+          "options": ["Kasi", "Mpe", "Soki", "To"],
+          "correctAnswer": "Soki",
+          "explanation": "Soki est la particule pour exprimer une condition en dualaba."
+        },
+        {
+          "type": "translation",
+          "question": "Traduisez: \"J'ai vu\" (passé composé)",
+          "correctAnswer": "Na moni",
+          "explanation": "Na moni est la forme du passé composé pour \"j'ai vu\" en dualaba."
+        }
+      ],
+      "culturalNotes": "La grammaire dualaba reflète la logique et la pensée traditionnelle de la culture.",
+      "tags": ["grammaire", "syntaxe", "temps", "particules", "structures"],
+      "isActive": true,
+      "createdBy": "system"
+    }
+  ]
+}
