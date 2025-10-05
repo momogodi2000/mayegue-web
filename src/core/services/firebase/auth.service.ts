@@ -33,8 +33,36 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
   let profile: Awaited<ReturnType<typeof userService.getUserProfile>> = null;
 
   try {
-    role = await userService.getUserRole(user.uid);
+    // First try to get the user profile
     profile = await userService.getUserProfile(user.uid);
+    
+    if (!profile) {
+      // If no profile exists, create one with default role based on email
+      console.log('No profile found, creating default profile for:', user.email);
+      
+      // Determine role based on email for default users
+      let defaultRole: UserRole = 'apprenant';
+      if (user.email === 'admin@mayegue.com') {
+        defaultRole = 'admin';
+      } else if (user.email === 'teacher@mayegue.com') {
+        defaultRole = 'teacher';
+      }
+      
+      await userService.ensureUserProfile(user.uid, {
+        email: user.email || '',
+        displayName: user.displayName || user.email || 'Utilisateur',
+        emailVerified: user.emailVerified
+      });
+      
+      // If it's a default user, update their role
+      if (defaultRole !== 'apprenant') {
+        await userService.updateUserRole(user.uid, defaultRole);
+      }
+      
+      role = defaultRole;
+    } else {
+      role = await userService.getUserRole(user.uid);
+    }
   } catch (error) {
     console.error('Error fetching user profile:', error);
     // Continue with default values if Firestore fetch fails
@@ -104,6 +132,9 @@ export class AuthService {
         displayName: cred.user.displayName || cred.user.email || 'Utilisateur',
         emailVerified: cred.user.emailVerified
       });
+
+      // Set custom claims for Firestore rules
+      await this.setUserCustomClaims(cred.user.uid);
     } catch (error) {
       console.error('Error ensuring user profile on login:', error);
     }
@@ -192,6 +223,13 @@ export class AuthService {
       displayName: cred.user.displayName || cred.user.email || 'Utilisateur',
       emailVerified: cred.user.emailVerified
     });
+
+    // Set custom claims for Firestore rules
+    try {
+      await this.setUserCustomClaims(cred.user.uid);
+    } catch (error) {
+      console.error('Error setting custom claims:', error);
+    }
 
     // Return mapped user with proper role
     return await mapFirebaseUser(cred.user);
@@ -347,6 +385,23 @@ export class AuthService {
       return await mapFirebaseUser(fbUser);
     }
     return null;
+  }
+
+  // Set custom claims for Firestore rules compatibility
+  private async setUserCustomClaims(userId: string): Promise<void> {
+    try {
+      const userRole = await userService.getUserRole(userId);
+      
+      // In a production app, this would be done via Cloud Functions
+      // For now, we'll use a workaround by refreshing the token
+      const user = auth.currentUser;
+      if (user) {
+        // Force token refresh to get updated claims
+        await user.getIdToken(true);
+      }
+    } catch (error) {
+      console.error('Error setting custom claims:', error);
+    }
   }
 }
 

@@ -32,13 +32,22 @@ export class UserService {
     const ref = doc(db, 'users', userId);
     const snap = await getDoc(ref);
     const now = Date.now();
+    
     if (!snap.exists()) {
-      // Default role for new users is 'apprenant' (student)
+      // Determine default role based on email for special users
+      let defaultRole: UserRole = 'apprenant';
+      if (payload.email === 'admin@mayegue.com') {
+        defaultRole = 'admin';
+      } else if (payload.email === 'teacher@mayegue.com') {
+        defaultRole = 'teacher';
+      }
+      
+      // Default role for new users is 'apprenant' (student) unless specified
       await setDoc(ref, {
-        role: 'apprenant',
+        role: defaultRole,
         createdAt: now,
         updatedAt: now,
-        subscriptionStatus: 'free',
+        subscriptionStatus: defaultRole === 'admin' || defaultRole === 'teacher' ? 'premium' : 'free',
         emailVerified: false,
         twoFactorEnabled: false,
         preferences: {
@@ -46,7 +55,7 @@ export class UserService {
           targetLanguages: [],
           notificationsEnabled: true,
           theme: 'system',
-          dailyGoalMinutes: 10,
+          dailyGoalMinutes: defaultRole === 'admin' ? 60 : defaultRole === 'teacher' ? 45 : 10,
         },
         stats: {
           lessonsCompleted: 0,
@@ -68,6 +77,14 @@ export class UserService {
         },
         ...payload
       });
+      
+      console.log(`✅ Created user profile for ${payload.email} with role: ${defaultRole}`);
+    } else {
+      // Update existing profile if needed
+      await setDoc(ref, {
+        updatedAt: now,
+        ...payload
+      }, { merge: true });
     }
   }
 

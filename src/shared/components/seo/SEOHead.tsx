@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function SEOHead({ title, description, canonical }: Props) {
-  const fullTitle = title ? `${title} | Ma’a yegue` : 'Ma’a yegue - Langues Camerounaises';
+  const fullTitle = title && typeof title === 'string' ? `${title} | Ma'a yegue` : 'Ma'a yegue - Langues Camerounaises';
   return (
     <Helmet>
       <title>{fullTitle}</title>

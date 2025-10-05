@@ -4,6 +4,7 @@ import { Layout } from '@/shared/components/layout/Layout';
 import { LoadingScreen } from '@/shared/components/ui/LoadingScreen';
 import { ProtectedRoute } from '@/shared/components/auth/ProtectedRoute';
 import { RoleRedirect } from '@/shared/components/auth/RoleRedirect';
+import { RoleBasedRouter } from '@/shared/components/auth/RoleBasedRouter';
 import { RoleRoute } from '@/shared/components/auth/RoleRoute';
 import { GuestDashboard } from '@/features/users/guest';
 import { LearnerDashboard } from '@/features/users/learner';
@@ -49,6 +50,7 @@ const RPGGamificationPage = lazy(() => import('@/features/rpg-gamification/pages
 const AIFeaturesPage = lazy(() => import('@/features/ai-features/pages/AIFeaturesPage'));
 const LevelTestPage = lazy(() => import('@/features/assessment/pages/LevelTestPage'));
 const CultureHistoryPage = lazy(() => import('@/features/culture-history/pages/CultureHistoryPage'));
+const TwoFactorPage = lazy(() => import('@/features/auth/pages/TwoFactorPage'));
 
 export function AppRouter() {
   return (
@@ -88,7 +90,7 @@ export function AppRouter() {
           
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="dashboard" element={<RoleRedirect />} />
+            <Route path="dashboard" element={<RoleBasedRouter />} />
             <Route path="dashboard/apprenant" element={<LearnerDashboard />} />
             <Route path="dashboard/learner" element={<Navigate to="/dashboard/apprenant" replace />} /> {/* Legacy redirect */}
             <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
@@ -105,6 +107,7 @@ export function AppRouter() {
             <Route path="community" element={<CommunityPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="security/2fa" element={<TwoFactorPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
           </Route>
           

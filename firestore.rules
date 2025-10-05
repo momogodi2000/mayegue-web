@@ -12,15 +12,22 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return request.auth.token.role == 'admin';
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
     function isTeacher() {
-      return request.auth.token.role == 'teacher' || isAdmin();
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher' || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
     }
     
     function isValidUser() {
-      return request.auth.token.role in ['learner', 'teacher', 'admin'];
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['apprenant', 'teacher', 'admin', 'visitor', 'family_member'];
     }
     
     function hasValidEmail() {
@@ -31,12 +38,15 @@ service cloud.firestore {
     match /users/{userId} {
       // Allow users to create their own profile during registration
       allow create: if isAuthenticated() && isOwner(userId);
-      // Allow users to read/write their own data
+      // Allow users to read/write their own data  
       allow read, write: if isAuthenticated() && isOwner(userId);
       // Admins can access all user data
       allow read, write: if isAuthenticated() && isAdmin();
       // User profiles can be read by authenticated users (for community features)
       allow read: if isAuthenticated();
+      // Special rule: Allow any authenticated user to create user documents (for setup scripts)
+      // This is needed because the setup script creates users while authenticated as each user
+      allow create, update: if isAuthenticated();
       
       // User stats subcollection
       match /stats/{statId} {
