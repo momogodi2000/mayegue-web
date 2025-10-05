@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, UserPreferences } from '@/shared/types/user.types';
 import { RPGStats, FamilyTree, VARKProfile, PerformanceAnalytics, CulturalProgress } from '../types/rpg.types';
+import { userService } from '@/core/services/firebase/user.service';
+import { useAuthStore } from '@/features/auth/store/authStore';
 
 interface ProfileState {
   // Core data
@@ -64,33 +66,44 @@ export const useProfileStore = create<ProfileState>()(
         set({ isLoading: true, error: null });
         
         try {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          const mockProfile: User = {
-            id: '1',
-            email: 'user@example.com',
-            displayName: 'John Doe',
-            photoURL: '',
-            role: 'apprenant',
-            emailVerified: false,
-            createdAt: new Date(),
+          // Get current user from auth store
+          const authUser = useAuthStore.getState().user;
+          if (!authUser) {
+            throw new Error('No authenticated user');
+          }
+
+          // Fetch real user profile from Firebase
+          const userProfile = await userService.getUserProfile(authUser.id);
+          if (!userProfile) {
+            throw new Error('User profile not found');
+          }
+
+          // Convert to User type
+          const profile: User = {
+            id: authUser.id,
+            email: authUser.email,
+            displayName: authUser.displayName,
+            photoURL: authUser.photoURL || '',
+            role: userProfile.role || 'apprenant',
+            emailVerified: userProfile.emailVerified || false,
+            createdAt: new Date(userProfile.createdAt || Date.now()),
             lastLoginAt: new Date(),
-            preferences: {
-              language: 'en',
-              targetLanguages: ['Ewondo', 'Duala'],
+            preferences: userProfile.preferences || {
+              language: 'fr',
+              targetLanguages: [],
               notificationsEnabled: true,
-              theme: 'light',
+              theme: 'system',
               dailyGoalMinutes: 15
             },
-            stats: {
-              lessonsCompleted: 10,
-              wordsLearned: 150,
-              totalTimeMinutes: 300,
-              currentStreak: 5,
-              longestStreak: 12,
-              badgesEarned: 3,
-              level: 2,
-              xp: 450,
+            stats: userProfile.stats || {
+              lessonsCompleted: 0,
+              wordsLearned: 0,
+              totalTimeMinutes: 0,
+              currentStreak: 0,
+              longestStreak: 0,
+              badgesEarned: 0,
+              level: 1,
+              xp: 0,
               atlasExplorations: 0,
               encyclopediaEntries: 0,
               historicalSitesVisited: 0,

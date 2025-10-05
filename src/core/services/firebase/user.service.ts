@@ -89,6 +89,73 @@ export class UserService {
     const snap = await getDoc(ref);
     return snap.exists() ? snap.data() as UserProfileDoc : null;
   }
+
+  async updateUserStats(userId: string, statsUpdate: Partial<UserStats>): Promise<void> {
+    const ref = doc(db, 'users', userId);
+    const userDoc = await getDoc(ref);
+    
+    if (userDoc.exists()) {
+      const currentData = userDoc.data() as UserProfileDoc;
+      const currentStats = currentData.stats || {};
+      
+      const updatedStats = {
+        ...currentStats,
+        ...statsUpdate
+      };
+
+      await setDoc(ref, {
+        stats: updatedStats,
+        updatedAt: Date.now()
+      }, { merge: true });
+    }
+  }
+
+  async incrementLessonCompleted(userId: string, xpGained: number = 50): Promise<void> {
+    const profile = await this.getUserProfile(userId);
+    if (profile?.stats) {
+      const newXP = (profile.stats.xp || 0) + xpGained;
+      const newLevel = Math.floor(newXP / 100) + 1; // Level up every 100 XP
+      
+      await this.updateUserStats(userId, {
+        lessonsCompleted: (profile.stats.lessonsCompleted || 0) + 1,
+        xp: newXP,
+        level: newLevel,
+        totalTimeMinutes: (profile.stats.totalTimeMinutes || 0) + 15 // Assume 15 min per lesson
+      });
+    }
+  }
+
+  async updateStreak(userId: string): Promise<void> {
+    const profile = await this.getUserProfile(userId);
+    if (profile?.stats) {
+      const newStreak = (profile.stats.currentStreak || 0) + 1;
+      const longestStreak = Math.max(profile.stats.longestStreak || 0, newStreak);
+      
+      await this.updateUserStats(userId, {
+        currentStreak: newStreak,
+        longestStreak: longestStreak
+      });
+    }
+  }
+
+  async addWordsLearned(userId: string, wordCount: number): Promise<void> {
+    const profile = await this.getUserProfile(userId);
+    if (profile?.stats) {
+      await this.updateUserStats(userId, {
+        wordsLearned: (profile.stats.wordsLearned || 0) + wordCount
+      });
+    }
+  }
+
+  async unlockAchievement(userId: string, achievementId: string): Promise<void> {
+    const profile = await this.getUserProfile(userId);
+    if (profile?.stats) {
+      await this.updateUserStats(userId, {
+        achievementsUnlocked: (profile.stats.achievementsUnlocked || 0) + 1,
+        badgesEarned: (profile.stats.badgesEarned || 0) + 1
+      });
+    }
+  }
 }
 
 export const userService = new UserService();

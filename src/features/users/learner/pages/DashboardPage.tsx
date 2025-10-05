@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import {
@@ -21,10 +21,12 @@ import {
   GlobeAltIcon,
   CpuChipIcon,
   UsersIcon,
-  HeartIcon
+  HeartIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { AnimatedSection, FloatingCard, CountUp } from '@/shared/components/ui/AnimatedComponents';
+import { Button } from '@/shared/components/ui';
 import toast from 'react-hot-toast';
 
 interface LearningStats {
@@ -55,6 +57,7 @@ interface Achievement {
 
 export default function LearnerDashboardPage() {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<LearningStats>({
     lessonsCompleted: 0,
     wordsLearned: 0,
@@ -67,6 +70,7 @@ export default function LearnerDashboardPage() {
   const [recentLessons, setRecentLessons] = useState<RecentLesson[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [needsLevelTest, setNeedsLevelTest] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -75,6 +79,16 @@ export default function LearnerDashboardPage() {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
+
+      // Check if user needs to take level test
+      const hasCompletedLevelTest = user?.stats?.level && user.stats.level > 1;
+      const hasAnyProgress = user?.stats?.lessonsCompleted && user.stats.lessonsCompleted > 0;
+      
+      if (!hasCompletedLevelTest && !hasAnyProgress) {
+        setNeedsLevelTest(true);
+        setLoading(false);
+        return;
+      }
 
       // Load user stats from Firestore or use defaults
       if (user?.stats) {
@@ -85,6 +99,16 @@ export default function LearnerDashboardPage() {
           totalXP: user.stats.xp || 0,
           level: user.stats.level || 1,
           nextLevelXP: (user.stats.level || 1) * 100
+        });
+      } else {
+        // Set default stats for new users
+        setStats({
+          lessonsCompleted: 0,
+          wordsLearned: 0,
+          currentStreak: 0,
+          totalXP: 0,
+          level: 1,
+          nextLevelXP: 100
         });
       }
 
@@ -126,6 +150,108 @@ export default function LearnerDashboardPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  // Show level test prompt for new users
+  if (needsLevelTest) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <Helmet>
+          <title>Test de Niveau Requis - Ma'a yegue</title>
+        </Helmet>
+
+        <div className="container-custom py-12">
+          <AnimatedSection className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-8">
+                <ExclamationTriangleIcon className="w-12 h-12 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Bienvenue dans Ma'a yegue ! 🎉
+              </h1>
+              
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                Avant de commencer votre apprentissage, nous devons évaluer votre niveau actuel 
+                pour vous proposer des leçons adaptées à vos compétences.
+              </p>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg mb-8">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Pourquoi passer un test de niveau ?
+                </h2>
+                
+                <div className="grid md:grid-cols-3 gap-6 text-left">
+                  <div className="flex items-start space-x-3">
+                    <AcademicCapIcon className="w-6 h-6 text-blue-500 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                        Apprentissage Personnalisé
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Recevez des leçons adaptées à votre niveau réel
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <TrophyIcon className="w-6 h-6 text-yellow-500 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                        Progression Optimale
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Évitez les leçons trop faciles ou trop difficiles
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <SparklesIcon className="w-6 h-6 text-purple-500 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                        IA Adaptative
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Notre IA s'adapte à votre style d'apprentissage
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  onClick={() => navigate('/level-test')}
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                >
+                  <AcademicCapIcon className="w-5 h-5 mr-2" />
+                  Passer le Test de Niveau
+                </Button>
+                
+                <Button
+                  onClick={() => setNeedsLevelTest(false)}
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                >
+                  Passer pour l'instant
+                </Button>
+              </div>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
+                ⏱️ Le test prend environ 15-20 minutes et s'adapte à vos réponses
+              </p>
+            </motion.div>
+          </AnimatedSection>
+        </div>
       </div>
     );
   }

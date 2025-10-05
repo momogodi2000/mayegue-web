@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Lesson, LessonProgress, ExerciseResult } from '@/shared/types/lesson.types';
 import { firestoreService } from '@/core/services/firebase/firestore.service';
+import { userService } from '@/core/services/firebase/user.service';
 
 interface LessonsState {
   // Data
@@ -205,7 +206,7 @@ export const useLessonsStore = create<LessonsState>()(
         }
       },
 
-      completeLesson: async (_lessonId: string, _userId: string, score: number) => {
+      completeLesson: async (lessonId: string, userId: string, score: number) => {
         try {
           const { updateProgress } = get();
           await updateProgress({
@@ -213,6 +214,35 @@ export const useLessonsStore = create<LessonsState>()(
             score,
             completedAt: new Date()
           });
+
+          // Update user progress and stats
+          const xpGained = Math.floor(score * 0.5); // XP based on score
+          await userService.incrementLessonCompleted(userId, xpGained);
+          
+          // Add words learned (estimate based on lesson content)
+          const wordsLearned = Math.floor(score / 10); // Rough estimate
+          await userService.addWordsLearned(userId, wordsLearned);
+          
+          // Update streak
+          await userService.updateStreak(userId);
+          
+          // Check for achievements
+          const profile = await userService.getUserProfile(userId);
+          if (profile?.stats) {
+            // First lesson achievement
+            if (profile.stats.lessonsCompleted === 0) {
+              await userService.unlockAchievement(userId, 'first_lesson');
+            }
+            
+            // Milestone achievements
+            if (profile.stats.lessonsCompleted === 9) { // Will be 10 after increment
+              await userService.unlockAchievement(userId, 'ten_lessons');
+            }
+            
+            if (profile.stats.wordsLearned >= 49) { // Will be 50+ after increment
+              await userService.unlockAchievement(userId, 'fifty_words');
+            }
+          }
         } catch (error) {
           console.error('Failed to complete lesson:', error);
         }

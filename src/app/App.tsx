@@ -8,6 +8,7 @@ import { authService } from '@/core/services/firebase/auth.service';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { userService } from '@/core/services/firebase/user.service';
 import { initializeApp } from '@/core/services/initialization.service';
+import { ToastProvider } from '@/shared/components/ui/Toast';
 
 function App() {
   const isOnline = useOnlineStatus();
@@ -80,9 +81,11 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <AppRouter />
-    </BrowserRouter>
+    <ToastProvider>
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
 
