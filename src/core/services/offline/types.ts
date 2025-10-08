@@ -43,14 +43,105 @@ export interface Achievement {
 }
 
 // Database record types
-export interface LessonRecord {
+export interface UserRecord {
   id: string;
+  user_id?: number;  // SQLite auto-increment ID
+  firebaseUid: string;
+  email: string;
+  displayName: string;
+  role: 'guest' | 'learner' | 'teacher' | 'admin';
+  level: number;
+  xp: number;
+  coins: number;
+  ngondoCoins?: number;  // v2.0 - virtual currency
+  subscription: 'free' | 'premium' | 'family' | 'teacher' | 'enterprise';
+  subscriptionExpires?: number;  // v2.0 - Unix timestamp
+  isActive?: boolean;  // v2.0
+  emailVerified?: boolean;  // v2.0
+  twoFactorEnabled?: boolean;  // v2.0
+  createdAt: number;
+  updatedAt: number;
+  lastLogin: number;
+  preferences: Record<string, unknown>;
+  stats?: Record<string, unknown>;  // v2.0 - user statistics
+  syncStatus: SyncStatus;
+}
+
+export interface QuizRecord {
+  id: string;
+  quiz_id?: number;  // SQLite auto-increment ID
   title: string;
   description: string;
   language: string;
+  language_id?: string;  // v2.0 - Language code
+  level: 'beginner' | 'intermediate' | 'advanced';
+  questions: QuizQuestion[] | string;  // v2.0 - can be JSON string
+  timeLimit?: number;
+  time_limit?: number;  // v2.0
+  passingScore: number;
+  passing_score?: number;  // v2.0
+  xp_reward?: number;  // v2.0 - XP earned
+  published?: boolean;  // v2.0 - Published flag
+  verified?: boolean;  // v2.0 - Admin verified
+  createdBy: string;
+  created_by?: string;  // v2.0
+  createdAt: number;
+  created_at?: string;  // v2.0
+  updated_at?: string;  // v2.0
+  syncStatus: SyncStatus;
+}
+
+export interface QuizQuestion {
+  id: string;
+  type: 'multiple-choice' | 'true-false' | 'fill-blank' | 'matching';
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
+  explanation?: string;
+  points: number;
+}
+
+export interface MigrationRecord {
+  id: string;
+  version: string;
+  description: string;
+  appliedAt: number;
+  checksum: string;
+}
+
+export interface DailyLimitRecord {
+  id: string;
+  userId: string;
+  date: string; // YYYY-MM-DD
+  lessonsUsed: number;
+  readingsUsed: number;
+  quizzesUsed: number;
+  maxLessons: number;
+  maxReadings: number;
+  maxQuizzes: number;
+}
+
+export interface LessonRecord {
+  id: string;
+  lesson_id?: number;  // SQLite auto-increment ID
+  title: string;
+  description: string;
+  language: string;
+  language_id?: string;  // v2.0 - Language code
   difficulty: string;
-  content: LessonContent[];
+  level?: string;  // v2.0 - beginner/intermediate/advanced
+  content: LessonContent[] | string;  // v2.0 - can be JSON or text
   exercises: Exercise[];
+  order_index?: number;  // v2.0 - Display order
+  audio_url?: string;  // v2.0
+  video_url?: string;  // v2.0
+  estimated_duration?: number;  // v2.0 - Minutes
+  xp_reward?: number;  // v2.0 - XP earned
+  published?: boolean;  // v2.0 - Published flag
+  verified?: boolean;  // v2.0 - Admin verified
+  created_by?: string;  // v2.0 - Creator ID
+  created_date?: string;  // v2.0
+  updated_date?: string;  // v2.0
   progress: number;
   completed: boolean;
   lastAccessed: number;
@@ -60,13 +151,24 @@ export interface LessonRecord {
 
 export interface DictionaryRecord {
   id: string;
+  translation_id?: number;  // SQLite auto-increment ID
   word: string;
+  french_text?: string;  // v2.0 - French source text
   translation: string;
   pronunciation: string;
   language: string;
+  language_id?: string;  // v2.0 - Language code
   category: string;
+  category_id?: string;  // v2.0 - Category code
   examples: string[];
+  usage_notes?: string;  // v2.0
+  difficulty_level?: string;  // v2.0
   audioUrl?: string;
+  audio_url?: string;  // v2.0
+  verified?: boolean;  // v2.0 - Admin verified flag
+  created_by?: string;  // v2.0 - Creator ID
+  created_date?: string;  // v2.0
+  updated_date?: string;  // v2.0
   lastAccessed: number;
   syncStatus: SyncStatus;
 }
@@ -120,10 +222,14 @@ export interface StorageInfo {
 
 // Export data structure
 export interface ExportData {
+  users: UserRecord[];
   lessons: LessonRecord[];
   dictionary: DictionaryRecord[];
+  quizzes: QuizRecord[];
+  dailyLimits: DailyLimitRecord[];
   userProgress: UserProgressRecord[];
   gamification: GamificationRecord[];
   settings: SettingRecord[];
+  migrations: MigrationRecord[];
   exportDate: string;
 }

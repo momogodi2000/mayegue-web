@@ -14,7 +14,7 @@ export function GuestRoute() {
   const [hasShownToast, setHasShownToast] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'visitor' && !hasShownToast) {
+    if (isAuthenticated && user?.role === 'guest' && !hasShownToast) {
       toast.error('Créez un compte pour accéder à cette fonctionnalité', {
         duration: 4000,
         icon: '🔒',
@@ -24,7 +24,7 @@ export function GuestRoute() {
   }, [isAuthenticated, user?.role, hasShownToast]);
 
   // If user is authenticated but is a guest/visitor, redirect to register
-  if (isAuthenticated && user?.role === 'visitor') {
+  if (isAuthenticated && user?.role === 'guest') {
     return <Navigate to="/register" state={{ from: location }} replace />;
   }
 

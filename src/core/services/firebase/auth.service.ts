@@ -29,7 +29,7 @@ import {
 
 async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
   // Fetch role and profile from Firestore with error handling
-  let role: UserRole = 'apprenant';
+  let role: UserRole = 'learner';
   let profile: Awaited<ReturnType<typeof userService.getUserProfile>> = null;
 
   try {
@@ -41,7 +41,7 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
       console.log('No profile found, creating default profile for:', user.email);
       
       // Determine role based on email for default users
-      let defaultRole: UserRole = 'apprenant';
+      let defaultRole: UserRole = 'learner';
       if (user.email === 'admin@mayegue.com') {
         defaultRole = 'admin';
       } else if (user.email === 'teacher@mayegue.com') {
@@ -55,7 +55,7 @@ async function mapFirebaseUser(user: FirebaseUser): Promise<User> {
       });
       
       // If it's a default user, update their role
-      if (defaultRole !== 'apprenant') {
+      if (defaultRole !== 'learner') {
         await userService.updateUserRole(user.uid, defaultRole);
       }
       
@@ -145,7 +145,7 @@ export class AuthService {
     return await mapFirebaseUser(cred.user);
   }
 
-  async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User> {
+  async signUpWithEmail(email: string, password: string, displayName?: string, role: UserRole = 'learner'): Promise<User> {
     // Validate email
     if (!isValidEmail(email)) {
       throw new Error('Adresse e-mail invalide');
@@ -178,25 +178,21 @@ export class AuthService {
         await updateProfile(cred.user, { displayName });
       }
 
-      // Create user profile in Firestore with default 'apprenant' role
+      // Create user profile in Firestore with selected role
       try {
         await userService.ensureUserProfile(cred.user.uid, {
           email: cred.user.email || '',
           displayName: displayName || cred.user.email || 'Utilisateur',
-          emailVerified: false
+          emailVerified: false,
+          role: role // Pass the selected role
         });
       } catch (profileError) {
         console.error('Error creating user profile:', profileError);
         // Continue even if profile creation fails - it will be created on next login
       }
 
-      // Send verification email
-      try {
-        await sendEmailVerification(cred.user);
-      } catch (emailError) {
-        console.error('Error sending verification email:', emailError);
-        // Continue even if email fails - user can request it later
-      }
+      // Email verification disabled - users can login immediately
+      // No verification email needed
 
       // Reset rate limiter on successful signup
       this.signupRateLimiter.reset(email);
@@ -271,12 +267,10 @@ export class AuthService {
     return unsub;
   }
 
-  // Email verification
+  // Email verification disabled
   async sendVerificationEmail(): Promise<void> {
-    const user = auth.currentUser;
-    if (user && !user.emailVerified) {
-      await sendEmailVerification(user);
-    }
+    // Email verification is disabled - no action needed
+    console.log('Email verification is disabled');
   }
 
   // Password reset

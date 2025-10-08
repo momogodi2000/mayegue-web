@@ -22,10 +22,10 @@ export class UserService {
     const snap = await getDoc(ref);
     if (snap.exists()) {
       const data = snap.data() as UserProfileDoc;
-      // Default role is 'apprenant' (student)
-      return (data.role || 'apprenant') as UserRole;
+      // Default role is 'learner'
+      return (data.role || 'learner') as UserRole;
     }
-    return 'apprenant';
+    return 'learner';
   }
 
   async ensureUserProfile(userId: string, payload: Partial<UserProfileDoc>): Promise<void> {
@@ -34,15 +34,18 @@ export class UserService {
     const now = Date.now();
     
     if (!snap.exists()) {
-      // Determine default role based on email for special users
-      let defaultRole: UserRole = 'apprenant';
-      if (payload.email === 'admin@mayegue.com') {
-        defaultRole = 'admin';
-      } else if (payload.email === 'teacher@mayegue.com') {
-        defaultRole = 'teacher';
+      // Determine role: use payload.role if provided, or default based on email
+      let defaultRole: UserRole = payload.role || 'learner';
+      if (!payload.role) {
+        // Only check for special emails if no role was explicitly provided
+        if (payload.email === 'admin@mayegue.com') {
+          defaultRole = 'admin';
+        } else if (payload.email === 'teacher@mayegue.com') {
+          defaultRole = 'teacher';
+        }
       }
       
-      // Default role for new users is 'apprenant' (student) unless specified
+      // Create new user profile with the determined role
       await setDoc(ref, {
         role: defaultRole,
         createdAt: now,

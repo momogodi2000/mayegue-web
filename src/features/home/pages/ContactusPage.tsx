@@ -3,8 +3,11 @@ import { Helmet } from 'react-helmet-async';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/config/firebase.config';
 import toast from 'react-hot-toast';
+import { sqliteService } from '@/core/services/offline/sqlite.service';
+import { useAuthStore } from '@/features/auth/store/authStore';
 
 export default function ContactusPage() {
+  const { user } = useAuthStore();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -19,27 +22,66 @@ export default function ContactusPage() {
       toast.error('Veuillez remplir tous les champs obligatoires.');
       return;
     }
+    
     try {
       setSubmitting(true);
-      await addDoc(collection(db, 'contact_messages'), {
-        name: name.trim(),
-        email: email.trim(),
-        subject: subject.trim(),
-        category: category || 'general',
-        message: message.trim(),
-        createdAt: serverTimestamp(),
-        status: 'new',
-        priority: category === 'support' ? 'high' : 'medium'
-      });
+      
+      // 1. Save to SQLite first (local-first approach)
+      try {
+        await sqliteService.initialize();
+        const localId = await sqliteService.saveContactMessage({
+          userId: user?.id ? parseInt(user.id) : undefined,
+          name: name.trim(),
+          email: email.trim(),
+          subject: subject.trim(),
+          category: category || 'general',
+          message: message.trim(),
+          status: 'new',
+          priority: category === 'support' ? 'high' : 'medium'
+        });
+        
+        console.log('✅ Contact message saved locally with ID:', localId);
+      } catch (localError) {
+        console.error('⚠️ Failed to save locally:', localError);
+        // Continue to Firebase save even if local save fails
+      }
+
+      // 2. Try to sync to Firebase immediately if online
+      if (navigator.onLine) {
+        try {
+          const docRef = await addDoc(collection(db, 'contact_messages'), {
+            name: name.trim(),
+            email: email.trim(),
+            subject: subject.trim(),
+            category: category || 'general',
+            message: message.trim(),
+            createdAt: serverTimestamp(),
+            status: 'new',
+            priority: category === 'support' ? 'high' : 'medium',
+            userId: user?.id || null
+          });
+          
+          console.log('✅ Contact message synced to Firebase:', docRef.id);
+          toast.success('Merci! Votre message a été envoyé. Nous vous répondrons dans les 24h.');
+        } catch (firebaseError) {
+          console.error('⚠️ Failed to sync to Firebase:', firebaseError);
+          toast.success('Message enregistré. Il sera envoyé automatiquement quand vous serez en ligne.');
+        }
+      } else {
+        toast.success('Message enregistré. Il sera envoyé automatiquement quand vous serez en ligne.');
+      }
+      
+      // Clear form
       setSent(true);
-      toast.success('Merci! Votre message a été envoyé. Nous vous répondrons dans les 24h.');
       setName('');
       setEmail('');
       setSubject('');
       setCategory('');
       setMessage('');
+      
     } catch (err) {
-      toast.error("Impossible d'envoyer le message. Réessayez.");
+      console.error('❌ Error submitting contact form:', err);
+      toast.error("Impossible d'enregistrer le message. Réessayez.");
     } finally {
       setSubmitting(false);
     }

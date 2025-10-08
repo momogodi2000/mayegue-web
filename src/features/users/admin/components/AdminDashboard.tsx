@@ -24,7 +24,7 @@ import {
   CogIcon
 } from '@heroicons/react/24/outline';
 import BulkOperationsPanel from './BulkOperationsPanel';
-import SystemMonitoringPanel from './SystemMonitoringPanel';
+import { SystemMonitoringPanel } from './SystemMonitoringPanel';
 
 const AdminDashboard: React.FC = () => {
   const { success: showSuccess, error: showError } = useToastActions();

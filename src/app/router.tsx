@@ -6,9 +6,10 @@ import { ProtectedRoute } from '@/shared/components/auth/ProtectedRoute';
 import { RoleRedirect } from '@/shared/components/auth/RoleRedirect';
 import { RoleBasedRouter } from '@/shared/components/auth/RoleBasedRouter';
 import { RoleRoute } from '@/shared/components/auth/RoleRoute';
+import { TwoFactorGuard } from '@/shared/components/auth/TwoFactorGuard';
 import { GuestDashboard } from '@/features/users/guest';
 import { LearnerDashboard } from '@/features/users/learner';
-import { TeacherDashboard } from '@/features/users/teacher';
+import { TeacherDashboard, EnhancedTeacherDashboardPage } from '@/features/users/teacher';
 import { AdminPage } from '@/features/users/admin';
 import { AdminLayout } from '@/features/users/admin/layouts/AdminLayout';
 import { TeacherLayout } from '@/features/users/teacher/layouts/TeacherLayout';
@@ -51,11 +52,13 @@ const ARVRPage = lazy(() => import('@/features/ar-vr/pages/ARVRPage'));
 const RPGGamificationPage = lazy(() => import('@/features/rpg-gamification/pages/RPGGamificationPage'));
 const AIFeaturesPage = lazy(() => import('@/features/ai-features/pages/AIFeaturesPage'));
 const LevelTestPage = lazy(() => import('@/features/assessment/pages/LevelTestPage'));
+const QuizPage = lazy(() => import('@/features/quiz/pages/QuizPage'));
 const CultureHistoryPage = lazy(() => import('@/features/culture-history/pages/CultureHistoryPage'));
 const TwoFactorPage = lazy(() => import('@/features/auth/pages/TwoFactorPage'));
 
 // Admin Dashboard Pages
 const AdminDashboardPage = lazy(() => import('@/features/users/admin/pages/AdminDashboardPage'));
+const EnhancedAdminDashboardPage = lazy(() => import('@/features/users/admin/pages/EnhancedAdminDashboardPage').then(module => ({ default: module.EnhancedAdminDashboardPage })));
 
 // Teacher Dashboard Pages  
 const TeacherDashboardPage = lazy(() => import('@/features/users/teacher/pages/TeacherDashboardPage'));
@@ -93,31 +96,52 @@ export function AppRouter() {
           
           {/* Dictionary - Public with limited features */}
           <Route path="dictionary" element={<DictionaryPage />} />
-          {/* Public Guest Dashboard */}
-          <Route path="dashboard/guest" element={<GuestDashboard />} />
+          {/* Guest Dashboard - Public access */}
+          <Route path="guest" element={<GuestDashboard />} />
           
-          {/* Protected Routes */}
+          {/* Public Routes with Guest Limitations */}
+          <Route path="lessons" element={<LessonsPage />} />
+          <Route path="lessons/:lessonId" element={<LessonDetailPage />} />
+          <Route path="quiz" element={<QuizPage />} />
+          <Route path="level-test" element={<LevelTestPage />} />
+          
+          {/* Protected Routes - Require Authentication */}
           <Route element={<ProtectedRoute />}>
-            <Route path="dashboard" element={<RoleBasedRouter />} />
-            <Route path="dashboard/apprenant" element={<LearnerDashboard />} />
-            <Route path="dashboard/learner" element={<Navigate to="/dashboard/apprenant" replace />} /> {/* Legacy redirect */}
+              <Route path="dashboard" element={<RoleBasedRouter />} />
+              <Route path="learner/dashboard" element={<LearnerDashboard />} />
             
-            {/* Admin Routes */}
+            {/* Legacy redirects */}
+            <Route path="dashboard/guest" element={<Navigate to="/guest" replace />} />
+            <Route path="dashboard/student" element={<Navigate to="/learner/dashboard" replace />} />
+            <Route path="dashboard/apprenant" element={<Navigate to="/learner/dashboard" replace />} />
+            <Route path="dashboard/learner" element={<Navigate to="/learner/dashboard" replace />} />
+            
+            {/* Admin Routes - Protected with 2FA */}
             <Route element={<RoleRoute allow={["admin"]} />}>
-              <Route path="admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="admin" element={
+                <TwoFactorGuard>
+                  <AdminLayout />
+                </TwoFactorGuard>
+              }>
+                <Route path="panel" element={<EnhancedAdminDashboardPage />} />
                 <Route path="users" element={<AdminAnalyticsPage />} />
                 <Route path="analytics" element={<AdminAnalyticsPage />} />
                 <Route path="content" element={<AdminAnalyticsPage />} />
                 <Route path="reports" element={<AdminAnalyticsPage />} />
                 <Route path="system" element={<AdminAnalyticsPage />} />
+                {/* Legacy redirect */}
+                <Route path="dashboard" element={<Navigate to="/admin/panel" replace />} />
               </Route>
             </Route>
             
-            {/* Teacher Routes */}
+            {/* Teacher Routes - Protected with 2FA */}
             <Route element={<RoleRoute allow={["teacher", "admin"]} />}>
-              <Route path="teacher" element={<TeacherLayout />}>
-                <Route path="dashboard" element={<TeacherDashboardPage />} />
+              <Route path="teacher" element={
+                <TwoFactorGuard>
+                  <TeacherLayout />
+                </TwoFactorGuard>
+              }>
+                <Route path="dashboard" element={<EnhancedTeacherDashboardPage />} />
                 <Route path="classes" element={<TeacherLessonManagementPage />} />
                 <Route path="lessons" element={<TeacherLessonManagementPage />} />
                 <Route path="assignments" element={<TeacherLessonManagementPage />} />
@@ -131,9 +155,6 @@ export function AppRouter() {
             {/* Legacy Routes - Keep for backward compatibility */}
             <Route path="dashboard/teacher" element={<Navigate to="/teacher/dashboard" replace />} />
             <Route path="dashboard/admin" element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="level-test" element={<LevelTestPage />} />
-            <Route path="lessons" element={<LessonsPage />} />
-            <Route path="lessons/:lessonId" element={<LessonDetailPage />} />
             <Route path="ai-assistant" element={<AIAssistantPage />} />
             <Route path="gamification" element={<GamificationPage />} />
             <Route path="community" element={<CommunityPage />} />

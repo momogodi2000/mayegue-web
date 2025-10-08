@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import {
   BookOpenIcon,
   GlobeAltIcon,
@@ -7,8 +8,36 @@ import {
   UserPlusIcon,
   RocketLaunchIcon,
 } from '@heroicons/react/24/outline';
+import { guestService } from '../services/guest.service';
 
 export default function GuestDashboardPage() {
+  const [limits, setLimits] = useState({
+    lessons: 5,
+    readings: 5,
+    quizzes: 5,
+    usedLessons: 0,
+    usedReadings: 0,
+    usedQuizzes: 0
+  });
+
+  useEffect(() => {
+    const loadLimits = async () => {
+      const today = guestService.getTodayDate();
+      const usage = await guestService.getDailyUsage(today);
+      if (usage) {
+        setLimits({
+          lessons: usage.maxLessons,
+          readings: usage.maxReadings,
+          quizzes: usage.maxQuizzes,
+          usedLessons: usage.lessonsUsed,
+          usedReadings: usage.readingsUsed,
+          usedQuizzes: usage.quizzesUsed
+        });
+      }
+    };
+    loadLimits();
+  }, []);
+
   const guestFeatures = [
     {
       icon: BookOpenIcon,
@@ -17,26 +46,57 @@ export default function GuestDashboardPage() {
       link: '/dictionary',
       buttonText: 'Explorer',
       color: 'text-blue-600 dark:text-blue-400',
-      available: true
+      available: true,
+      limit: null
+    },
+    {
+      icon: AcademicCapIcon,
+      title: `Leçons (${limits.lessons - limits.usedLessons}/${limits.lessons} aujourd'hui)`,
+      description: 'Accédez à des leçons interactives limitées par jour.',
+      link: '/lessons',
+      buttonText: limits.usedLessons < limits.lessons ? 'Commencer' : 'Limite Atteinte',
+      color: limits.usedLessons < limits.lessons ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500',
+      available: limits.usedLessons < limits.lessons
     },
     {
       icon: GlobeAltIcon,
-      title: 'Leçons Premium',
-      description: 'Créez un compte pour accéder à toutes nos leçons interactives.',
-      link: '/register',
-      buttonText: 'Créer un Compte',
-      color: 'text-gray-400 dark:text-gray-500',
-      available: false
+      title: `Quiz (${limits.quizzes - limits.usedQuizzes}/${limits.quizzes} aujourd'hui)`,
+      description: 'Testez vos connaissances avec des quiz limités par jour.',
+      link: '/quiz',
+      buttonText: limits.usedQuizzes < limits.quizzes ? 'Jouer' : 'Limite Atteinte',
+      color: limits.usedQuizzes < limits.quizzes ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500',
+      available: limits.usedQuizzes < limits.quizzes
     },
     {
       icon: SparklesIcon,
-      title: 'Assistant IA Premium',
-      description: 'Déverrouillez notre assistant IA en créant un compte gratuit.',
-      link: '/register',
-      buttonText: 'S\'inscrire',
-      color: 'text-gray-400 dark:text-gray-500',
-      available: false
+      title: 'Culture & Histoire',
+      description: 'Découvrez la richesse culturelle et historique des langues camerounaises.',
+      link: '/culture-history',
+      buttonText: 'Découvrir',
+      color: 'text-purple-600 dark:text-purple-400',
+      available: true,
+      limit: null
     },
+    {
+      icon: GlobeAltIcon,
+      title: 'Atlas Linguistique',
+      description: 'Explorez la carte interactive des langues camerounaises.',
+      link: '/atlas',
+      buttonText: 'Explorer',
+      color: 'text-indigo-600 dark:text-indigo-400',
+      available: true,
+      limit: null
+    },
+    {
+      icon: BookOpenIcon,
+      title: 'Encyclopédie',
+      description: 'Accédez à notre encyclopédie des langues et cultures camerounaises.',
+      link: '/encyclopedia',
+      buttonText: 'Lire',
+      color: 'text-teal-600 dark:text-teal-400',
+      available: true,
+      limit: null
+    }
   ];
 
   const premiumBenefits = [

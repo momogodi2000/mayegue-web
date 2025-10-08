@@ -27,36 +27,43 @@ export const RoleBasedRouter = () => {
           
           setUserRole(actualRole);
           
-          const roleToPath: Record<string, string> = {
-            visitor: '/dashboard/guest',
-            apprenant: '/dashboard/apprenant',
-            learner: '/dashboard/apprenant', // Legacy support
-            teacher: '/teacher/dashboard',
-            admin: '/admin/dashboard',
-            family_member: '/dashboard/apprenant', // Family members use learner dashboard
-          };
+const roleToPath: Record<string, string> = {
+  guest: '/guest',
+  learner: '/learner/dashboard',
+  teacher: '/teacher/dashboard',
+  admin: '/admin/panel',
+  // Legacy support
+  visitor: '/guest',
+  apprenant: '/learner/dashboard',
+  student: '/learner/dashboard',
+  family_member: '/learner/dashboard',
+};
 
-          const targetPath = roleToPath[actualRole] || '/dashboard/apprenant';
+          const targetPath = roleToPath[actualRole] || '/learner/dashboard';
           console.log('🎯 Redirecting to:', targetPath);
           
           // Show welcome message based on role
           const welcomeMessages: Record<string, string> = {
             admin: 'Bienvenue dans l\'interface d\'administration',
             teacher: 'Bienvenue dans l\'espace enseignant',
+            learner: 'Bienvenue dans votre espace d\'apprentissage',
+            guest: 'Bienvenue sur Ma\'a yegue',
+            // Legacy support
             apprenant: 'Bienvenue dans votre espace d\'apprentissage',
+            student: 'Bienvenue dans votre espace d\'apprentissage',
             visitor: 'Bienvenue sur Ma\'a yegue',
             family_member: 'Bienvenue dans l\'espace familial'
           };
 
-          const message = welcomeMessages[actualRole] || welcomeMessages.apprenant;
+          const message = welcomeMessages[actualRole] || welcomeMessages.learner;
           toast.success(message);
 
           // Navigate to appropriate dashboard
           navigate(targetPath, { replace: true });
         } catch (error) {
           console.error('❌ Error checking user role:', error);
-          // Fallback to learner dashboard if role check fails
-          navigate('/dashboard/apprenant', { replace: true });
+          // Fallback to student dashboard if role check fails
+          navigate('/learner/dashboard', { replace: true });
         } finally {
           setRoleChecking(false);
         }

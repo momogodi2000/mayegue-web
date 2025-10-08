@@ -5,16 +5,32 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: [],
-    coverage: {
-      reporter: ['text', 'html'],
-    },
-  },
   plugins: [
     react(),
+    // Custom plugin to ensure WASM files are served with correct MIME type
+    {
+      name: 'configure-server',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.endsWith('.wasm')) {
+            res.setHeader('Content-Type', 'application/wasm');
+            res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+          }
+          next();
+        });
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.endsWith('.wasm')) {
+            res.setHeader('Content-Type', 'application/wasm');
+            res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+          }
+          next();
+        });
+      }
+    },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
@@ -133,7 +149,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        globIgnores: ['**/node_modules/**/*', '**/sql-wasm/**/*'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB for WASM files
+        navigateFallback: null, // Disable navigate fallback to prevent serving HTML for WASM files
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
@@ -226,8 +246,10 @@ export default defineConfig({
         ]
       },
       devOptions: {
-        enabled: true
-      }
+        enabled: false, // Disable service worker in development
+        type: 'module'
+      },
+      injectRegister: 'auto'
     })
   ],
   resolve: {
@@ -258,10 +280,28 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: false
+    sourcemap: false,
+    assetsInlineLimit: 0 // Don't inline WASM files
   },
   server: {
     port: 3000,
-    host: true
+    host: true,
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin'
+    },
+    fs: {
+      strict: false
+    },
+    middlewareMode: false
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext'
+    }
+  },
+  assetsInclude: ['**/*.wasm'],
+  worker: {
+    format: 'es'
   }
 });

@@ -3,6 +3,7 @@ import { EnvelopeIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { newsletterService } from '@/core/services/firebase/newsletter.service';
 import { EmailVerificationModal } from './EmailVerificationModal';
+import { sqliteService } from '@/core/services/offline/sqlite.service';
 
 export function NewsletterSubscription() {
   const [email, setEmail] = useState('');
@@ -21,19 +22,49 @@ export function NewsletterSubscription() {
     setLoading(true);
 
     try {
-      const result = await newsletterService.subscribe(email, 'website_footer', true);
-      
-      if (result.success) {
-        if (result.requiresVerification) {
-          setSubscribedEmail(email);
-          setShowVerificationModal(true);
-          setEmail('');
-        } else {
-          toast.success(result.message);
+      // 1. Save to SQLite first (local-first approach)
+      try {
+        await sqliteService.initialize();
+        const localId = await sqliteService.saveNewsletterSubscription({
+          email,
+          source: 'website_footer'
+        });
+        console.log('✅ Newsletter subscription saved locally with ID:', localId);
+      } catch (localError: any) {
+        if (localError.message === 'EMAIL_ALREADY_SUBSCRIBED') {
+          toast.error('Cet email est déjà inscrit à notre newsletter');
+          setLoading(false);
+          return;
+        }
+        console.error('⚠️ Failed to save locally:', localError);
+        // Continue to Firebase save even if local save fails
+      }
+
+      // 2. Try to sync to Firebase immediately if online
+      if (navigator.onLine) {
+        try {
+          const result = await newsletterService.subscribe(email, 'website_footer', true);
+          
+          if (result.success) {
+            if (result.requiresVerification) {
+              setSubscribedEmail(email);
+              setShowVerificationModal(true);
+              setEmail('');
+            } else {
+              toast.success(result.message);
+              setEmail('');
+            }
+          } else {
+            toast.error(result.message);
+          }
+        } catch (firebaseError) {
+          console.error('⚠️ Failed to sync to Firebase:', firebaseError);
+          toast.success('Inscription enregistrée. Elle sera synchronisée automatiquement quand vous serez en ligne.');
           setEmail('');
         }
       } else {
-        toast.error(result.message);
+        toast.success('Inscription enregistrée. Elle sera synchronisée automatiquement quand vous serez en ligne.');
+        setEmail('');
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);

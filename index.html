@@ -2,6 +2,18 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://www.googletagmanager.com https://*.firebaseio.com https://js.stripe.com https://www.google-analytics.com;
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                   font-src 'self' https://fonts.gstatic.com data:;
+                   img-src 'self' data: https: blob:;
+                   connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://*.firebasestorage.app wss://*.firebaseio.com https://www.google-analytics.com https://generativelanguage.googleapis.com;
+                   media-src 'self' https://*.firebasestorage.app blob: data: mediastream:;
+                   worker-src 'self' blob:;
+                   object-src 'none';
+                   base-uri 'self';" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/logo.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,16 +68,6 @@
     
     <title>Ma’a yegue - Apprenez les Langues Camerounaises</title>
     
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.firebaseio.com https://js.stripe.com https://www.google-analytics.com; 
-                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-                   font-src 'self' https://fonts.gstatic.com data:; 
-                   img-src 'self' data: https: blob:; 
-                   connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://*.firebasestorage.app wss://*.firebaseio.com https://www.google-analytics.com https://generativelanguage.googleapis.com; 
-                   media-src 'self' https://*.firebasestorage.app blob:; 
-                   worker-src 'self' blob:;">
   </head>
   <body>
     <noscript>

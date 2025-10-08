@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/shared/components/ui';
 import { useToastActions } from '@/shared/components/ui';
-import { authService } from '@/core/services/firebase/auth.service';
+import { hybridAuthService } from '@/core/services/auth/hybrid-auth.service';
 import { GoogleIcon } from '@/shared/components/icons/GoogleIcon';
 
 interface GoogleSignInButtonProps {
@@ -25,7 +25,7 @@ export default function GoogleSignInButton({
     setLoading(true);
     
     try {
-      const user = await authService.signInWithGoogle();
+      const user = await hybridAuthService.signInWithGoogle();
 
       if (user) {
         showSuccess('Connexion réussie avec Google !');

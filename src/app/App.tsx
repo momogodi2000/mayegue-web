@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus';
 import { syncService } from '@/core/services/offline/sync.service';
 import toast from 'react-hot-toast';
-import { authService } from '@/core/services/firebase/auth.service';
+import { hybridAuthService } from '@/core/services/auth/hybrid-auth.service';
 import { useAuthStore } from '@/features/auth/store/authStore';
-import { userService } from '@/core/services/firebase/user.service';
 import { initializeApp } from '@/core/services/initialization.service';
 import { ToastProvider } from '@/shared/components/ui/Toast';
 
@@ -23,32 +22,15 @@ function App() {
       })
       .catch((error) => {
         console.error('App initialization failed:', error);
-        setInitialized(true); // Continue even if initialization fails
+        // Continue even if initialization fails - app should still be usable
+        setInitialized(true);
       });
   }, []);
 
   useEffect(() => {
-    // Wire Firebase auth state changes to Zustand store
-    const unsub = authService.onAuthStateChange(async (user) => {
-      if (user) {
-        try {
-          // Ensure profile exists and fetch complete user data
-          await userService.ensureUserProfile(user.id, { 
-            email: user.email, 
-            displayName: user.displayName,
-            emailVerified: user.emailVerified 
-          });
-          
-          // Get fresh user data with role from Firestore
-          const freshUser = await authService.getCurrentMappedUser();
-          setUser(freshUser);
-        } catch (error) {
-          console.error('Error updating user profile:', error);
-          setUser(user); // Fallback to the user from auth state
-        }
-      } else {
-        setUser(null);
-      }
+    // Wire hybrid auth state changes to Zustand store
+    const unsub = hybridAuthService.onAuthStateChange((user) => {
+      setUser(user);
     });
     return () => unsub();
   }, [setUser]);
@@ -82,7 +64,12 @@ function App() {
 
   return (
     <ToastProvider>
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
         <AppRouter />
       </BrowserRouter>
     </ToastProvider>

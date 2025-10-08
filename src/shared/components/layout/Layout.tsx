@@ -1,22 +1,33 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/store/authStore';
-import { authService } from '@/core/services/firebase/auth.service';
-import { useState } from 'react';
+import { hybridAuthService } from '@/core/services/auth/hybrid-auth.service';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { ThemeToggle } from '@/shared/components/ui/ThemeToggle';
 import { NewsletterSubscription } from '@/shared/components/ui/NewsletterSubscription';
+import { NotificationCenter, useNotificationStore } from '@/features/notifications';
+import { SyncStatus } from '@/features/sync';
 
 export const Layout = () => {
   const { user, isAuthenticated } = useAuthStore();
+  const { loadNotifications, loadPreferences } = useNotificationStore();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
+  // Initialize notifications when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadNotifications();
+      loadPreferences();
+    }
+  }, [isAuthenticated, loadNotifications, loadPreferences]);
+
   const handleLogout = async () => {
     try {
-      await authService.signOut();
+      await hybridAuthService.signOut();
       toast.success('Déconnecté');
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (err) {
       toast.error('Erreur de déconnexion');
     }
@@ -76,6 +87,8 @@ export const Layout = () => {
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center space-x-4">
               <ThemeToggle />
+              {isAuthenticated && <SyncStatus />}
+              {isAuthenticated && <NotificationCenter />}
               {isAuthenticated ? (
                 <div className="relative">
                   <button 
