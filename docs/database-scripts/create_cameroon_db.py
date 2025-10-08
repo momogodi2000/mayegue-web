@@ -1,29 +1,323 @@
 import sqlite3
 import re
+import json
 from datetime import datetime
 
+def run_migrations(cursor):
+    """Run database migrations"""
+    # Check if migrations table exists, if not create it
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS migrations (
+        migration_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        version TEXT UNIQUE NOT NULL,
+        description TEXT,
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        checksum TEXT
+    )
+    ''')
+    
+    # Define migrations
+    migrations = [
+        {
+            'version': '001_initial_schema',
+            'description': 'Create initial database schema',
+            'up': create_tables,
+            'checksum': 'initial'
+        },
+        {
+            'version': '002_add_gamification_and_teacher_features',
+            'description': 'Add user progress, achievements, teacher content, admin logs, app settings',
+            'up': migration_002,
+            'checksum': 'v2.0_hybrid'
+        }
+    ]
+    
+    for migration in migrations:
+        # Check if migration already applied
+        cursor.execute('SELECT version FROM migrations WHERE version = ?', (migration['version'],))
+        if not cursor.fetchone():
+            print(f"Applying migration: {migration['version']}")
+            # Run migration up
+            migration['up'](cursor)
+            # Record migration
+            cursor.execute('INSERT INTO migrations (version, description, checksum) VALUES (?, ?, ?)',
+                         (migration['version'], migration['description'], migration['checksum']))
+
 def create_database():
+    """
+    Create the complete Ma'a yegue SQLite database with hybrid architecture
+    """
     # Connect to SQLite database (creates if doesn't exist)
-    conn = sqlite3.connect('cameroon_languages.db')
+    db_path = 'cameroon_languages.db'
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # Enable foreign keys
+    print("Creating Ma'a yegue hybrid database...")
+    
+    # Enable foreign keys and performance optimizations
     cursor.execute("PRAGMA foreign_keys = ON")
+    cursor.execute("PRAGMA journal_mode = WAL")
+    cursor.execute("PRAGMA synchronous = NORMAL")
+    cursor.execute("PRAGMA cache_size = 10000")
+    cursor.execute("PRAGMA temp_store = MEMORY")
     
-    # Create tables
-    create_tables(cursor)
+    try:
+        # Run migrations (creates all tables)
+        run_migrations(cursor)
+        
+        # Insert seed data
+        print("Inserting seed data...")
+        insert_languages(cursor)
+        insert_categories(cursor)
+        insert_translations(cursor)
+        insert_lessons(cursor)
+        insert_users(cursor)
+        insert_quizzes(cursor)
+        insert_achievements(cursor)
+        insert_app_settings(cursor)
+        
+        # Commit changes
+        conn.commit()
+        print(f"Database created successfully: {db_path}")
+        
+        # Export seed data to JSON for web app
+        export_seed_data_to_json()
+        
+        # Generate database statistics
+        print_database_stats(cursor)
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Database creation failed: {e}")
+        raise
+    finally:
+        conn.close()
     
-    # Insert data
-    insert_languages(cursor)
-    insert_categories(cursor)
-    insert_translations(cursor)
-    insert_lessons(cursor)
+def migration_002(cursor):
+    """Migration 002: Add v2.0 features for hybrid architecture"""
+    print("  Adding new columns to existing tables...")
     
-    # Commit changes and close connection
-    conn.commit()
-    conn.close()
-    print("Cameroon Languages Database created successfully!")
-    print("Database file: cameroon_languages.db")
+    # Add new columns to users table
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN ngondo_coins INTEGER DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN subscription_expires INTEGER')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT 1')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN two_factor_enabled BOOLEAN DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass
+    
+    # Add new columns to translations table
+    try:
+        cursor.execute('ALTER TABLE translations ADD COLUMN audio_url TEXT')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE translations ADD COLUMN verified BOOLEAN DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE translations ADD COLUMN created_by TEXT')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE translations ADD COLUMN updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+    except sqlite3.OperationalError:
+        pass
+    
+    # Add new columns to lessons table
+    try:
+        cursor.execute('ALTER TABLE lessons ADD COLUMN xp_reward INTEGER DEFAULT 10')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE lessons ADD COLUMN published BOOLEAN DEFAULT 1')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE lessons ADD COLUMN verified BOOLEAN DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE lessons ADD COLUMN estimated_duration INTEGER')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE lessons ADD COLUMN created_by TEXT DEFAULT "system"')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE lessons ADD COLUMN updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+    except sqlite3.OperationalError:
+        pass
+    
+    # Add new columns to quizzes table
+    try:
+        cursor.execute('ALTER TABLE quizzes ADD COLUMN xp_reward INTEGER DEFAULT 20')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE quizzes ADD COLUMN published BOOLEAN DEFAULT 1')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE quizzes ADD COLUMN verified BOOLEAN DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE quizzes ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+    except sqlite3.OperationalError:
+        pass
+    
+    print("  Creating new tables...")
+    
+    # Create user_progress table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_progress (
+        progress_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        content_type TEXT CHECK(content_type IN ('lesson', 'quiz')) NOT NULL,
+        content_id INTEGER NOT NULL,
+        status TEXT CHECK(status IN ('not_started', 'in_progress', 'completed')) DEFAULT 'not_started',
+        score INTEGER,
+        time_spent INTEGER DEFAULT 0,
+        attempts INTEGER DEFAULT 0,
+        started_at INTEGER,
+        completed_at INTEGER,
+        last_accessed INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        UNIQUE(user_id, content_type, content_id)
+    )
+    ''')
+    
+    # Create achievements table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS achievements (
+        achievement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        code TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT,
+        icon TEXT,
+        category TEXT,
+        xp_reward INTEGER DEFAULT 0,
+        coin_reward INTEGER DEFAULT 0,
+        required_count INTEGER DEFAULT 1,
+        active BOOLEAN DEFAULT 1
+    )
+    ''')
+    
+    # Create user_achievements table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_achievements (
+        user_achievement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        achievement_id INTEGER NOT NULL,
+        earned_at INTEGER DEFAULT (strftime('%s', 'now')),
+        progress INTEGER DEFAULT 0,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        FOREIGN KEY (achievement_id) REFERENCES achievements(achievement_id) ON DELETE CASCADE,
+        UNIQUE(user_id, achievement_id)
+    )
+    ''')
+    
+    # Create teacher_content table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS teacher_content (
+        content_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id INTEGER NOT NULL,
+        content_type TEXT CHECK(content_type IN ('translation', 'lesson', 'quiz')) NOT NULL,
+        reference_id INTEGER,
+        status TEXT CHECK(status IN ('draft', 'pending_review', 'approved', 'rejected')) DEFAULT 'draft',
+        reviewed_by INTEGER,
+        review_notes TEXT,
+        created_at INTEGER DEFAULT (strftime('%s', 'now')),
+        reviewed_at INTEGER,
+        FOREIGN KEY (teacher_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        FOREIGN KEY (reviewed_by) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    ''')
+    
+    # Create admin_logs table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS admin_logs (
+        log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        admin_id INTEGER NOT NULL,
+        action TEXT NOT NULL,
+        target_type TEXT,
+        target_id INTEGER,
+        details TEXT,
+        ip_address TEXT,
+        timestamp INTEGER DEFAULT (strftime('%s', 'now')),
+        FOREIGN KEY (admin_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )
+    ''')
+    
+    # Create app_settings table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS app_settings (
+        setting_key TEXT PRIMARY KEY,
+        setting_value TEXT,
+        setting_type TEXT,
+        description TEXT,
+        updated_at INTEGER DEFAULT (strftime('%s', 'now')),
+        updated_by INTEGER,
+        FOREIGN KEY (updated_by) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    ''')
+    
+    print("  Creating indexes for new tables...")
+    
+    # Indexes for user_progress
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_progress(user_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_progress_content ON user_progress(content_type, content_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_progress_status ON user_progress(status)')
+    
+    # Indexes for user_achievements
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)')
+    
+    # Indexes for teacher_content
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_teacher_content_teacher ON teacher_content(teacher_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_teacher_content_status ON teacher_content(status)')
+    
+    # Indexes for admin_logs
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_admin_logs_admin ON admin_logs(admin_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_admin_logs_timestamp ON admin_logs(timestamp)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_admin_logs_action ON admin_logs(action)')
+    
+    # Indexes for existing tables with new columns
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_created_by ON translations(created_by)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_lessons_created_by ON lessons(created_by)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_quizzes_created_by ON quizzes(created_by)')
+    
+    print("  Migration 002 completed successfully!")
+
 
 def create_tables(cursor):
     # Languages table
@@ -81,6 +375,69 @@ def create_tables(cursor):
     )
     ''')
     
+    # Users table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        firebase_uid TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        display_name TEXT,
+        role TEXT CHECK(role IN ('guest', 'apprenant', 'teacher', 'admin')) NOT NULL,
+        level INTEGER DEFAULT 1,
+        xp INTEGER DEFAULT 0,
+        coins INTEGER DEFAULT 0,
+        subscription TEXT CHECK(subscription IN ('free', 'premium')) DEFAULT 'free',
+        created_at INTEGER,
+        updated_at INTEGER,
+        last_login INTEGER,
+        preferences TEXT
+    )
+    ''')
+    
+    # Quizzes table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS quizzes (
+        quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        language_id VARCHAR(10),
+        level TEXT CHECK(level IN ('beginner', 'intermediate', 'advanced')),
+        questions TEXT NOT NULL, -- JSON
+        time_limit INTEGER,
+        passing_score INTEGER DEFAULT 70,
+        created_by TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (language_id) REFERENCES languages(language_id)
+    )
+    ''')
+    
+    # Daily limits table for guest users
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS daily_limits (
+        limit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        date TEXT NOT NULL, -- YYYY-MM-DD
+        lessons_used INTEGER DEFAULT 0,
+        readings_used INTEGER DEFAULT 0,
+        quizzes_used INTEGER DEFAULT 0,
+        max_lessons INTEGER DEFAULT 5,
+        max_readings INTEGER DEFAULT 5,
+        max_quizzes INTEGER DEFAULT 5,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+    )
+    ''')
+    
+    # Migrations table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS migrations (
+        migration_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        version TEXT UNIQUE NOT NULL,
+        description TEXT,
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        checksum TEXT
+    )
+    ''')
+    
     # Create indexes for better performance
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_language ON translations(language_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_category ON translations(category_id)')
@@ -88,6 +445,11 @@ def create_tables(cursor):
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_french ON translations(french_text)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_lessons_language ON lessons(language_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_lessons_level ON lessons(level)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_firebase_uid ON users(firebase_uid)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_quizzes_language ON quizzes(language_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_quizzes_level ON quizzes(level)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_daily_limits_user_date ON daily_limits(user_id, date)')
 
 def insert_languages(cursor):
     languages_data = [
@@ -1983,12 +2345,166 @@ def insert_lessons(cursor):
     VALUES (?, ?, ?, ?, ?, ?, ?)
     ''', lessons_data)
 
+def insert_users(cursor):
+    # Default users data
+    users_data = [
+        ('firebase-admin-uid', 'admin@maayegue.app', 'Administrateur Principal', 'admin', 15, 5000, 10000, 'premium', 1640995200000, 1640995200000, 1640995200000, '{"language": "fr", "notifications": true, "theme": "light"}'),
+        ('firebase-teacher-uid', 'teacher@maayegue.app', 'Prof. Jean Nkolo', 'teacher', 10, 3000, 5000, 'premium', 1640995200000, 1640995200000, 1640995200000, '{"language": "fr", "notifications": true, "theme": "light"}'),
+        ('firebase-student-uid', 'apprenant@maayegue.app', 'Marie Tchamba', 'apprenant', 5, 1000, 500, 'free', 1640995200000, 1640995200000, 1640995200000, '{"language": "fr", "notifications": true, "theme": "light"}'),
+        ('firebase-guest-uid', 'guest@maayegue.app', 'Utilisateur Invité', 'guest', 1, 0, 0, 'free', 1640995200000, 1640995200000, 1640995200000, '{"language": "fr", "notifications": false, "theme": "light"}')
+    ]
+    
+    cursor.executemany('''
+    INSERT OR IGNORE INTO users (firebase_uid, email, display_name, role, level, xp, coins, subscription, created_at, updated_at, last_login, preferences)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', users_data)
+
+def insert_quizzes(cursor):
+    import json
+    
+    # Quiz questions as JSON
+    quiz_data = [
+        ('Quiz Salutations Ewondo', 'Testez vos connaissances des salutations en Ewondo', 'EWO', 'beginner', 
+         json.dumps([
+             {"id": "q1", "type": "multiple-choice", "question": "Comment dit-on 'Bonjour' en Ewondo?", "options": ["Mbolo", "Mwa boma", "Kweni", "Jam waali"], "correctAnswer": "Mbolo", "explanation": "Mbolo est la salutation de base en Ewondo.", "points": 10},
+             {"id": "q2", "type": "multiple-choice", "question": "Comment dit-on 'Merci' en Ewondo?", "options": ["Akiba", "Masa", "Nyango", "Numeni"], "correctAnswer": "Akiba", "explanation": "Akiba signifie merci en Ewondo.", "points": 10}
+         ]), 300, 70, 'system'),
+        ('Quiz Nombres Ewondo', 'Testez vos connaissances des nombres en Ewondo', 'EWO', 'beginner',
+         json.dumps([
+             {"id": "q1", "type": "multiple-choice", "question": "Comment dit-on 'un' en Ewondo?", "options": ["fok", "iba", "ilal", "inai"], "correctAnswer": "fok", "explanation": "fok signifie un en Ewondo.", "points": 10}
+         ]), 300, 70, 'system')
+    ]
+    
+    cursor.executemany('''
+    INSERT INTO quizzes (title, description, language_id, level, questions, time_limit, passing_score, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', quiz_data)
+
+def insert_achievements(cursor):
+    """Insert gamification achievements"""
+    achievements_data = [
+        # Progress achievements
+        ('first_lesson', 'Première leçon', 'Complétez votre première leçon', '🎓', 'progress', 10, 5, 1, 1),
+        ('5_lessons', 'Apprenti assidu', 'Complétez 5 leçons', '📚', 'progress', 25, 15, 5, 1),
+        ('10_lessons', 'Étudiant dévoué', 'Complétez 10 leçons', '🏆', 'progress', 50, 30, 10, 1),
+        ('25_lessons', 'Maître apprenant', 'Complétez 25 leçons', '🌟', 'progress', 100, 75, 25, 1),
+        ('50_lessons', 'Expert linguistique', 'Complétez 50 leçons', '👑', 'progress', 200, 150, 50, 1),
+        
+        # Streak achievements
+        ('streak_3', 'Bon départ', 'Apprenez 3 jours consécutifs', '🔥', 'streak', 15, 10, 3, 1),
+        ('streak_7', 'Semaine parfaite', 'Apprenez 7 jours consécutifs', '⭐', 'streak', 35, 25, 7, 1),
+        ('streak_14', 'Deux semaines de maîtrise', 'Apprenez 14 jours consécutifs', '💪', 'streak', 75, 50, 14, 1),
+        ('streak_30', 'Mois de discipline', 'Apprenez 30 jours consécutifs', '🎯', 'streak', 150, 100, 30, 1),
+        ('streak_100', 'Centenaire', 'Apprenez 100 jours consécutifs', '💎', 'streak', 500, 300, 100, 1),
+        
+        # Vocabulary achievements
+        ('10_words', 'Premiers mots', 'Apprenez 10 nouveaux mots', '💬', 'vocabulary', 10, 5, 10, 1),
+        ('50_words', 'Vocabulaire croissant', 'Apprenez 50 nouveaux mots', '📖', 'vocabulary', 40, 25, 50, 1),
+        ('100_words', 'Polyglotte débutant', 'Apprenez 100 nouveaux mots', '🗣️', 'vocabulary', 80, 50, 100, 1),
+        ('250_words', 'Maître des mots', 'Apprenez 250 nouveaux mots', '📚', 'vocabulary', 200, 125, 250, 1),
+        ('500_words', 'Linguiste confirmé', 'Apprenez 500 nouveaux mots', '🎓', 'vocabulary', 400, 250, 500, 1),
+        
+        # Quiz achievements
+        ('first_quiz', 'Premier quiz', 'Réussissez votre premier quiz', 'check', 'quiz', 10, 5, 1, 1),
+        ('quiz_perfect', 'Score parfait', 'Obtenez 100% à un quiz', '💯', 'quiz', 30, 20, 1, 1),
+        ('5_quizzes', 'Amateur de quiz', 'Réussissez 5 quiz', '🎯', 'quiz', 40, 25, 5, 1),
+        ('10_quizzes', 'Expert en quiz', 'Réussissez 10 quiz', '🏅', 'quiz', 75, 50, 10, 1),
+        ('25_quizzes', 'Maître des quiz', 'Réussissez 25 quiz', '👨‍🎓', 'quiz', 150, 100, 25, 1),
+        
+        # Language mastery
+        ('ewondo_beginner', 'Ewondo débutant', 'Complétez tous les cours débutants en Ewondo', '🇨🇲', 'mastery', 50, 30, 1, 1),
+        ('duala_beginner', 'Duala débutant', 'Complétez tous les cours débutants en Duala', '🇨🇲', 'mastery', 50, 30, 1, 1),
+        ('fulfulde_beginner', 'Fulfulde débutant', 'Complétez tous les cours débutants en Fulfulde', '🇨🇲', 'mastery', 50, 30, 1, 1),
+        ('bassa_beginner', 'Bassa débutant', 'Complétez tous les cours débutants en Bassa', '🇨🇲', 'mastery', 50, 30, 1, 1),
+        ('bamum_beginner', 'Bamum débutant', 'Complétez tous les cours débutants en Bamum', '🇨🇲', 'mastery', 50, 30, 1, 1),
+        
+        # Special achievements
+        ('early_bird', 'Lève-tôt', 'Complétez une leçon avant 8h du matin', '🌅', 'special', 20, 15, 1, 1),
+        ('night_owl', 'Oiseau de nuit', 'Complétez une leçon après 22h', '🦉', 'special', 20, 15, 1, 1),
+        ('weekend_warrior', 'Guerrier du weekend', 'Apprenez 5 leçons un weekend', '🎉', 'special', 35, 25, 5, 1),
+        ('speed_learner', 'Apprentissage éclair', 'Complétez 3 leçons en une heure', '⚡', 'special', 40, 30, 3, 1),
+        ('perfectionist', 'Perfectionniste', 'Obtenez 100% sur 5 quiz consécutifs', '⭐', 'special', 100, 75, 5, 1),
+        
+        # Community achievements
+        ('first_share', 'Premier partage', 'Partagez votre première leçon', '📤', 'community', 15, 10, 1, 1),
+        ('helpful', 'Personne serviable', 'Aidez 5 autres apprenants', '🤝', 'community', 40, 30, 5, 1),
+        ('community_star', 'Star de la communauté', 'Recevez 50 likes sur vos contributions', '🌟', 'community', 75, 50, 50, 1),
+        
+        # Milestone achievements
+        ('bronze_medal', 'Médaille de bronze', 'Atteignez le niveau 5', '🥉', 'milestone', 30, 20, 5, 1),
+        ('silver_medal', 'Médaille d\'argent', 'Atteignez le niveau 10', '🥈', 'milestone', 75, 50, 10, 1),
+        ('gold_medal', 'Médaille d\'or', 'Atteignez le niveau 20', '🥇', 'milestone', 150, 100, 20, 1),
+        ('platinum_medal', 'Médaille de platine', 'Atteignez le niveau 30', '💎', 'milestone', 300, 200, 30, 1),
+        
+        # Time-based achievements
+        ('10_hours', '10 heures d\'apprentissage', 'Passez 10 heures à apprendre', '⏱️', 'time', 50, 35, 600, 1),  # 600 minutes
+        ('25_hours', '25 heures d\'apprentissage', 'Passez 25 heures à apprendre', '⏰', 'time', 100, 75, 1500, 1),
+        ('50_hours', '50 heures d\'apprentissage', 'Passez 50 heures à apprendre', '⌚', 'time', 200, 150, 3000, 1),
+        ('100_hours', 'Champion du temps', 'Passez 100 heures à apprendre', '👑', 'time', 500, 350, 6000, 1),
+        
+        # Cultural achievements
+        ('culture_explorer', 'Explorateur culturel', 'Découvrez 5 faits culturels différents', '🌍', 'culture', 30, 20, 5, 1),
+        ('tradition_keeper', 'Gardien des traditions', 'Complétez toutes les leçons culturelles', '🏛️', 'culture', 100, 75, 1, 1),
+        ('royal_scholar', 'Érudit royal', 'Maîtrisez l\'histoire du royaume Bamum', '👑', 'culture', 75, 50, 1, 1),
+        
+        # Multi-language achievements
+        ('bilingual', 'Bilingue', 'Apprenez 2 langues camerounaises', '🗣️', 'multilingual', 100, 75, 2, 1),
+        ('trilingual', 'Trilingue', 'Apprenez 3 langues camerounaises', '🌐', 'multilingual', 200, 150, 3, 1),
+        ('polyglot', 'Polyglotte', 'Apprenez toutes les 7 langues camerounaises', '🌍', 'multilingual', 500, 400, 7, 1),
+    ]
+    
+    cursor.executemany('''
+    INSERT OR IGNORE INTO achievements (code, name, description, icon, category, xp_reward, coin_reward, required_count, active)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', achievements_data)
+    
+    print(f"Inserted {len(achievements_data)} achievements")
+
+def insert_app_settings(cursor):
+    """Insert default application settings"""
+    settings_data = [
+        ('app_version', '2.0.0', 'string', 'Current application version'),
+        ('db_version', '002', 'string', 'Current database schema version'),
+        ('maintenance_mode', 'false', 'boolean', 'Maintenance mode flag'),
+        ('guest_lesson_limit', '5', 'number', 'Daily lesson limit for guests'),
+        ('guest_reading_limit', '5', 'number', 'Daily reading limit for guests'),
+        ('guest_quiz_limit', '5', 'number', 'Daily quiz limit for guests'),
+        ('min_password_length', '8', 'number', 'Minimum password length'),
+        ('session_timeout', '3600', 'number', 'Session timeout in seconds'),
+        ('max_upload_size', '5242880', 'number', 'Maximum file upload size in bytes (5MB)'),
+        ('enable_notifications', 'true', 'boolean', 'Enable push notifications'),
+        ('enable_analytics', 'true', 'boolean', 'Enable analytics tracking'),
+        ('default_language', 'fr', 'string', 'Default app language'),
+        ('supported_languages', '["fr", "en"]', 'json', 'List of supported interface languages'),
+        ('xp_per_lesson', '10', 'number', 'Default XP reward per lesson'),
+        ('xp_per_quiz', '20', 'number', 'Default XP reward per quiz'),
+        ('coins_per_level', '10', 'number', 'Ngondo coins earned per level up'),
+    ]
+    
+    cursor.executemany('''
+    INSERT OR IGNORE INTO app_settings (setting_key, setting_value, setting_type, description)
+    VALUES (?, ?, ?, ?)
+    ''', settings_data)
+    
+    print(f"Inserted {len(settings_data)} app settings")
+
+def insert_migrations(cursor):
+    # Initial migration
+    migrations_data = [
+        ('001_initial_schema', 'Create initial database schema with languages, translations, lessons, users, quizzes', '2025-01-01 00:00:00', 'checksum123')
+    ]
+    
+    cursor.executemany('''
+    INSERT OR IGNORE INTO migrations (version, description, applied_at, checksum)
+    VALUES (?, ?, ?, ?)
+    ''', migrations_data)
+
 def query_examples():
     """Example queries to test the database"""
     conn = sqlite3.connect('cameroon_languages.db')
     cursor = conn.cursor()
     
-    print("\n📋 Example Queries:")
+    print("\nExample Queries:")
     
     # Get all greetings in Ewondo
     cursor.execute('''
@@ -2016,6 +2532,112 @@ def query_examples():
         print(f"  {row[0]}: {row[1]} words")
     
     conn.close()
+
+def export_seed_data_to_json():
+    """Export all seed data to JSON format for TypeScript consumption"""
+    print("\nExporting seed data to JSON...")
+    
+    conn = sqlite3.connect('cameroon_languages.db')
+    conn.row_factory = sqlite3.Row  # Access columns by name
+    cursor = conn.cursor()
+    
+    seed_data = {
+        'version': '2.0.0',
+        'exported_at': datetime.now().isoformat(),
+        'languages': [],
+        'categories': [],
+        'translations': [],
+        'lessons': [],
+        'quizzes': [],
+        'achievements': [],
+        'app_settings': [],
+        'users': []
+    }
+    
+    # Export languages
+    cursor.execute('SELECT * FROM languages')
+    for row in cursor.fetchall():
+        seed_data['languages'].append(dict(row))
+    
+    # Export categories
+    cursor.execute('SELECT * FROM categories')
+    for row in cursor.fetchall():
+        seed_data['categories'].append(dict(row))
+    
+    # Export translations (limit to first 100 for JSON file size)
+    cursor.execute('SELECT * FROM translations LIMIT 100')
+    for row in cursor.fetchall():
+        seed_data['translations'].append(dict(row))
+    
+    # Export lessons
+    cursor.execute('SELECT * FROM lessons')
+    for row in cursor.fetchall():
+        lesson_dict = dict(row)
+        seed_data['lessons'].append(lesson_dict)
+    
+    # Export quizzes
+    cursor.execute('SELECT * FROM quizzes')
+    for row in cursor.fetchall():
+        quiz_dict = dict(row)
+        # Parse questions JSON if needed
+        seed_data['quizzes'].append(quiz_dict)
+    
+    # Export achievements
+    cursor.execute('SELECT * FROM achievements')
+    for row in cursor.fetchall():
+        seed_data['achievements'].append(dict(row))
+    
+    # Export app settings
+    cursor.execute('SELECT * FROM app_settings')
+    for row in cursor.fetchall():
+        seed_data['app_settings'].append(dict(row))
+    
+    # Export default users (without sensitive data)
+    cursor.execute('SELECT user_id, firebase_uid, email, display_name, role, level, xp, coins, subscription, preferences FROM users')
+    for row in cursor.fetchall():
+        user_dict = dict(row)
+        seed_data['users'].append(user_dict)
+    
+    conn.close()
+    
+    # Write to JSON file
+    output_file = 'seed-data.json'
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(seed_data, f, ensure_ascii=False, indent=2)
+    
+    # Print statistics
+    print(f"  Exported {len(seed_data['languages'])} languages")
+    print(f"  Exported {len(seed_data['categories'])} categories")
+    print(f"  Exported {len(seed_data['translations'])} translations")
+    print(f"  Exported {len(seed_data['lessons'])} lessons")
+    print(f"  Exported {len(seed_data['quizzes'])} quizzes")
+    print(f"  Exported {len(seed_data['achievements'])} achievements")
+    print(f"  Exported {len(seed_data['app_settings'])} app settings")
+    print(f"  Exported {len(seed_data['users'])} users")
+    print(f"\nSeed data saved to: {output_file}")
+
+def print_database_stats(cursor):
+    """Print database statistics"""
+    print("\nDatabase Statistics:")
+    
+    tables = ['languages', 'categories', 'translations', 'lessons', 'users', 'quizzes', 'achievements', 'app_settings']
+    
+    for table in tables:
+        try:
+            cursor.execute(f'SELECT COUNT(*) FROM {table}')
+            count = cursor.fetchone()[0]
+            print(f"  • {table.capitalize()}: {count} records")
+        except sqlite3.OperationalError:
+            print(f"  • {table.capitalize()}: Table not found")
+    
+    # Database file size
+    import os
+    if os.path.exists('cameroon_languages.db'):
+        size = os.path.getsize('cameroon_languages.db')
+        size_mb = size / (1024 * 1024)
+        print(f"  • Database size: {size_mb:.2f} MB")
+    
+    print()
 
 if __name__ == "__main__":
     create_database()

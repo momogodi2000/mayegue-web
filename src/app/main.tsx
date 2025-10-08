@@ -9,6 +9,9 @@ import '../assets/styles/globals.css';
 // Initialize Firebase
 import '../core/config/firebase.config';
 
+// Initialize SQLite
+import { sqliteService } from '../core/services/offline/sqlite.service';
+
 // Initialize PWA Service Worker
 import { registerServiceWorker } from '../core/pwa/serviceWorkerRegistration';
 
@@ -25,6 +28,9 @@ const queryClient = new QueryClient({
 
 // Register service worker for PWA
 registerServiceWorker();
+
+// Initialize SQLite
+sqliteService.initialize().catch(console.error);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

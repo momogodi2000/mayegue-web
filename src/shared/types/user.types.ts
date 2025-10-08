@@ -2,15 +2,55 @@
  * User-related TypeScript types
  */
 
-export type UserRole = 'visitor' | 'apprenant' | 'teacher' | 'admin' | 'family_member';
-export type SubscriptionPlan = 'freemium' | 'premium_monthly' | 'premium_yearly' | 'family_monthly' | 'family_yearly' | 'teacher_monthly' | 'teacher_yearly' | 'enterprise';
+export type UserRole = 'guest' | 'learner' | 'teacher' | 'admin';
+export type SubscriptionPlan = 'free' | 'premium_monthly' | 'premium_yearly' | 'family_monthly' | 'family_yearly' | 'teacher_monthly' | 'teacher_yearly' | 'enterprise';
 export type SubscriptionStatus = 'active' | 'inactive' | 'expired' | 'cancelled' | 'trial';
 
-// Legacy support - mapping old roles to new
+// Legacy support - mapping old roles to new standardized roles
 export const ROLE_MAPPING = {
-  learner: 'apprenant',
-  apprenant: 'apprenant',
-  student: 'apprenant',
+  visitor: 'guest',
+  apprenant: 'learner', 
+  learner: 'learner',
+  student: 'learner',
+  family_member: 'learner',
+  guest: 'guest',
+  teacher: 'teacher',
+  admin: 'admin',
+} as const;
+
+// Role permissions for authorization
+export const ROLE_PERMISSIONS = {
+  guest: [
+    'dictionary:read',
+    'lessons:limited',
+    'quizzes:limited',
+    'readings:limited'
+  ],
+  learner: [
+    'dictionary:read',
+    'lessons:unlimited',
+    'quizzes:unlimited',
+    'readings:unlimited',
+    'progress:read',
+    'achievements:read',
+    'profile:update'
+  ],
+  teacher: [
+    'content:create',
+    'content:update',
+    'content:delete',
+    'students:read',
+    'analytics:read',
+    'classes:manage'
+  ],
+  admin: [
+    'users:manage',
+    'content:moderate',
+    'system:manage',
+    'analytics:full',
+    'roles:update',
+    'data:export'
+  ]
 } as const;
 
 export interface User {

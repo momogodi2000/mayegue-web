@@ -1,3 +1,3 @@
-export { default as LearnerDashboard } from './pages/DashboardPage';
+export { default as LearnerDashboard } from './pages/LearnerDashboardPage';
 
 

@@ -8,10 +8,14 @@ export const RoleRedirect = () => {
 
   // Map roles to dashboards
   const roleToPath: Record<string, string> = {
+    guest: '/dashboard/guest',
+    student: '/dashboard/student',
+    teacher: '/teacher/dashboard',
+    admin: '/admin/dashboard',
+    // Legacy support
     visitor: '/dashboard/guest',
-    apprenant: '/dashboard/apprenant',
-    teacher: '/dashboard/teacher',
-    admin: '/dashboard/admin',
+    apprenant: '/dashboard/student',
+    learner: '/dashboard/student',
   };
 
   const target = roleToPath[user.role] || '/dashboard/guest';

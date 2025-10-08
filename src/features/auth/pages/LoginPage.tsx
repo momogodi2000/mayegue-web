@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FormEvent, useState } from 'react';
-import { authService } from '@/core/services/firebase/auth.service';
+import { hybridAuthService } from '@/core/services/auth/hybrid-auth.service';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { 
   Button, 
@@ -45,8 +45,13 @@ export default function LoginPage() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('🔐 Login form submitted', { email, password: '***' });
     
     if (!validateForm()) {
+      console.log('❌ Form validation failed');
+      toast.error('Veuillez corriger les erreurs dans le formulaire');
       return;
     }
 
@@ -54,7 +59,8 @@ export default function LoginPage() {
       setLoading(true);
       setError(null);
       
-      const user = await authService.signInWithEmail(email, password);
+      console.log('🔐 Attempting login for:', email);
+      const user = await hybridAuthService.signInWithEmail(email, password);
       console.log('🔐 User logged in:', user.email, 'Role:', user.role, 'UID:', user.id);
       setUser(user);
       
@@ -68,6 +74,7 @@ export default function LoginPage() {
       navigate('/dashboard', { replace: true });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion';
+      console.error('❌ Login failed:', errorMessage);
       setError(errorMessage);
       toast.error('Identifiants invalides. Veuillez vérifier vos informations.');
     } finally {
@@ -205,6 +212,7 @@ export default function LoginPage() {
                 fullWidth
                 isLoading={isLoading}
                 loadingText="Connexion en cours..."
+                disabled={isLoading}
               >
                 Se connecter
               </Button>

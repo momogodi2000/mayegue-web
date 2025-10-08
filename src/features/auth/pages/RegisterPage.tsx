@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '@/core/services/firebase/auth.service';
+import { hybridAuthService } from '@/core/services/auth/hybrid-auth.service';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { 
   Button, 
@@ -22,6 +22,7 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
+  role: 'learner' | 'teacher';
   acceptTerms: boolean;
   subscribeNewsletter: boolean;
 }
@@ -31,6 +32,7 @@ interface ValidationErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  role?: string;
   acceptTerms?: string;
   subscribeNewsletter?: string;
 }
@@ -44,6 +46,7 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'learner', // Default role is learner
     acceptTerms: false,
     subscribeNewsletter: false
   });
@@ -123,9 +126,9 @@ export default function RegisterPage() {
       setLoading(true);
       setError(null);
       
-      const user = await authService.signUpWithEmail(
-        formData.email, 
-        formData.password, 
+      const user = await hybridAuthService.signUpWithEmail(
+        formData.email,
+        formData.password,
         formData.name.trim()
       );
       
@@ -223,6 +226,26 @@ export default function RegisterPage() {
                     </svg>
                   }
                 />
+              </FormGroup>
+
+              <FormGroup>
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                  Je m'inscris en tant que
+                </label>
+                <select
+                  id="role"
+                  value={formData.role}
+                  onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as 'learner' | 'teacher' }))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                >
+                  <option value="learner">Apprenant / Étudiant</option>
+                  <option value="teacher">Enseignant</option>
+                </select>
+                <p className="mt-1 text-sm text-gray-500">
+                  {formData.role === 'teacher' 
+                    ? "En tant qu'enseignant, vous pourrez créer et gérer des cours" 
+                    : "En tant qu'apprenant, vous pourrez suivre des cours et progresser"}
+                </p>
               </FormGroup>
 
               <FormGroup>

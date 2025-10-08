@@ -27,7 +27,7 @@ service cloud.firestore {
     function isValidUser() {
       return isAuthenticated() && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['apprenant', 'teacher', 'admin', 'visitor', 'family_member'];
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['guest', 'learner', 'teacher', 'admin'];
     }
     
     function hasValidEmail() {
@@ -37,16 +37,13 @@ service cloud.firestore {
     // Users collection - users can read/write their own data
     match /users/{userId} {
       // Allow users to create their own profile during registration
-      allow create: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && (isOwner(userId) || request.auth.uid == userId);
       // Allow users to read/write their own data  
       allow read, write: if isAuthenticated() && isOwner(userId);
       // Admins can access all user data
       allow read, write: if isAuthenticated() && isAdmin();
       // User profiles can be read by authenticated users (for community features)
       allow read: if isAuthenticated();
-      // Special rule: Allow any authenticated user to create user documents (for setup scripts)
-      // This is needed because the setup script creates users while authenticated as each user
-      allow create, update: if isAuthenticated();
       
       // User stats subcollection
       match /stats/{statId} {
@@ -211,6 +208,14 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow create: if true; // Anyone can subscribe
       allow update: if true; // Allow verification updates
+      allow delete: if isAdmin();
+    }
+
+    // Contact messages - anyone can submit
+    match /contact_messages/{messageId} {
+      allow read: if isAdmin();
+      allow create: if true; // Anyone can submit a contact message
+      allow update: if isAdmin(); // Only admins can update status
       allow delete: if isAdmin();
     }
 
