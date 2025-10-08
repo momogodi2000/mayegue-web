@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { geminiService } from '@/core/services/ai/gemini.service';
+import { geminiService } from '@/core/services/ai/geminiService';
 
 export default function AIAssistantPage() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'ai'; text: string }>>([
@@ -18,7 +18,7 @@ export default function AIAssistantPage() {
     
     setLoading(true);
     try {
-      const response = await geminiService.sendMessage(userMessage);
+      const response = await geminiService.generateResponse(userMessage);
       setMessages((m) => [...m, { role: 'ai', text: response }]);
     } catch (error) {
       setMessages((m) => [...m, { role: 'ai', text: 'Désolé, une erreur est survenue. Veuillez réessayer.' }]);

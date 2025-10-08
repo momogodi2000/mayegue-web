@@ -191,13 +191,8 @@ export class AuthService {
         // Continue even if profile creation fails - it will be created on next login
       }
 
-      // Send verification email
-      try {
-        await sendEmailVerification(cred.user);
-      } catch (emailError) {
-        console.error('Error sending verification email:', emailError);
-        // Continue even if email fails - user can request it later
-      }
+      // Email verification disabled - users can login immediately
+      // No verification email needed
 
       // Reset rate limiter on successful signup
       this.signupRateLimiter.reset(email);
@@ -272,12 +267,10 @@ export class AuthService {
     return unsub;
   }
 
-  // Email verification
+  // Email verification disabled
   async sendVerificationEmail(): Promise<void> {
-    const user = auth.currentUser;
-    if (user && !user.emailVerified) {
-      await sendEmailVerification(user);
-    }
+    // Email verification is disabled - no action needed
+    console.log('Email verification is disabled');
   }
 
   // Password reset

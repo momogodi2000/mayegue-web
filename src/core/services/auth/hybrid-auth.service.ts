@@ -313,10 +313,11 @@ export class HybridAuthService {
   }
 
   /**
-   * Delegate Firebase-specific methods
+   * Email verification disabled
    */
   async sendVerificationEmail(): Promise<void> {
-    return authService.sendVerificationEmail();
+    // Email verification is disabled
+    console.log('Email verification is disabled');
   }
 
   async requestPasswordReset(email: string): Promise<void> {

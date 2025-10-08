@@ -7,7 +7,6 @@ import { RoleRedirect } from '@/shared/components/auth/RoleRedirect';
 import { RoleBasedRouter } from '@/shared/components/auth/RoleBasedRouter';
 import { RoleRoute } from '@/shared/components/auth/RoleRoute';
 import { TwoFactorGuard } from '@/shared/components/auth/TwoFactorGuard';
-import { EmailVerificationGuard } from '@/shared/components/auth/EmailVerificationGuard';
 import { GuestDashboard } from '@/features/users/guest';
 import { LearnerDashboard } from '@/features/users/learner';
 import { TeacherDashboard, EnhancedTeacherDashboardPage } from '@/features/users/teacher';
@@ -106,9 +105,8 @@ export function AppRouter() {
           <Route path="quiz" element={<QuizPage />} />
           <Route path="level-test" element={<LevelTestPage />} />
           
-          {/* Protected Routes - Require Authentication and Email Verification */}
+          {/* Protected Routes - Require Authentication */}
           <Route element={<ProtectedRoute />}>
-            <Route element={<EmailVerificationGuard />}>
               <Route path="dashboard" element={<RoleBasedRouter />} />
               <Route path="learner/dashboard" element={<LearnerDashboard />} />
             
@@ -164,7 +162,6 @@ export function AppRouter() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="security/2fa" element={<TwoFactorPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
-            </Route>
           </Route>
           
           {/* Error Pages */}
