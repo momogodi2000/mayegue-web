@@ -129,7 +129,8 @@ export default function RegisterPage() {
       const user = await hybridAuthService.signUpWithEmail(
         formData.email,
         formData.password,
-        formData.name.trim()
+        formData.name.trim(),
+        formData.role
       );
       
       // Subscribe to newsletter if opted in
@@ -143,10 +144,11 @@ export default function RegisterPage() {
       }
       
       setUser(user);
-      setRegisteredEmail(formData.email);
-      setShowEmailVerificationModal(true);
-      
+
       toast.success("Bienvenue dans Ma'a yegue! Votre compte a été créé avec succès.");
+
+      // Navigate to dashboard - let RoleBasedRouter handle role-based redirection
+      navigate('/dashboard', { replace: true });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Erreur lors de l'inscription";
       setError(errorMessage);

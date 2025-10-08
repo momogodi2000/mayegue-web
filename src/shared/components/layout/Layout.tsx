@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/store/authStore';
-import { authService } from '@/core/services/firebase/auth.service';
+import { hybridAuthService } from '@/core/services/auth/hybrid-auth.service';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { ThemeToggle } from '@/shared/components/ui/ThemeToggle';
@@ -25,9 +25,9 @@ export const Layout = () => {
 
   const handleLogout = async () => {
     try {
-      await authService.signOut();
+      await hybridAuthService.signOut();
       toast.success('Déconnecté');
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (err) {
       toast.error('Erreur de déconnexion');
     }

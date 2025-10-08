@@ -141,8 +141,8 @@ export class HybridAuthService {
   /**
    * Sign up with email and password
    */
-  async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User> {
-    const firebaseUser = await authService.signUpWithEmail(email, password, displayName);
+  async signUpWithEmail(email: string, password: string, displayName?: string, role?: UserRole): Promise<User> {
+    const firebaseUser = await authService.signUpWithEmail(email, password, displayName, role);
     await this.linkFirebaseUserToLocal(firebaseUser);
     return this.currentUser!;
   }

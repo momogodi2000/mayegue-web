@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Lesson, LessonProgress, ExerciseResult } from '@/shared/types/lesson.types';
 import { firestoreService } from '@/core/services/firebase/firestore.service';
 import { userService } from '@/core/services/firebase/user.service';
+import { sqliteService } from '@/core/services/offline/sqlite.service';
 
 interface LessonsState {
   // Data
@@ -84,17 +85,37 @@ export const useLessonsStore = create<LessonsState>()(
       fetchLessons: async (languageId?: string, level?: string) => {
         try {
           set({ loading: true, error: null });
-          
-          // Build query filters
-          const whereFilters: [string, '==' | '!=' | '<' | '<=' | '>' | '>=' | 'array-contains' | 'in' | 'array-contains-any' | 'not-in', unknown][] = [];
-          if (languageId) whereFilters.push(['languageId', '==', languageId]);
-          if (level) whereFilters.push(['level', '==', level]);
-          
-          // Fetch from Firestore
-          const lessons = await firestoreService.getDocuments<Lesson>('lessons', {
-            where: whereFilters.length > 0 ? whereFilters : undefined
-          });
-          
+
+          // Fetch from SQLite (offline-first, always available)
+          const sqliteLessons = await sqliteService.getLessons(languageId);
+
+          // Filter by level if specified
+          let filteredLessons = sqliteLessons;
+          if (level) {
+            filteredLessons = sqliteLessons.filter(l => l.level === level);
+          }
+
+          // Map SQLite lesson records to Lesson type
+          const lessons: Lesson[] = filteredLessons.map(l => ({
+            id: l.lesson_id?.toString() || '',
+            languageId: l.language_id || '',
+            title: l.title || '',
+            description: l.content || '',
+            content: [{ type: 'text', value: l.content || '' }],
+            exercises: [],
+            level: (l.level as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
+            order: l.order_index || 0,
+            duration: l.estimated_duration || 15,
+            xpReward: l.xp_reward || 10,
+            audioUrl: l.audio_url,
+            videoUrl: l.video_url,
+            tags: [],
+            isDownloaded: false,
+            isPublished: l.published === 1,
+            createdAt: new Date(l.created_date || Date.now()),
+            updatedAt: new Date(l.updated_date || Date.now())
+          }));
+
           const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
           set({ lessons: sortedLessons, loading: false });
         } catch (error) {
@@ -106,15 +127,38 @@ export const useLessonsStore = create<LessonsState>()(
       fetchLessonById: async (id: string) => {
         try {
           set({ loading: true, error: null });
-          
+
           // Check if lesson is already in store
           const { lessons } = get();
           let lesson = lessons.find(l => l.id === id);
-          
+
           if (!lesson) {
-            // Fetch from Firestore
-            const fetchedLesson = await firestoreService.getDocument<Lesson>('lessons', id);
-            lesson = fetchedLesson || undefined;
+            // Fetch from SQLite
+            const lessonId = parseInt(id);
+            if (!isNaN(lessonId)) {
+              const sqliteLesson = await sqliteService.getLesson(lessonId);
+              if (sqliteLesson) {
+                lesson = {
+                  id: sqliteLesson.lesson_id?.toString() || '',
+                  languageId: sqliteLesson.language_id || '',
+                  title: sqliteLesson.title || '',
+                  description: sqliteLesson.content || '',
+                  content: [{ type: 'text', value: sqliteLesson.content || '' }],
+                  exercises: [],
+                  level: (sqliteLesson.level as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
+                  order: sqliteLesson.order_index || 0,
+                  duration: sqliteLesson.estimated_duration || 15,
+                  xpReward: sqliteLesson.xp_reward || 10,
+                  audioUrl: sqliteLesson.audio_url,
+                  videoUrl: sqliteLesson.video_url,
+                  tags: [],
+                  isDownloaded: false,
+                  isPublished: sqliteLesson.published === 1,
+                  createdAt: new Date(sqliteLesson.created_date || Date.now()),
+                  updatedAt: new Date(sqliteLesson.updated_date || Date.now())
+                };
+              }
+            }
           }
 
           if (lesson) {
